@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Folder Uploader</title>
+    
+    <!-- Tailwind CSS (Catatan: Gunakan Tailwind CLI untuk production) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- JSZip -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #030305;
+            background-image: 
+                radial-gradient(circle at 15% 0%, rgba(168, 85, 247, 0.15) 0%, transparent 25%),
+                radial-gradient(circle at 85% 100%, rgba(217, 70, 239, 0.15) 0%, transparent 25%);
+            color: #e2e8f0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        
+        .glass-panel {
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.8), rgba(9, 9, 11, 0.9));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .input-dark {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            color: #f8fafc;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+            font-size: 14px !important; 
+        }
+        
+        @media (min-width: 768px) {
+            .input-dark { font-size: 13px !important; } 
+        }
+        
+        .input-dark:hover {
+            border-color: rgba(168, 85, 247, 0.4);
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        
+        .input-dark:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2), inset 0 2px 4px rgba(0,0,0,0.5);
+            outline: none;
+        }
+
+        .cyber-checkbox {
+            appearance: none;
+            width: 1.5rem; 
+            height: 1.5rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(51, 65, 85, 0.8);
+            border-radius: 0.375rem;
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .cyber-checkbox::before {
+            content: "";
+            width: 0.8rem;
+            height: 0.8rem;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em #000;
+            background-color: transform;
+            transform-origin: center;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+        
+        @media (min-width: 768px) {
+            .cyber-checkbox { width: 1.25rem; height: 1.25rem; border-radius: 0.25rem; }
+            .cyber-checkbox::before { width: 0.65rem; height: 0.65rem; }
+        }
+
+        .cyber-checkbox:checked {
+            background-color: #a855f7;
+            border-color: #a855f7;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+        }
+        .cyber-checkbox:checked::before { transform: scale(1); }
+
+        .btn-upload {
+            background: linear-gradient(135deg, #a855f7 0%, #c026d3 100%);
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-upload::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+            transform: skewX(-20deg);
+        }
+        .btn-upload:hover:not(:disabled), .btn-upload:active:not(:disabled) {
+            box-shadow: 0 6px 30px rgba(16, 185, 129, 0.6);
+            transform: translateY(-2px);
+        }
+        .btn-upload:hover:not(:disabled)::after {
+            animation: shine 1.5s infinite;
+        }
+        .btn-upload:disabled {
+            filter: grayscale(100%);
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-test {
+            background: #111827;
+            border: 1px solid #374151;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+        }
+        .btn-test:hover:not(:disabled), .btn-test:active:not(:disabled) {
+            background: #1f2937;
+            border-color: #a855f7;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+        }
+
+        .upload-area {
+            background: rgba(0,0,0,0.4);
+            border: 1px dashed rgba(51, 65, 85, 0.8);
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover {
+            border-color: #a855f7;
+            background: rgba(168, 85, 247, 0.05);
+            box-shadow: inset 0 0 20px rgba(168, 85, 247, 0.1);
+        }
+
+        @keyframes shine { 100% { left: 200%; } }
+
+        .spinner { 
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg at 50% 50%, transparent 0%, #fff 100%);
+            animation: spin 1s linear infinite;
+            position: relative;
+        }
+        .spinner::before {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            background: #000;
+            border-radius: 50%;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .file-list-container { max-height: 280px; overflow-y: auto; overflow-x: hidden; }
+        
+        @media (pointer: fine) {
+            ::-webkit-scrollbar { width: 6px; }
+            ::-webkit-scrollbar-track { background: #000; border-radius: 4px; }
+            ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; border: 1px solid #000; }
+            ::-webkit-scrollbar-thumb:hover { background-color: #444; }
+        }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen p-2 sm:p-4 md:p-8 flex justify-center items-start">
+    <div class="w-full max-w-4xl glass-panel rounded-2xl overflow-hidden mb-6 md:mb-12 relative z-10">
+        
+        <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-80"></div>
+
+        <div class="p-4 md:p-8 pb-4 md:pb-5 border-b border-white/5 relative overflow-hidden flex justify-start items-center gap-3 md:gap-5">
+            <i class="fab fa-github absolute -right-4 -top-4 text-9xl text-white/5 transform -rotate-12"></i>
+            
+            <div class="relative z-10 shrink-0 group cursor-pointer" title="Change Avatar">
+                <div class="absolute inset-0 bg-gradient-to-tr from-purple-500 to-fuchsia-500 rounded-full blur-[6px] md:blur-[10px] opacity-60 animate-pulse"></div>
+                <img src="https://i.imgur.com/GDSFrlG.png" alt="User Avatar" class="relative w-12 h-12 md:w-16 md:h-16 rounded-full border-[2px] border-black object-cover z-10 group-hover:scale-105 transition-transform duration-300">
+            </div>
+
+            <div class="flex items-center relative z-10">
+                <div>
+                    <h1 class="text-xl md:text-3xl font-extrabold tracking-tight text-white mb-0.5 md:mb-1 leading-tight">
+                        GitHub <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-fuchsia-400">Uploader</span>
+                    </h1>
+                    <p class="text-slate-400 text-xs md:text-sm font-medium">Upload folder atau ZIP ke repository secara instan.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 md:p-8 pt-4 md:pt-6">
+            
+            <div class="bg-black/40 border border-amber-500/20 rounded-xl p-3 md:p-5 mb-5 flex items-start gap-3 md:gap-4 shadow-inner relative overflow-hidden">
+                <div class="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-amber-400 to-orange-500"></div>
+                <div class="bg-amber-500/10 p-1.5 md:p-2 rounded-lg text-amber-400 shrink-0 mt-0.5">
+                    <i class="fas fa-shield-halved text-base md:text-xl"></i>
+                </div>
+                <div class="space-y-1 text-xs md:text-sm text-slate-300 leading-relaxed">
+                    <p class="font-bold text-white mb-1">Keamanan & Token</p>
+                    <p>Membutuhkan <strong>Fine-grained Personal Access Token</strong> dengan izin <em>Contents (Read & Write)</em>.</p>
+                    <p>Generate di <a href="https://github.com/settings/personal-access-tokens" target="_blank" class="text-cyan-400 font-semibold hover:text-cyan-300 transition-colors">github.com/settings <i class="fas fa-external-link-alt text-[9px] ml-0.5"></i></a>. Token diproses secara lokal.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 md:gap-y-6 mb-6">
+                
+                <div class="md:col-span-2 group">
+                    <div class="flex justify-between items-center mb-1.5 md:mb-2">
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider group-focus-within:text-purple-400 transition-colors">GitHub Token <span class="text-rose-500">*</span></label>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="remember-token" class="cyber-checkbox origin-right">
+                            <label for="remember-token" class="ml-2 text-xs font-medium text-slate-400 cursor-pointer hover:text-slate-200 select-none">Remember</label>
+                        </div>
+                    </div>
+                    <div class="flex rounded-xl overflow-hidden shadow-sm">
+                        <span class="bg-black px-3 md:px-4 flex items-center justify-center text-slate-500 border border-r-0 border-slate-700/80 group-focus-within:border-purple-500 transition-colors"><i class="fas fa-key text-sm md:text-base"></i></span>
+                        <input type="password" id="gh-token" class="flex-1 w-full px-3 md:px-4 py-2.5 md:py-3 input-dark !rounded-none !border-x-0 mono tracking-wider" placeholder="github_pat_...">
+                        <button type="button" id="toggle-token" class="bg-black px-3 md:px-4 flex items-center justify-center text-slate-400 hover:text-purple-400 transition-colors border border-l-0 border-slate-700/80 group-focus-within:border-purple-500 focus:outline-none">
+                            <i class="fas fa-eye text-sm md:text-base"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="group">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 md:mb-2 group-focus-within:text-purple-400 transition-colors">Owner / User <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <i class="fas fa-user absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors"></i>
+                        <input type="text" id="gh-owner" class="w-full py-2.5 md:py-3 pl-10 md:pl-11 pr-3 input-dark rounded-xl mono" placeholder="oktocat">
+                    </div>
+                </div>
+
+                <div class="group">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 md:mb-2 group-focus-within:text-purple-400 transition-colors">Repository <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <i class="fas fa-book-journal-whills absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors"></i>
+                        <input type="text" id="gh-repo" class="w-full py-2.5 md:py-3 pl-10 md:pl-11 pr-3 input-dark rounded-xl mono" placeholder="my-project">
+                    </div>
+                </div>
+
+                <div class="group">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 md:mb-2 group-focus-within:text-purple-400 transition-colors">Branch <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <i class="fas fa-code-branch absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors"></i>
+                        <!-- Menambahkan value="main" sebagai default -->
+                        <input type="text" id="gh-branch" class="w-full py-2.5 md:py-3 pl-10 md:pl-11 pr-3 input-dark rounded-xl mono" placeholder="main" value="main">
+                    </div>
+                </div>
+
+                <div class="group">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 md:mb-2 group-focus-within:text-purple-400 transition-colors">Dest. Path <span class="text-[10px] md:text-xs text-slate-500 normal-case">(Opsional)</span></label>
+                    <div class="relative">
+                        <i class="fas fa-folder-tree absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors"></i>
+                        <input type="text" id="gh-path" class="w-full py-2.5 md:py-3 pl-10 md:pl-11 pr-3 input-dark rounded-xl mono" placeholder="assets/ (Kosong = root)">
+                    </div>
+                </div>
+
+                <div class="md:col-span-2 flex flex-col md:flex-row gap-3 md:gap-4 mt-2">
+                    <div class="flex-1 group">
+                        <div class="relative">
+                            <i class="fas fa-comment-dots absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors"></i>
+                            <input type="text" id="gh-message" class="w-full py-2.5 md:py-3 pl-10 md:pl-11 pr-3 input-dark rounded-xl" value="Upload files via Web Uploader">
+                        </div>
+                    </div>
+                    <button type="button" id="btn-test" class="btn-test w-full md:w-auto px-6 py-3 md:py-3 text-slate-300 font-bold rounded-xl flex items-center justify-center gap-2 focus:outline-none">
+                        <i class="fas fa-plug text-slate-400"></i> <span class="text-sm">Test API</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="alert-box" class="hidden mb-6 p-3 md:p-4 rounded-xl text-xs md:text-sm font-medium border"></div>
+
+            <div class="flex flex-col md:flex-row gap-3 md:gap-4 mb-6">
+                <div class="flex-1">
+                    <input type="file" id="input-folder" webkitdirectory multiple class="hidden">
+                    <button type="button" onclick="document.getElementById('input-folder').click()" class="w-full upload-area p-5 md:p-6 rounded-xl flex flex-col items-center justify-center h-full group focus:outline-none">
+                        <i class="fas fa-folder-open text-4xl mb-2 text-purple-400 group-hover:scale-110 transition-transform"></i>
+                        <span class="font-bold text-slate-200 text-sm md:text-base">Pilih Folder</span>
+                        <span class="text-xs text-slate-400 mt-1 text-center">Upload utuh dari sistem</span>
+                        
+                        <div class="mt-3 text-[11px] bg-purple-500/10 text-purple-300 px-3 py-1.5 rounded-lg border border-purple-500/20 font-medium">
+                            <i class="fas fa-check-circle mr-1"></i> Mendukung struktur direktori
+                        </div>
+                    </button>
+                </div>
+                <div class="flex-1">
+                    <input type="file" id="input-zip" accept=".zip" class="hidden">
+                    <button type="button" id="btn-zip-trigger" onclick="document.getElementById('input-zip').click()" class="w-full upload-area p-5 md:p-6 rounded-xl flex flex-col items-center justify-center h-full group focus:outline-none relative">
+                        <i class="fas fa-file-zipper text-4xl mb-2 text-fuchsia-400 group-hover:scale-110 transition-transform"></i>
+                        <span class="font-bold text-slate-200 text-sm md:text-base">Pilih ZIP</span>
+                        <span class="text-xs text-slate-400 mt-1 text-center">Ekstrak otomatis di browser</span>
+                        
+                        <div class="mt-3 text-[11px] bg-fuchsia-500/10 text-fuchsia-300 px-3 py-1.5 rounded-lg border border-fuchsia-500/20 font-medium">
+                            <i class="fas fa-bolt mr-1"></i> Proses ekstrak super cepat
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div id="file-section" class="hidden animate-[fadeIn_0.3s_ease]">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-3">
+                    <h3 class="text-sm font-bold text-slate-300 uppercase tracking-widest"><i class="fas fa-list-ul mr-2 text-purple-400"></i>Antrean (<span id="file-count" class="text-purple-400">0</span>)</h3>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="strip-root" class="cyber-checkbox origin-right" checked>
+                        <label for="strip-root" class="ml-2 text-xs font-medium text-slate-400 cursor-pointer select-none hover:text-white">Strip root folder</label>
+                    </div>
+                </div>
+
+                <div class="border border-slate-700/50 bg-[#020202] rounded-xl overflow-hidden mb-6 shadow-inner">
+                    <div class="file-list-container bg-black/40">
+                        <table class="min-w-full text-left text-xs table-fixed">
+                            <thead class="bg-black/80 border-b border-slate-800 text-slate-400 font-mono tracking-wider sticky top-0 z-10">
+                                <tr>
+                                    <th class="px-3 md:px-4 py-3 font-semibold w-[55%] md:w-[65%]">Path Tujuan</th>
+                                    <th class="px-3 md:px-4 py-3 font-semibold text-right w-[25%] md:w-[20%]">Ukuran</th>
+                                    <th class="px-3 md:px-4 py-3 font-semibold text-center w-[20%] md:w-[15%]">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="file-list-body" class="divide-y divide-slate-800/50 font-mono text-slate-300">
+                                <!-- Files Injected Here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="progress-container" class="mb-5 hidden">
+                    <div class="flex justify-between text-xs mb-1.5 font-bold uppercase tracking-wider">
+                        <span id="progress-text" class="text-fuchsia-400">Menyiapkan...</span>
+                        <span id="progress-percentage" class="text-fuchsia-400">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden shadow-inner">
+                        <div id="progress-bar" class="bg-gradient-to-r from-purple-500 to-fuchsia-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <p id="progress-detail" class="text-[10px] md:text-xs text-slate-500 mt-2 truncate font-mono"></p>
+                </div>
+
+                <button type="button" id="btn-upload" class="w-full btn-upload text-white font-bold py-3.5 md:py-4 rounded-xl flex justify-center items-center gap-2 focus:outline-none text-base md:text-lg">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload ke GitHub
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let selectedFiles = []; 
+        let strippedFiles = []; 
+        let isUploading = false;
+
+        const DOM = {
+            token: document.getElementById('gh-token'),
+            rememberToken: document.getElementById('remember-token'),
+            toggleToken: document.getElementById('toggle-token'),
+            owner: document.getElementById('gh-owner'),
+            repo: document.getElementById('gh-repo'),
+            branch: document.getElementById('gh-branch'),
+            path: document.getElementById('gh-path'),
+            message: document.getElementById('gh-message'),
+            btnTest: document.getElementById('btn-test'),
+            inputFolder: document.getElementById('input-folder'),
+            inputZip: document.getElementById('input-zip'),
+            btnZipTrigger: document.getElementById('btn-zip-trigger'),
+            fileSection: document.getElementById('file-section'),
+            fileCount: document.getElementById('file-count'),
+            fileListBody: document.getElementById('file-list-body'),
+            stripRoot: document.getElementById('strip-root'),
+            btnUpload: document.getElementById('btn-upload'),
+            progressContainer: document.getElementById('progress-container'),
+            progressBar: document.getElementById('progress-bar'),
+            progressText: document.getElementById('progress-text'),
+            progressPercentage: document.getElementById('progress-percentage'),
+            progressDetail: document.getElementById('progress-detail'),
+            alertBox: document.getElementById('alert-box')
+        };
+
+        function init() {
+            const savedSettings = JSON.parse(localStorage.getItem('ghUploaderSettingsCyber') || '{}');
+            if (savedSettings.rememberToken && savedSettings.token) {
+                DOM.token.value = savedSettings.token;
+                DOM.rememberToken.checked = true;
+            }
+            if (savedSettings.owner) DOM.owner.value = savedSettings.owner;
+            if (savedSettings.repo) DOM.repo.value = savedSettings.repo;
+            // Memastikan branch tersimpan diaplikasikan. Jika tidak ada di storage, biarkan default "main" dari HTML
+            if (savedSettings.branch) DOM.branch.value = savedSettings.branch;
+            if (savedSettings.path) DOM.path.value = savedSettings.path;
+
+            DOM.toggleToken.addEventListener('click', () => {
+                const isPass = DOM.token.type === 'password';
+                DOM.token.type = isPass ? 'text' : 'password';
+                DOM.toggleToken.innerHTML = isPass ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+                DOM.toggleToken.classList.toggle('text-purple-400', isPass);
+            });
+
+            DOM.inputFolder.addEventListener('change', handleFolderSelection);
+            DOM.inputZip.addEventListener('change', handleZipSelection);
+            DOM.stripRoot.addEventListener('change', updateFileList);
+            DOM.btnTest.addEventListener('click', testConnection);
+            DOM.btnUpload.addEventListener('click', startUpload);
+
+            const saveInputs = [DOM.owner, DOM.repo, DOM.branch, DOM.path, DOM.token, DOM.rememberToken];
+            saveInputs.forEach(el => el.addEventListener('change', saveSettings));
+        }
+
+        function saveSettings() {
+            const settings = {
+                owner: DOM.owner.value.trim(),
+                repo: DOM.repo.value.trim(),
+                branch: DOM.branch.value.trim(),
+                path: DOM.path.value.trim(),
+                rememberToken: DOM.rememberToken.checked,
+                token: DOM.rememberToken.checked ? DOM.token.value.trim() : ''
+            };
+            localStorage.setItem('ghUploaderSettingsCyber', JSON.stringify(settings));
+        }
+
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        function showAlert(message, type = 'error') {
+            DOM.alertBox.className = `mt-3 mb-6 p-3 md:p-4 rounded-xl text-xs md:text-sm font-medium border flex items-start gap-3 shadow-inner ${
+                type === 'error' ? 'bg-rose-500/10 text-rose-400 border-rose-500/30' : 
+                'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+            }`;
+            DOM.alertBox.innerHTML = `
+                <div class="mt-0.5"><i class="fas ${type === 'error' ? 'fa-times-circle' : 'fa-check-circle'} text-base"></i></div>
+                <div class="leading-relaxed flex-1">${message}</div>
+            `;
+            DOM.alertBox.classList.remove('hidden');
+        }
+
+        function hideAlert() {
+            DOM.alertBox.classList.add('hidden');
+        }
+
+        function getCommonRoot(paths) {
+            if (paths.length === 0) return '';
+            let splitPaths = paths.map(p => p.split('/'));
+            let common = [];
+            let minLen = Math.min(...splitPaths.map(p => p.length));
+            if (minLen <= 1) return ''; 
+            for (let i = 0; i < minLen - 1; i++) { 
+                let current = splitPaths[0][i];
+                let isCommon = splitPaths.every(p => p[i] === current);
+                if (isCommon) common.push(current);
+                else break;
+            }
+            return common.length > 0 ? common.join('/') + '/' : '';
+        }
+        
+        function setUpdate(text, progress) {
+            DOM.progressText.textContent = text;
+            DOM.progressDetail.textContent = text;
+            DOM.progressPercentage.textContent = Math.round(progress) + '%';
+            DOM.progressBar.style.width = progress + '%';
+        }
+
+        async function handleFolderSelection(e) {
+            const files = e.target.files;
+            if (!files.length) return;
+            
+            selectedFiles = [];
+            for (let i = 0; i < files.length; i++) {
+                const f = files[i];
+                if (f.size > 100 * 1024 * 1024) {
+                    console.warn(`Skipped: ${f.webkitRelativePath} (>100MB)`);
+                    continue;
+                }
+                selectedFiles.push({
+                    originalPath: f.webkitRelativePath,
+                    fileData: f,
+                    size: f.size,
+                    isDir: false
+                });
+            }
+            DOM.inputFolder.value = ''; 
+            updateFileList();
+        }
+
+        async function handleZipSelection(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            hideAlert();
+            DOM.fileSection.classList.add('hidden');
+            const originalBtnHtml = DOM.btnZipTrigger.innerHTML;
+            DOM.btnZipTrigger.innerHTML = `<div class="spinner"></div><span class="mt-3 text-fuchsia-400 font-bold text-sm">Mengekstrak...</span>`;
+
+            try {
+                const zip = await JSZip.loadAsync(file);
+                selectedFiles = [];
+                const promises = [];
+
+                zip.forEach((relativePath, zipEntry) => {
+                    if (relativePath.includes('__MACOSX/') || relativePath.endsWith('.DS_Store')) return;
+                    if (zipEntry.dir) {
+                        selectedFiles.push({ originalPath: relativePath, size: 0, isDir: true, fileData: null });
+                    } else {
+                        promises.push(
+                            zipEntry.async('blob').then(blob => {
+                                if (blob.size > 100 * 1024 * 1024) return;
+                                selectedFiles.push({ originalPath: relativePath, fileData: blob, size: blob.size, isDir: false });
+                            })
+                        );
+                    }
+                });
+
+                await Promise.all(promises);
+                updateFileList();
+            } catch (err) {
+                showAlert("Gagal membaca ZIP: " + err.message);
+            } finally {
+                DOM.inputZip.value = ''; 
+                DOM.btnZipTrigger.innerHTML = originalBtnHtml;
+            }
+        }
+
+        function updateFileList() {
+            if (selectedFiles.length === 0) {
+                DOM.fileSection.classList.add('hidden');
+                return;
+            }
+            DOM.fileSection.classList.remove('hidden');
+            let rootToStrip = DOM.stripRoot.checked ? getCommonRoot(selectedFiles.map(f => f.originalPath)) : '';
+
+            strippedFiles = selectedFiles.map((f, index) => {
+                let displayPath = f.originalPath;
+                if (rootToStrip && displayPath.startsWith(rootToStrip)) {
+                    displayPath = displayPath.substring(rootToStrip.length);
+                }
+                return { ...f, displayPath, originalIndex: index };
+            }).filter(f => f.displayPath !== ''); 
+
+            renderFileList();
+        }
+
+        function renderFileList() {
+            DOM.fileListBody.innerHTML = '';
+            const visibleFiles = [];
+            
+            for (let file of strippedFiles) {
+                if (file.isDir) {
+                    const hasChildren = strippedFiles.some(f => !f.isDir && f.displayPath.startsWith(file.displayPath));
+                    if (!hasChildren) visibleFiles.push(file);
+                } else {
+                    visibleFiles.push(file);
+                }
+            }
+
+            DOM.fileCount.textContent = visibleFiles.length;
+
+            visibleFiles.forEach((file) => {
+                const isBig = file.size > 25 * 1024 * 1024;
+                const tr = document.createElement('tr');
+                tr.className = `hover:bg-white/[0.02] transition-colors ${isBig ? 'text-amber-400' : ''}`;
+                
+                const hoverText = file.displayPath + (file.isDir ? '/.gitkeep' : '');
+                
+                tr.innerHTML = `
+                    <td class="px-3 md:px-4 py-2 truncate" title="${hoverText}">
+                        <i class="${file.isDir ? 'fas fa-folder text-amber-500' : 'far fa-file-code text-purple-400'} mr-2 opacity-80"></i>
+                        ${file.displayPath}${file.isDir ? '/<span class="opacity-50">.gitkeep</span>' : ''}
+                    </td>
+                    <td class="px-3 md:px-4 py-2 text-right ${isBig ? 'font-bold' : 'text-slate-500'}">
+                        ${file.isDir ? '-' : formatBytes(file.size)}
+                    </td>
+                    <td class="px-3 md:px-4 py-2 text-center">
+                        <button type="button" class="text-rose-500/70 hover:text-rose-400 hover:bg-rose-500/20 p-2 md:p-1.5 rounded-lg transition" onclick="removeFile(${file.originalIndex})" title="Hapus"><i class="fas fa-trash-alt text-base md:text-sm"></i></button>
+                    </td>
+                `;
+                DOM.fileListBody.appendChild(tr);
+            });
+        }
+
+        window.removeFile = function(idx) {
+            selectedFiles.splice(idx, 1);
+            updateFileList();
+        };
+
+        async function ghApi(endpoint, method = 'GET', body = null) {
+            const token = DOM.token.value.trim();
+            if (!token) throw new Error("Token wajib diisi.");
+
+            const options = {
+                method,
+                headers: { 'Accept': 'application/vnd.github.v3+json', 'Authorization': `Bearer ${token}` }
+            };
+            if (body) options.body = JSON.stringify(body);
+
+            const res = await fetch(`https://api.github.com/${endpoint}`, options);
+            if (res.status === 204) return null;
+
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
+            return data;
+        }
+
+        async function testConnection() {
+            hideAlert(); saveSettings();
+            const owner = DOM.owner.value.trim();
+            const repo = DOM.repo.value.trim();
+            const branch = DOM.branch.value.trim();
+
+            // Memastikan branch juga terisi karena sekarang sifatnya wajib
+            if (!owner || !repo || !branch) return showAlert("Owner, Repo, dan Branch wajib diisi.");
+
+            const btnHtml = DOM.btnTest.innerHTML;
+            DOM.btnTest.innerHTML = `<div class="spinner"></div>`;
+            DOM.btnTest.disabled = true;
+
+            try {
+                const repoData = await ghApi(`repos/${owner}/${repo}`);
+                let msg = `Terhubung ke <strong class="text-white">${repoData.full_name}</strong>.<br>`;
+                
+                try {
+                    await ghApi(`repos/${owner}/${repo}/branches/${branch}`);
+                    msg += `Branch <span class="text-fuchsia-300">${branch}</span> ditemukan.`;
+                } catch (e) {
+                    msg += `Branch <span class="text-amber-300">${branch}</span> akan dibuat otomatis saat upload.`;
+                }
+                showAlert(msg, 'success');
+            } catch (error) {
+                showAlert(error.message);
+            } finally {
+                DOM.btnTest.innerHTML = btnHtml;
+                DOM.btnTest.disabled = false;
+            }
+        }
+
+        function blobToBase64(blob) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        async function startUpload() {
+            if (isUploading) return;
+            if (strippedFiles.length === 0) return showAlert("Tidak ada file untuk diupload.");
+
+            const owner = DOM.owner.value.trim();
+            const repo = DOM.repo.value.trim();
+            const branch = DOM.branch.value.trim();
+            const basePath = DOM.path.value.trim().replace(/^\/|\/$/g, ''); 
+            const commitMessage = DOM.message.value.trim() || "Upload via Web Uploader";
+
+            // Validasi ketiga field yang wajib
+            if (!owner || !repo || !branch) return showAlert("Owner, Repo, dan Branch wajib diisi.");
+
+            hideAlert();
+            isUploading = true;
+            DOM.btnUpload.innerHTML = `<div class="spinner"></div> <span class="ml-2 uppercase tracking-widest text-sm">Uploading...</span>`;
+            DOM.btnUpload.disabled = true;
+            DOM.progressContainer.classList.remove('hidden');
+            
+            try {
+                const repoInfo = await ghApi(`repos/${owner}/${repo}`);
+                const defaultBranch = repoInfo.default_branch;
+
+                setUpdate("Mengecek Branch...", 5);
+                let latestCommitSha, baseTreeSha, isNewBranch = false;
+
+                try {
+                    const refInfo = await ghApi(`repos/${owner}/${repo}/git/ref/heads/${branch}`);
+                    latestCommitSha = refInfo.object.sha;
+                } catch (e) {
+                    setUpdate(`Cloning dari default branch (${defaultBranch})...`, 10);
+                    const defaultRef = await ghApi(`repos/${owner}/${repo}/git/ref/heads/${defaultBranch}`);
+                    latestCommitSha = defaultRef.object.sha;
+                    isNewBranch = true;
+                }
+
+                const commitInfo = await ghApi(`repos/${owner}/${repo}/git/commits/${latestCommitSha}`);
+                baseTreeSha = commitInfo.tree.sha;
+
+                const treeEntries = [];
+                const filesToUpload = [];
+
+                for (let file of strippedFiles) {
+                    if (file.isDir) {
+                        const hasChildren = strippedFiles.some(f => !f.isDir && f.displayPath.startsWith(file.displayPath));
+                        if (!hasChildren) filesToUpload.push({ path: file.displayPath.replace(/\/$/, '') + '/.gitkeep', content: '', isBinary: false });
+                    } else {
+                        filesToUpload.push({ path: file.displayPath, blobData: file.fileData, isBinary: true });
+                    }
+                }
+
+                for (let i = 0; i < filesToUpload.length; i++) {
+                    const item = filesToUpload[i];
+                    let fullPath = basePath ? `${basePath}/${item.path}` : item.path;
+                    
+                    setUpdate(`Memproses (${i+1}/${filesToUpload.length}): ${item.path}`, 10 + (80 * (i / filesToUpload.length)));
+
+                    let blobSha;
+                    if (!item.isBinary) {
+                        const blobResp = await ghApi(`repos/${owner}/${repo}/git/blobs`, 'POST', { content: item.content, encoding: 'utf-8' });
+                        blobSha = blobResp.sha;
+                    } else {
+                        const base64Data = await blobToBase64(item.blobData);
+                        const blobResp = await ghApi(`repos/${owner}/${repo}/git/blobs`, 'POST', { content: base64Data, encoding: 'base64' });
+                        blobSha = blobResp.sha;
+                    }
+                    treeEntries.push({ path: fullPath, mode: "100644", type: "blob", sha: blobSha });
+                }
+
+                setUpdate("Merakit Git Tree...", 92);
+                const newTree = await ghApi(`repos/${owner}/${repo}/git/trees`, 'POST', { base_tree: baseTreeSha, tree: treeEntries });
+
+                setUpdate("Membuat Commit...", 95);
+                const newCommit = await ghApi(`repos/${owner}/${repo}/git/commits`, 'POST', { message: commitMessage, tree: newTree.sha, parents: [latestCommitSha] });
+
+                setUpdate("Pushing ke Github...", 98);
+                if (isNewBranch) {
+                    await ghApi(`repos/${owner}/${repo}/git/refs`, 'POST', { ref: `refs/heads/${branch}`, sha: newCommit.sha });
+                } else {
+                    await ghApi(`repos/${owner}/${repo}/git/refs/heads/${branch}`, 'PATCH', { sha: newCommit.sha, force: false });
+                }
+
+                setUpdate("Selesai!", 100);
+                showAlert(`Sukses! ${filesToUpload.length} file telah di-push ke branch <strong class="text-white">${branch}</strong>.`, 'success');
+                
+                setTimeout(() => {
+                    DOM.progressContainer.classList.add('hidden');
+                    DOM.fileSection.classList.add('hidden');
+                    selectedFiles = []; strippedFiles = [];
+                }, 2500);
+
+            } catch (error) {
+                showAlert(`Gagal: ${error.message}`);
+                DOM.progressContainer.classList.add('hidden');
+            } finally {
+                isUploading = false;
+                DOM.btnUpload.innerHTML = `<i class="fas fa-cloud-upload-alt"></i> Upload ke GitHub`;
+                DOM.btnUpload.disabled = false;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
