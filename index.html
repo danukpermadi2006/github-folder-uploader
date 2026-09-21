@@ -2,7 +2,6 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <!-- Viewport dinormalisasi untuk aksesibilitas (bisa di-zoom) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub Folder Uploader</title>
     
@@ -45,11 +44,11 @@
             color: #f8fafc;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
-            font-size: 14px !important; /* Dikecilkan agar tidak terlalu besar */
+            font-size: 14px !important; 
         }
         
         @media (min-width: 768px) {
-            .input-dark { font-size: 13px !important; } /* Desktop font size */
+            .input-dark { font-size: 13px !important; } 
         }
         
         .input-dark:hover {
@@ -65,7 +64,7 @@
 
         .cyber-checkbox {
             appearance: none;
-            width: 1.5rem; /* Diperbesar untuk layar sentuh */
+            width: 1.5rem; 
             height: 1.5rem;
             background-color: rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(51, 65, 85, 0.8);
@@ -140,7 +139,6 @@
             box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
         }
 
-        /* Upload Area styling */
         .upload-area {
             background: rgba(0,0,0,0.4);
             border: 1px dashed rgba(51, 65, 85, 0.8);
@@ -173,7 +171,6 @@
 
         .file-list-container { max-height: 280px; overflow-y: auto; overflow-x: hidden; }
         
-        /* Custom scrollbar - Active only on pointer devices */
         @media (pointer: fine) {
             ::-webkit-scrollbar { width: 6px; }
             ::-webkit-scrollbar-track { background: #000; border-radius: 4px; }
@@ -186,15 +183,11 @@
 <body class="antialiased min-h-screen p-2 sm:p-4 md:p-8 flex justify-center items-start">
     <div class="w-full max-w-4xl glass-panel rounded-2xl overflow-hidden mb-6 md:mb-12 relative z-10">
         
-        <!-- Animated Top Glowing Line -->
         <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-80"></div>
 
-        <!-- Header -->
         <div class="p-4 md:p-8 pb-4 md:pb-5 border-b border-white/5 relative overflow-hidden flex justify-start items-center gap-3 md:gap-5">
-            <!-- Background Decoration -->
             <i class="fab fa-github absolute -right-4 -top-4 text-9xl text-white/5 transform -rotate-12"></i>
             
-            <!-- Foto Profil -->
             <div class="relative z-10 shrink-0 group cursor-pointer" title="Change Avatar">
                 <div class="absolute inset-0 bg-gradient-to-tr from-purple-500 to-fuchsia-500 rounded-full blur-[6px] md:blur-[10px] opacity-60 animate-pulse"></div>
                 <img src="https://i.imgur.com/GDSFrlG.png" alt="User Avatar" class="relative w-12 h-12 md:w-16 md:h-16 rounded-full border-[2px] border-black object-cover z-10 group-hover:scale-105 transition-transform duration-300">
@@ -226,7 +219,6 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 md:gap-y-6 mb-6">
                 
-                <!-- Token -->
                 <div class="md:col-span-2 group">
                     <div class="flex justify-between items-center mb-1.5 md:mb-2">
                         <label class="text-xs font-bold text-slate-400 uppercase tracking-wider group-focus-within:text-purple-400 transition-colors">GitHub Token <span class="text-rose-500">*</span></label>
@@ -244,7 +236,6 @@
                     </div>
                 </div>
 
-                <!-- Owner -->
                 <div class="group">
                     <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 md:mb-2 group-focus-within:text-purple-400 transition-colors">Owner / User <span class="text-rose-500">*</span></label>
                     <div class="relative">
@@ -253,7 +244,6 @@
                     </div>
                 </div>
 
-                <!-- Repo -->
                 <div class="group">
                     <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 md:mb-2 group-focus-within:text-purple-400 transition-colors">Repository <span class="text-rose-500">*</span></label>
                     <div class="relative">
@@ -262,16 +252,15 @@
                     </div>
                 </div>
 
-                <!-- Branch -->
                 <div class="group">
-                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 md:mb-2 group-focus-within:text-purple-400 transition-colors">Branch <span class="text-[10px] md:text-xs text-slate-500 normal-case">(Opsional)</span></label>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 md:mb-2 group-focus-within:text-purple-400 transition-colors">Branch <span class="text-rose-500">*</span></label>
                     <div class="relative">
                         <i class="fas fa-code-branch absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors"></i>
-                        <input type="text" id="gh-branch" class="w-full py-2.5 md:py-3 pl-10 md:pl-11 pr-3 input-dark rounded-xl mono" placeholder="Default branch">
+                        <!-- Menambahkan value="main" sebagai default -->
+                        <input type="text" id="gh-branch" class="w-full py-2.5 md:py-3 pl-10 md:pl-11 pr-3 input-dark rounded-xl mono" placeholder="main" value="main">
                     </div>
                 </div>
 
-                <!-- Path -->
                 <div class="group">
                     <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 md:mb-2 group-focus-within:text-purple-400 transition-colors">Dest. Path <span class="text-[10px] md:text-xs text-slate-500 normal-case">(Opsional)</span></label>
                     <div class="relative">
@@ -280,7 +269,6 @@
                     </div>
                 </div>
 
-                <!-- Commit & Test -->
                 <div class="md:col-span-2 flex flex-col md:flex-row gap-3 md:gap-4 mt-2">
                     <div class="flex-1 group">
                         <div class="relative">
@@ -304,7 +292,6 @@
                         <span class="font-bold text-slate-200 text-sm md:text-base">Pilih Folder</span>
                         <span class="text-xs text-slate-400 mt-1 text-center">Upload utuh dari sistem</span>
                         
-                        <!-- Teks disamakan gayanya dengan tombol ZIP -->
                         <div class="mt-3 text-[11px] bg-purple-500/10 text-purple-300 px-3 py-1.5 rounded-lg border border-purple-500/20 font-medium">
                             <i class="fas fa-check-circle mr-1"></i> Mendukung struktur direktori
                         </div>
@@ -317,7 +304,6 @@
                         <span class="font-bold text-slate-200 text-sm md:text-base">Pilih ZIP</span>
                         <span class="text-xs text-slate-400 mt-1 text-center">Ekstrak otomatis di browser</span>
                         
-                        <!-- Peringatan mobile dihapus, diganti badge fitur -->
                         <div class="mt-3 text-[11px] bg-fuchsia-500/10 text-fuchsia-300 px-3 py-1.5 rounded-lg border border-fuchsia-500/20 font-medium">
                             <i class="fas fa-bolt mr-1"></i> Proses ekstrak super cepat
                         </div>
@@ -336,7 +322,6 @@
 
                 <div class="border border-slate-700/50 bg-[#020202] rounded-xl overflow-hidden mb-6 shadow-inner">
                     <div class="file-list-container bg-black/40">
-                        <!-- Menggunakan table-fixed agar fitur truncate jalan tanpa scroll horizontal -->
                         <table class="min-w-full text-left text-xs table-fixed">
                             <thead class="bg-black/80 border-b border-slate-800 text-slate-400 font-mono tracking-wider sticky top-0 z-10">
                                 <tr>
@@ -402,7 +387,6 @@
             alertBox: document.getElementById('alert-box')
         };
 
-        // --- Init & LocalStorage ---
         function init() {
             const savedSettings = JSON.parse(localStorage.getItem('ghUploaderSettingsCyber') || '{}');
             if (savedSettings.rememberToken && savedSettings.token) {
@@ -411,6 +395,7 @@
             }
             if (savedSettings.owner) DOM.owner.value = savedSettings.owner;
             if (savedSettings.repo) DOM.repo.value = savedSettings.repo;
+            // Memastikan branch tersimpan diaplikasikan. Jika tidak ada di storage, biarkan default "main" dari HTML
             if (savedSettings.branch) DOM.branch.value = savedSettings.branch;
             if (savedSettings.path) DOM.path.value = savedSettings.path;
 
@@ -443,7 +428,6 @@
             localStorage.setItem('ghUploaderSettingsCyber', JSON.stringify(settings));
         }
 
-        // --- Utilities ---
         function formatBytes(bytes, decimals = 2) {
             if (bytes === 0) return '0 B';
             const k = 1024;
@@ -486,12 +470,11 @@
         
         function setUpdate(text, progress) {
             DOM.progressText.textContent = text;
-            DOM.progressDetail.textContent = text; // Tampilkan detail log di bawah bar
+            DOM.progressDetail.textContent = text;
             DOM.progressPercentage.textContent = Math.round(progress) + '%';
             DOM.progressBar.style.width = progress + '%';
         }
 
-        // --- File Handlers ---
         async function handleFolderSelection(e) {
             const files = e.target.files;
             if (!files.length) return;
@@ -614,7 +597,6 @@
             updateFileList();
         };
 
-        // --- GitHub API & Core Logic ---
         async function ghApi(endpoint, method = 'GET', body = null) {
             const token = DOM.token.value.trim();
             if (!token) throw new Error("Token wajib diisi.");
@@ -639,7 +621,8 @@
             const repo = DOM.repo.value.trim();
             const branch = DOM.branch.value.trim();
 
-            if (!owner || !repo) return showAlert("Owner dan Repo wajib diisi.");
+            // Memastikan branch juga terisi karena sekarang sifatnya wajib
+            if (!owner || !repo || !branch) return showAlert("Owner, Repo, dan Branch wajib diisi.");
 
             const btnHtml = DOM.btnTest.innerHTML;
             DOM.btnTest.innerHTML = `<div class="spinner"></div>`;
@@ -649,13 +632,11 @@
                 const repoData = await ghApi(`repos/${owner}/${repo}`);
                 let msg = `Terhubung ke <strong class="text-white">${repoData.full_name}</strong>.<br>`;
                 
-                let targetBranch = branch || repoData.default_branch;
                 try {
-                    await ghApi(`repos/${owner}/${repo}/branches/${targetBranch}`);
-                    msg += `Branch <span class="text-fuchsia-300">${targetBranch}</span> ditemukan.`;
+                    await ghApi(`repos/${owner}/${repo}/branches/${branch}`);
+                    msg += `Branch <span class="text-fuchsia-300">${branch}</span> ditemukan.`;
                 } catch (e) {
-                    if (branch) msg += `Branch <span class="text-amber-300">${targetBranch}</span> akan dibuat otomatis.`;
-                    else throw e; 
+                    msg += `Branch <span class="text-amber-300">${branch}</span> akan dibuat otomatis saat upload.`;
                 }
                 showAlert(msg, 'success');
             } catch (error) {
@@ -681,11 +662,12 @@
 
             const owner = DOM.owner.value.trim();
             const repo = DOM.repo.value.trim();
-            let branch = DOM.branch.value.trim();
+            const branch = DOM.branch.value.trim();
             const basePath = DOM.path.value.trim().replace(/^\/|\/$/g, ''); 
             const commitMessage = DOM.message.value.trim() || "Upload via Web Uploader";
 
-            if (!owner || !repo) return showAlert("Owner dan Repo wajib diisi.");
+            // Validasi ketiga field yang wajib
+            if (!owner || !repo || !branch) return showAlert("Owner, Repo, dan Branch wajib diisi.");
 
             hideAlert();
             isUploading = true;
@@ -695,8 +677,7 @@
             
             try {
                 const repoInfo = await ghApi(`repos/${owner}/${repo}`);
-                let defaultBranch = repoInfo.default_branch;
-                if (!branch) branch = defaultBranch;
+                const defaultBranch = repoInfo.default_branch;
 
                 setUpdate("Mengecek Branch...", 5);
                 let latestCommitSha, baseTreeSha, isNewBranch = false;
@@ -705,7 +686,7 @@
                     const refInfo = await ghApi(`repos/${owner}/${repo}/git/ref/heads/${branch}`);
                     latestCommitSha = refInfo.object.sha;
                 } catch (e) {
-                    setUpdate(`Cloning dari ${defaultBranch}...`, 10);
+                    setUpdate(`Cloning dari default branch (${defaultBranch})...`, 10);
                     const defaultRef = await ghApi(`repos/${owner}/${repo}/git/ref/heads/${defaultBranch}`);
                     latestCommitSha = defaultRef.object.sha;
                     isNewBranch = true;
