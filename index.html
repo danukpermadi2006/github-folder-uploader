@@ -904,11 +904,15 @@
                 DOM.newRepoName.value = '';
                 DOM.newRepoDesc.value = '';
                 
-                // Refresh list in background
-                ghApi('user/repos?per_page=100&sort=updated').then(repos => {
-                    userReposCache = repos.map(r => r.name);
-                    saveSettings();
-                });
+                // Update memori lokal langsung tanpa nge-hit API lagi
+                if (!userReposCache.includes(name)) {
+                    userReposCache.unshift(name);
+                }
+                saveSettings();
+                
+                // (Opsional) Otomatis set repo yang baru dibuat ke kolom tab Upload
+                DOM.repo.value = name;
+                DOM.branch.value = 'main';
                 
             } catch (error) {
                 let msg = error.message;
@@ -950,11 +954,18 @@
             try {
                 await ghApi(`repos/${currentOwner}/${repo}`, 'DELETE');
                 closeDeleteModal();
-                showAlert(`Repository <strong>${repo}</strong> successfully deleted permanently.`, 'success');
+                showAlert(`Repository <strong class="text-white">${repo}</strong> successfully deleted permanently.`, 'success');
                 DOM.delRepoName.value = '';
                 DOM.btnTriggerDelete.disabled = true;
                 
-                await loadAccountData();
+                // Hapus dari memori lokal langsung tanpa perlu load ulang API
+                userReposCache = userReposCache.filter(r => r !== repo);
+                saveSettings();
+                
+                // Jika repo yang dihapus kebetulan sedang terpilih di form Upload, kosongkan
+                if (DOM.repo.value === repo) {
+                    DOM.repo.value = '';
+                }
             } catch (error) {
                 closeDeleteModal();
                 let msg = error.message;
