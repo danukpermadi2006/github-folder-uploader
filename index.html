@@ -44,7 +44,11 @@
             color: #f8fafc;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
-            font-size: 14px !important; 
+            font-size: 13px !important; 
+        }
+        
+        @media (min-width: 768px) {
+            .input-dark { font-size: 14px !important; } 
         }
         
         @media (min-width: 768px) {
@@ -174,8 +178,8 @@
         @keyframes shine { 100% { left: 200%; } }
 
         .spinner { 
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             background: conic-gradient(from 0deg at 50% 50%, transparent 0%, #fff 100%);
             animation: spin 1s linear infinite;
@@ -184,15 +188,15 @@
         .spinner::before {
             content: '';
             position: absolute;
-            inset: 3px;
+            inset: 2px;
             background: #000;
             border-radius: 50%;
         }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        .file-list-container { max-height: 280px; overflow-y: auto; overflow-x: hidden; }
+        .file-list-container { max-height: 200px; overflow-y: auto; overflow-x: hidden; }
         
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #000; border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; border: 1px solid #000; }
         ::-webkit-scrollbar-thumb:hover { background-color: #444; }
@@ -269,186 +273,177 @@
     </style>
 </head>
 
-<body class="antialiased min-h-screen p-2 sm:p-4 md:p-8 flex justify-center items-start">
-    <div class="w-full max-w-4xl glass-panel rounded-2xl mb-6 md:mb-12 relative z-10">
+<body class="antialiased min-h-screen p-1 sm:p-4 md:p-8 flex justify-center items-start">
+    <div class="w-full max-w-4xl glass-panel rounded-xl sm:rounded-2xl mb-6 md:mb-12 relative z-10">
         
         <!-- Top border glow -->
-        <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-80 rounded-t-2xl pointer-events-none"></div>
+        <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-80 rounded-t-xl sm:rounded-t-2xl pointer-events-none"></div>
 
-        <div class="p-4 md:p-8 pb-4 md:pb-5 border-b border-white/5 relative overflow-hidden flex justify-start items-center gap-3 md:gap-5 rounded-t-2xl">
-            <i class="fab fa-github absolute -right-4 -top-4 text-9xl text-white/5 transform -rotate-12 pointer-events-none"></i>
+        <div class="p-3 md:p-6 pb-3 md:pb-4 border-b border-white/5 relative overflow-hidden flex justify-start items-center gap-3 md:gap-5 rounded-t-xl sm:rounded-t-2xl">
+            <i class="fab fa-github absolute -right-2 -top-2 text-7xl md:text-9xl text-white/5 transform -rotate-12 pointer-events-none"></i>
             
             <div class="relative z-10 shrink-0 group cursor-pointer" title="Change Avatar" id="avatar-container">
                 <div class="absolute inset-0 bg-gradient-to-tr from-purple-500 to-fuchsia-500 rounded-full blur-[6px] md:blur-[10px] opacity-60 animate-pulse transition-opacity duration-500" id="avatar-glow"></div>
                 <!-- Default avatar is standard, will change to Github Avatar when loaded -->
-                <img src="https://i.imgur.com/GDSFrlG.png" id="user-avatar" alt="User Avatar" class="relative w-12 h-12 md:w-16 md:h-16 rounded-full border-[2px] border-black object-cover z-10 group-hover:scale-105 transition-transform duration-300 bg-slate-900">
+                <img src="https://i.imgur.com/GDSFrlG.png" id="user-avatar" alt="User Avatar" class="relative w-10 h-10 md:w-16 md:h-16 rounded-full border-[2px] border-black object-cover z-10 group-hover:scale-105 transition-transform duration-300 bg-slate-900">
             </div>
 
             <div class="flex items-center relative z-10">
                 <div>
-                    <h1 class="text-xl md:text-3xl font-extrabold tracking-tight text-white mb-0.5 md:mb-1 leading-tight">
+                    <h1 class="text-lg md:text-3xl font-extrabold tracking-tight text-white mb-0 md:mb-1 leading-tight">
                         GitHub <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-fuchsia-400">Manager</span>
                     </h1>
-                    <p class="text-slate-400 text-xs md:text-sm font-medium">Upload file & kelola repositori secara instan.</p>
+                    <p class="text-slate-400 text-[10px] md:text-sm font-medium leading-tight mt-0.5">Upload & Kelola Repositori Instan</p>
                 </div>
             </div>
         </div>
 
-        <div class="p-4 md:p-8 pt-4 md:pt-6 relative">
+        <div class="p-3 md:p-6 pt-3 md:pt-5 relative">
             
             <!-- Global Security Info -->
-            <div class="bg-black/40 border border-amber-500/20 rounded-xl p-3 md:p-5 mb-5 flex items-start gap-3 md:gap-4 shadow-inner relative overflow-hidden">
+            <div class="bg-black/40 border border-amber-500/20 rounded-lg p-2.5 md:p-4 mb-4 flex items-start gap-2 md:gap-4 shadow-inner relative overflow-hidden">
                 <div class="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-amber-400 to-orange-500"></div>
-                <div class="bg-amber-500/10 p-1.5 md:p-2 rounded-lg text-amber-400 shrink-0 mt-0.5">
-                    <i class="fas fa-shield-halved text-base md:text-xl"></i>
+                <div class="bg-amber-500/10 p-1 md:p-2 rounded-md text-amber-400 shrink-0 mt-0.5 hidden sm:block">
+                    <i class="fas fa-shield-halved text-sm md:text-xl"></i>
                 </div>
-                <div class="space-y-1 text-xs md:text-sm text-slate-300 leading-relaxed">
-                    <p class="font-bold text-white mb-1">Keamanan & Token</p>
-                    <p>Membutuhkan <strong>Personal Access Token (Classic)</strong> dengan izin <em>repo</em> dan <em>delete_repo</em> untuk mengelola repositori penuh.</p>
-                    <p>Generate di <a href="https://github.com/settings/tokens" target="_blank" class="text-cyan-400 font-semibold hover:text-cyan-300 transition-colors">github.com/settings <i class="fas fa-external-link-alt text-[9px] ml-0.5"></i></a>.</p>
+                <div class="space-y-0.5 md:space-y-1 text-[10px] md:text-sm text-slate-300 leading-tight">
+                    <p class="font-bold text-white mb-0.5">Info Keamanan</p>
+                    <p>Membutuhkan <strong>Personal Access Token (Classic)</strong> dengan izin <em>repo</em> & <em>delete_repo</em>.</p>
                 </div>
             </div>
 
             <!-- Global Token & Owner Setup -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 md:gap-y-6 mb-6 pb-6 border-b border-white/5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3 md:gap-y-5 mb-4 pb-4 border-b border-white/5">
                 <div class="md:col-span-2 group">
-                    <div class="flex justify-between items-center mb-1.5 md:mb-2">
-                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider group-focus-within:text-purple-400 transition-colors">GitHub Token <span class="text-rose-500">*</span></label>
-                        <div class="flex items-center gap-3 md:gap-4">
-                            <button type="button" id="btn-load-account" class="hidden text-[10px] md:text-xs font-bold bg-fuchsia-500/20 text-fuchsia-400 px-3 py-1 rounded-md hover:bg-fuchsia-500/30 transition-colors flex items-center gap-1.5 border border-fuchsia-500/30">
-                                <i class="fas fa-sync-alt"></i> <span>Load Akun</span>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider group-focus-within:text-purple-400 transition-colors">GitHub Token <span class="text-rose-500">*</span></label>
+                        <div class="flex items-center gap-2 md:gap-4">
+                            <button type="button" id="btn-load-account" class="hidden text-[9px] md:text-xs font-bold bg-fuchsia-500/20 text-fuchsia-400 px-2 py-0.5 rounded hover:bg-fuchsia-500/30 transition-colors flex items-center gap-1 border border-fuchsia-500/30">
+                                <i class="fas fa-sync-alt"></i> <span>Load</span>
                             </button>
                             <div class="flex items-center">
-                                <input type="checkbox" id="remember-token" class="cyber-checkbox origin-right">
-                                <label for="remember-token" class="ml-2 text-xs font-medium text-slate-400 cursor-pointer hover:text-slate-200 select-none">Remember</label>
+                                <input type="checkbox" id="remember-token" class="cyber-checkbox origin-right scale-75 md:scale-100">
+                                <label for="remember-token" class="ml-1 md:ml-2 text-[10px] md:text-xs font-medium text-slate-400 cursor-pointer hover:text-slate-200 select-none">Ingat</label>
                             </div>
                         </div>
                     </div>
-                    <div class="flex rounded-xl shadow-sm relative z-10">
-                        <span class="bg-black px-3 md:px-4 flex items-center justify-center text-slate-500 border border-r-0 border-slate-700/80 group-focus-within:border-purple-500 transition-colors rounded-l-xl"><i class="fas fa-key text-sm md:text-base"></i></span>
-                        <input type="password" id="gh-token" class="flex-1 w-full px-3 md:px-4 py-2.5 md:py-3 input-dark !border-x-0 mono tracking-wider" placeholder="ghp_...">
-                        <button type="button" id="toggle-token" class="bg-black px-3 md:px-4 flex items-center justify-center text-slate-400 hover:text-purple-400 transition-colors border border-l-0 border-slate-700/80 group-focus-within:border-purple-500 focus:outline-none rounded-r-xl">
-                            <i class="fas fa-eye text-sm md:text-base"></i>
+                    <div class="flex rounded-lg md:rounded-xl shadow-sm relative z-10">
+                        <span class="bg-black px-2.5 md:px-4 flex items-center justify-center text-slate-500 border border-r-0 border-slate-700/80 group-focus-within:border-purple-500 transition-colors rounded-l-lg md:rounded-l-xl"><i class="fas fa-key text-xs md:text-base"></i></span>
+                        <input type="password" id="gh-token" class="flex-1 w-full px-2 md:px-4 py-2 md:py-3 input-dark !border-x-0 mono tracking-wider" placeholder="ghp_...">
+                        <button type="button" id="toggle-token" class="bg-black px-2.5 md:px-4 flex items-center justify-center text-slate-400 hover:text-purple-400 transition-colors border border-l-0 border-slate-700/80 group-focus-within:border-purple-500 focus:outline-none rounded-r-lg md:rounded-r-xl">
+                            <i class="fas fa-eye text-xs md:text-base"></i>
                         </button>
                     </div>
                 </div>
                 
                 <div class="group relative md:col-span-2">
-                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 md:mb-2 group-focus-within:text-purple-400 transition-colors">Owner / Akun <span class="text-rose-500">*</span></label>
+                    <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-purple-400 transition-colors">Akun Terhubung <span class="text-rose-500">*</span></label>
                     <div class="relative">
-                        <i class="fas fa-user absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors"></i>
-                        <input type="text" id="gh-owner" class="w-full py-2.5 md:py-3 pl-10 md:pl-11 pr-3 input-dark rounded-xl mono relative z-20" placeholder="oktocat" disabled>
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 z-30">
-                            <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded border border-slate-700">Otomatis saat Load</span>
+                        <i class="fas fa-user absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs md:text-base group-focus-within:text-purple-400 transition-colors"></i>
+                        <input type="text" id="gh-owner" class="w-full py-2 md:py-3 pl-8 md:pl-11 pr-3 input-dark rounded-lg md:rounded-xl mono relative z-20" placeholder="Belum diload" disabled>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-2 z-30">
+                            <span class="text-[9px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded border border-slate-700">Otomatis</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Global Alert Box -->
-            <div id="alert-box" class="hidden mb-6 p-3 md:p-4 rounded-xl text-xs md:text-sm font-medium border relative z-10"></div>
+            <div id="alert-box" class="hidden mb-4 p-2.5 md:p-4 rounded-lg md:rounded-xl text-[10px] md:text-sm font-medium border relative z-10"></div>
 
-            <div class="nav-tabs">
-                <div class="nav-tab active" data-target="tab-upload">
-                    <i class="fas fa-cloud-upload-alt"></i> Upload Files
+            <div class="nav-tabs mb-4 p-1">
+                <div class="nav-tab active py-2 md:py-3 text-xs md:text-sm" data-target="tab-upload">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload
                 </div>
-                <div class="nav-tab" data-target="tab-manage">
-                    <i class="fas fa-box-open"></i> Manage Repo
+                <div class="nav-tab py-2 md:py-3 text-xs md:text-sm" data-target="tab-manage">
+                    <i class="fas fa-box-open"></i> Kelola Repo
                 </div>
             </div>
 
             <div id="tab-upload" class="tab-content active relative z-10">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 md:gap-y-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3 md:gap-y-5 mb-4">
                     <div class="group relative z-40 md:col-span-2">
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 md:mb-2 group-focus-within:text-purple-400 transition-colors">Target Repository <span class="text-rose-500">*</span></label>
+                        <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-purple-400 transition-colors">Target Repo <span class="text-rose-500">*</span></label>
                         <div class="relative">
-                            <i class="fas fa-book-journal-whills absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors z-30"></i>
-                            <input type="text" id="gh-repo" autocomplete="off" class="w-full py-2.5 md:py-3 pl-10 md:pl-11 pr-8 input-dark rounded-xl mono relative z-20" placeholder="Pilih atau ketik repositori...">
-                            <i class="fas fa-chevron-down absolute right-3.5 md:right-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs pointer-events-none z-30"></i>
-                            <div id="dropdown-repo" class="absolute left-0 top-full mt-1 w-full bg-[#0a0a0e] border border-purple-500/30 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-y-auto max-h-52 hidden flex-col divide-y divide-white/5 py-1 z-50"></div>
+                            <i class="fas fa-book-journal-whills absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs md:text-base group-focus-within:text-purple-400 transition-colors z-30"></i>
+                            <input type="text" id="gh-repo" autocomplete="off" class="w-full py-2 md:py-3 pl-8 md:pl-11 pr-6 input-dark rounded-lg md:rounded-xl mono relative z-20" placeholder="Pilih / ketik repo...">
+                            <i class="fas fa-chevron-down absolute right-3 md:right-4 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] pointer-events-none z-30"></i>
+                            <div id="dropdown-repo" class="absolute left-0 top-full mt-1 w-full bg-[#0a0a0e] border border-purple-500/30 rounded-lg md:rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-y-auto max-h-40 hidden flex-col divide-y divide-white/5 py-1 z-50"></div>
                         </div>
                     </div>
 
-                    <div class="group relative z-30">
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 md:mb-2 group-focus-within:text-purple-400 transition-colors">Target Branch <span class="text-rose-500">*</span></label>
+                    <div class="group relative z-30 md:col-span-1">
+                        <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-purple-400 transition-colors">Branch <span class="text-rose-500">*</span></label>
                         <div class="relative">
-                            <i class="fas fa-code-branch absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors z-30"></i>
-                            <input type="text" id="gh-branch" autocomplete="off" class="w-full py-2.5 md:py-3 pl-10 md:pl-11 pr-8 input-dark rounded-xl mono relative z-20" placeholder="main" value="main">
-                            <i class="fas fa-chevron-down absolute right-3.5 md:right-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs pointer-events-none z-30"></i>
-                            <div id="dropdown-branch" class="absolute left-0 top-full mt-1 w-full bg-[#0a0a0e] border border-purple-500/30 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-y-auto max-h-52 hidden flex-col divide-y divide-white/5 py-1 z-50"></div>
+                            <i class="fas fa-code-branch absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs md:text-base group-focus-within:text-purple-400 transition-colors z-30"></i>
+                            <input type="text" id="gh-branch" autocomplete="off" class="w-full py-2 md:py-3 pl-8 md:pl-11 pr-6 input-dark rounded-lg md:rounded-xl mono relative z-20" placeholder="main" value="main">
+                            <i class="fas fa-chevron-down absolute right-3 md:right-4 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] pointer-events-none z-30"></i>
+                            <div id="dropdown-branch" class="absolute left-0 top-full mt-1 w-full bg-[#0a0a0e] border border-purple-500/30 rounded-lg md:rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-y-auto max-h-40 hidden flex-col divide-y divide-white/5 py-1 z-50"></div>
                         </div>
                     </div>
 
-                    <div class="group relative z-20">
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 md:mb-2 group-focus-within:text-purple-400 transition-colors">Target Path <span class="text-[10px] md:text-xs text-slate-500 normal-case">(Opsional)</span></label>
+                    <div class="group relative z-20 md:col-span-1">
+                        <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-purple-400 transition-colors">Path <span class="text-[9px] md:text-[10px] text-slate-500 normal-case">(Ops)</span></label>
                         <div class="relative">
-                            <i class="fas fa-folder-tree absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors z-30"></i>
-                            <input type="text" id="gh-path" class="w-full py-2.5 md:py-3 pl-10 md:pl-11 pr-3 input-dark rounded-xl mono relative z-20" placeholder="assets/ (Kosong = root)">
+                            <i class="fas fa-folder-tree absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs md:text-base group-focus-within:text-purple-400 transition-colors z-30"></i>
+                            <input type="text" id="gh-path" class="w-full py-2 md:py-3 pl-8 md:pl-11 pr-3 input-dark rounded-lg md:rounded-xl mono relative z-20" placeholder="Kosong = root">
                         </div>
                     </div>
 
-                    <div class="md:col-span-2 flex flex-col md:flex-row gap-3 md:gap-4 mt-2 relative z-10">
+                    <div class="md:col-span-2 flex flex-col md:flex-row gap-2 md:gap-4 mt-1 relative z-10">
                         <div class="flex-1 group">
                             <div class="relative">
-                                <i class="fas fa-comment-dots absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors"></i>
-                                <input type="text" id="gh-message" class="w-full py-2.5 md:py-3 pl-10 md:pl-11 pr-3 input-dark rounded-xl relative z-20" value="Upload files via Web Uploader">
+                                <i class="fas fa-comment-dots absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs md:text-base group-focus-within:text-purple-400 transition-colors"></i>
+                                <input type="text" id="gh-message" class="w-full py-2 md:py-3 pl-8 md:pl-11 pr-3 input-dark rounded-lg md:rounded-xl relative z-20 text-xs md:text-sm" value="Upload files via Web Uploader">
                             </div>
                         </div>
-                        <button type="button" id="btn-test" class="btn-test w-full md:w-auto px-6 py-3 md:py-3 text-slate-300 font-bold rounded-xl flex items-center justify-center gap-2 focus:outline-none relative z-20">
-                            <i class="fas fa-plug text-slate-400"></i> <span class="text-sm">Test Destinasi</span>
+                        <button type="button" id="btn-test" class="btn-test w-full md:w-auto px-4 py-2 md:py-3 text-slate-300 font-bold rounded-lg md:rounded-xl flex items-center justify-center gap-1.5 focus:outline-none relative z-20 text-xs md:text-sm">
+                            <i class="fas fa-plug text-slate-400 text-xs"></i> <span>Test</span>
                         </button>
                     </div>
                 </div>
 
-                <div class="flex flex-col md:flex-row gap-3 md:gap-4 mb-6 relative z-10">
+                <div class="flex flex-row gap-2 md:gap-4 mb-4 relative z-10 h-24 md:h-32">
                     <div class="flex-1">
                         <input type="file" id="input-folder" webkitdirectory multiple class="hidden">
-                        <button type="button" onclick="document.getElementById('input-folder').click()" class="w-full upload-area p-5 md:p-6 rounded-xl flex flex-col items-center justify-center h-full group focus:outline-none relative">
-                            <i class="fas fa-folder-open text-4xl mb-2 text-purple-400 group-hover:scale-110 transition-transform"></i>
-                            <span class="font-bold text-slate-200 text-sm md:text-base">Pilih Folder</span>
-                            <span class="text-xs text-slate-400 mt-1 text-center">Upload utuh dari sistem</span>
-                            <div class="mt-3 text-[11px] bg-purple-500/10 text-purple-300 px-3 py-1.5 rounded-lg border border-purple-500/20 font-medium">
-                                <i class="fas fa-check-circle mr-1"></i> Max 100MB / File
-                            </div>
+                        <button type="button" onclick="document.getElementById('input-folder').click()" class="w-full upload-area p-2 md:p-4 rounded-lg md:rounded-xl flex flex-col items-center justify-center h-full group focus:outline-none relative">
+                            <i class="fas fa-folder-open text-2xl md:text-4xl mb-1 text-purple-400 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-bold text-slate-200 text-[10px] md:text-sm">Pilih Folder</span>
                         </button>
                     </div>
                     <div class="flex-1">
                         <input type="file" id="input-zip" accept=".zip" class="hidden">
-                        <button type="button" id="btn-zip-trigger" onclick="document.getElementById('input-zip').click()" class="w-full upload-area p-5 md:p-6 rounded-xl flex flex-col items-center justify-center h-full group focus:outline-none relative">
+                        <button type="button" id="btn-zip-trigger" onclick="document.getElementById('input-zip').click()" class="w-full upload-area p-2 md:p-4 rounded-lg md:rounded-xl flex flex-col items-center justify-center h-full group focus:outline-none relative">
                             <div id="zip-content-wrap" class="flex flex-col items-center justify-center pointer-events-none">
-                                <i class="fas fa-file-zipper text-4xl mb-2 text-fuchsia-400 group-hover:scale-110 transition-transform"></i>
-                                <span class="font-bold text-slate-200 text-sm md:text-base">Pilih / Drop ZIP</span>
-                                <span class="text-xs text-slate-400 mt-1 text-center">Ekstrak otomatis di browser</span>
-                                <div class="mt-3 text-[11px] bg-fuchsia-500/10 text-fuchsia-300 px-3 py-1.5 rounded-lg border border-fuchsia-500/20 font-medium">
-                                    <i class="fas fa-bolt mr-1"></i> Bebas file Sampah OS
-                                </div>
+                                <i class="fas fa-file-zipper text-2xl md:text-4xl mb-1 text-fuchsia-400 group-hover:scale-110 transition-transform"></i>
+                                <span class="font-bold text-slate-200 text-[10px] md:text-sm">Pilih ZIP</span>
                             </div>
                         </button>
                     </div>
                 </div>
 
                 <div id="file-section" class="hidden animate-[fadeIn_0.3s_ease] relative z-10">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-3">
-                        <div class="flex items-center gap-3">
-                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-widest"><i class="fas fa-list-ul mr-2 text-purple-400"></i>Antrean (<span id="file-count" class="text-purple-400">0</span>)</h3>
-                            <button type="button" id="btn-clear-files" class="text-[10px] uppercase font-bold bg-rose-500/10 text-rose-400 px-2.5 py-1 rounded-md hover:bg-rose-500/20 hover:text-rose-300 transition-colors">
-                                <i class="fas fa-trash-alt mr-1"></i> Bersihkan
+                    <div class="flex justify-between items-center mb-2 gap-2">
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-[10px] md:text-xs font-bold text-slate-300 uppercase tracking-widest"><i class="fas fa-list-ul mr-1 text-purple-400"></i>Antrean (<span id="file-count" class="text-purple-400">0</span>)</h3>
+                            <button type="button" id="btn-clear-files" class="text-[9px] uppercase font-bold bg-rose-500/10 text-rose-400 px-2 py-0.5 rounded hover:bg-rose-500/20 transition-colors">
+                                <i class="fas fa-trash-alt"></i>
                             </button>
                         </div>
                         <div class="flex items-center">
-                            <input type="checkbox" id="strip-root" class="cyber-checkbox origin-right" checked>
-                            <label for="strip-root" class="ml-2 text-xs font-medium text-slate-400 cursor-pointer select-none hover:text-white">Strip root folder</label>
+                            <input type="checkbox" id="strip-root" class="cyber-checkbox origin-right scale-75 md:scale-100" checked>
+                            <label for="strip-root" class="ml-1 text-[9px] md:text-xs font-medium text-slate-400 cursor-pointer select-none">Strip root</label>
                         </div>
                     </div>
 
-                    <div class="border border-slate-700/50 bg-[#020202] rounded-xl overflow-hidden mb-6 shadow-inner">
+                    <div class="border border-slate-700/50 bg-[#020202] rounded-lg md:rounded-xl overflow-hidden mb-4 shadow-inner">
                         <div class="file-list-container bg-black/40">
-                            <table class="min-w-full text-left text-xs table-fixed">
+                            <table class="min-w-full text-left text-[10px] md:text-xs table-fixed">
                                 <thead class="bg-black/80 border-b border-slate-800 text-slate-400 font-mono tracking-wider sticky top-0 z-10">
                                     <tr>
-                                        <th class="px-3 md:px-4 py-3 font-semibold w-[55%] md:w-[65%]">Path Tujuan</th>
-                                        <th class="px-3 md:px-4 py-3 font-semibold text-right w-[25%] md:w-[20%]">Ukuran</th>
-                                        <th class="px-3 md:px-4 py-3 font-semibold text-center w-[20%] md:w-[15%]">Aksi</th>
+                                        <th class="px-2 md:px-4 py-2 font-semibold w-[60%] md:w-[65%]">Path Tujuan</th>
+                                        <th class="px-2 md:px-4 py-2 font-semibold text-right w-[25%] md:w-[20%]">Ukuran</th>
+                                        <th class="px-2 md:px-4 py-2 font-semibold text-center w-[15%]">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="file-list-body" class="divide-y divide-slate-800/50 font-mono text-slate-300">
@@ -458,18 +453,18 @@
                         </div>
                     </div>
 
-                    <div id="progress-container" class="mb-5 hidden">
-                        <div class="flex justify-between text-xs mb-1.5 font-bold uppercase tracking-wider">
+                    <div id="progress-container" class="mb-4 hidden">
+                        <div class="flex justify-between text-[10px] md:text-xs mb-1 font-bold uppercase tracking-wider">
                             <span id="progress-text" class="text-fuchsia-400">Menyiapkan...</span>
                             <span id="progress-percentage" class="text-fuchsia-400">0%</span>
                         </div>
-                        <div class="w-full bg-slate-800/80 rounded-full h-2 overflow-hidden shadow-inner">
+                        <div class="w-full bg-slate-800/80 rounded-full h-1.5 overflow-hidden shadow-inner">
                             <div id="progress-bar" class="bg-gradient-to-r from-purple-500 to-fuchsia-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
                         </div>
-                        <p id="progress-detail" class="text-[10px] md:text-xs text-slate-500 mt-2 truncate font-mono"></p>
+                        <p id="progress-detail" class="text-[9px] md:text-[10px] text-slate-500 mt-1 truncate font-mono"></p>
                     </div>
 
-                    <button type="button" id="btn-upload" class="w-full btn-action btn-upload text-white font-bold py-3.5 md:py-4 rounded-xl flex justify-center items-center gap-2 focus:outline-none text-base md:text-lg">
+                    <button type="button" id="btn-upload" class="w-full btn-action btn-upload text-white font-bold py-2.5 md:py-4 rounded-lg md:rounded-xl flex justify-center items-center gap-2 focus:outline-none text-sm md:text-base">
                         <i class="fas fa-cloud-upload-alt"></i> Upload ke GitHub
                     </button>
                 </div>
@@ -477,66 +472,67 @@
 
             <div id="tab-manage" class="tab-content relative z-10">
                 <!-- Create Repository Section -->
-                <div class="mb-8 bg-black/30 border border-slate-700/50 rounded-2xl p-4 md:p-6">
-                    <h3 class="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                        <i class="fas fa-plus-circle text-emerald-400"></i> Buat Repositori Baru
+                <div class="mb-4 md:mb-6 bg-black/30 border border-emerald-900/30 rounded-xl md:rounded-2xl p-3 md:p-5 relative overflow-hidden">
+                     <div class="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-emerald-400 to-teal-500 opacity-50"></div>
+                    <h3 class="text-sm md:text-lg font-bold text-white mb-0.5 flex items-center gap-2">
+                        <i class="fas fa-plus-circle text-emerald-400"></i> Buat Repositori
                     </h3>
-                    <p class="text-slate-400 text-xs md:text-sm mb-5">Repositori baru akan dibuat di akun Anda saat ini.</p>
+                    <p class="text-slate-400 text-[10px] md:text-xs mb-3">Repo baru dibuat di akun <span id="lbl-create-owner" class="text-emerald-300 font-mono">-</span></p>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-                        <div class="group relative md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 group-focus-within:text-emerald-400 transition-colors">Nama Repositori <span class="text-rose-500">*</span></label>
-                            <input type="text" id="new-repo-name" class="w-full py-2.5 md:py-3 px-4 input-dark rounded-xl mono" placeholder="misal: project-keren-baru">
+                    <div class="grid grid-cols-1 gap-2.5 md:gap-4 mb-4">
+                        <div class="group relative">
+                            <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-emerald-400 transition-colors">Nama Repo <span class="text-rose-500">*</span></label>
+                            <input type="text" id="new-repo-name" class="w-full py-2 md:py-3 px-3 md:px-4 input-dark rounded-lg md:rounded-xl mono" placeholder="project-keren">
                         </div>
                         
-                        <div class="group relative md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 group-focus-within:text-emerald-400 transition-colors">Deskripsi <span class="text-[10px] md:text-xs text-slate-500 normal-case">(Opsional)</span></label>
-                            <input type="text" id="new-repo-desc" class="w-full py-2.5 md:py-3 px-4 input-dark rounded-xl" placeholder="Repositori ini untuk proyek...">
+                        <div class="group relative">
+                            <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-emerald-400 transition-colors">Deskripsi <span class="text-[9px] text-slate-500 normal-case">(Opsional)</span></label>
+                            <input type="text" id="new-repo-desc" class="w-full py-2 md:py-3 px-3 md:px-4 input-dark rounded-lg md:rounded-xl text-xs md:text-sm" placeholder="Untuk proyek...">
                         </div>
                         
-                        <div class="flex items-center gap-4 bg-slate-900/50 p-3 rounded-xl border border-slate-700/50 md:col-span-2">
-                            <label class="flex items-center gap-2 cursor-pointer">
+                        <div class="flex items-center gap-2 bg-slate-900/50 p-2 md:p-3 rounded-lg md:rounded-xl border border-slate-700/50">
+                            <label class="flex items-center gap-1.5 cursor-pointer">
                                 <input type="radio" name="repo_privacy" value="public" class="accent-emerald-500" checked>
-                                <span class="text-sm font-medium text-slate-300"><i class="fas fa-globe text-slate-500 mr-1"></i> Public</span>
+                                <span class="text-[10px] md:text-sm font-medium text-slate-300"><i class="fas fa-globe text-slate-500"></i> Public</span>
                             </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
+                            <label class="flex items-center gap-1.5 cursor-pointer ml-2">
                                 <input type="radio" name="repo_privacy" value="private" class="accent-emerald-500">
-                                <span class="text-sm font-medium text-slate-300"><i class="fas fa-lock text-slate-500 mr-1"></i> Private</span>
+                                <span class="text-[10px] md:text-sm font-medium text-slate-300"><i class="fas fa-lock text-slate-500"></i> Private</span>
                             </label>
-                            <div class="h-6 w-px bg-slate-700 mx-2"></div>
-                            <label class="flex items-center gap-2 cursor-pointer flex-1 justify-end">
-                                <input type="checkbox" id="new-repo-init" class="accent-emerald-500" checked>
-                                <span class="text-sm font-medium text-slate-300">Init dengan README</span>
+                            <div class="h-4 w-px bg-slate-700 mx-auto"></div>
+                            <label class="flex items-center gap-1.5 cursor-pointer justify-end">
+                                <input type="checkbox" id="new-repo-init" class="accent-emerald-500 scale-90 md:scale-100" checked>
+                                <span class="text-[10px] md:text-sm font-medium text-slate-300">Init README</span>
                             </label>
                         </div>
                     </div>
                     
-                    <button type="button" id="btn-create-repo" class="w-full btn-action btn-create text-white font-bold py-3 md:py-3.5 rounded-xl flex justify-center items-center gap-2 focus:outline-none">
-                        <i class="fas fa-magic"></i> Buat Repositori
+                    <button type="button" id="btn-create-repo" class="w-full btn-action btn-create text-white font-bold py-2.5 md:py-3.5 rounded-lg md:rounded-xl flex justify-center items-center gap-2 focus:outline-none text-xs md:text-sm">
+                        <i class="fas fa-magic"></i> Buat Repositori Baru
                     </button>
                 </div>
                 
                 <!-- Delete Repository Section -->
-                <div class="bg-rose-950/20 border border-rose-900/50 rounded-2xl p-4 md:p-6 relative overflow-hidden">
+                <div class="bg-rose-950/20 border border-rose-900/50 rounded-xl md:rounded-2xl p-3 md:p-5 relative overflow-hidden">
                     <div class="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-rose-500 to-red-600"></div>
                     
-                    <h3 class="text-lg font-bold text-rose-400 mb-1 flex items-center gap-2">
-                        <i class="fas fa-skull-crossbones"></i> Hapus Repositori (Danger Zone)
+                    <h3 class="text-sm md:text-lg font-bold text-rose-400 mb-0.5 flex items-center gap-2">
+                        <i class="fas fa-skull-crossbones"></i> Hapus Repositori
                     </h3>
-                    <p class="text-slate-400 text-xs md:text-sm mb-5">Tindakan ini tidak dapat dibatalkan. Repositori akan dihapus secara permanen.</p>
+                    <p class="text-slate-400 text-[10px] md:text-xs mb-3">Tindakan ini tidak dapat dibatalkan (Permanen).</p>
                     
-                    <div class="group relative z-40 mb-5">
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 group-focus-within:text-rose-400 transition-colors">Pilih Repositori untuk Dihapus <span class="text-rose-500">*</span></label>
+                    <div class="group relative z-40 mb-3">
+                        <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-rose-400 transition-colors">Pilih Repo untuk Dihapus <span class="text-rose-500">*</span></label>
                         <div class="relative">
-                            <i class="fas fa-trash-alt absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 text-rose-500/50 group-focus-within:text-rose-400 transition-colors z-30"></i>
-                            <input type="text" id="del-repo-name" autocomplete="off" class="w-full py-2.5 md:py-3 pl-10 md:pl-11 pr-8 input-dark border-rose-900/50 focus:border-rose-500 rounded-xl mono relative z-20" placeholder="Pilih dari daftar...">
-                            <i class="fas fa-chevron-down absolute right-3.5 md:right-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs pointer-events-none z-30"></i>
-                            <div id="dropdown-del-repo" class="absolute left-0 top-full mt-1 w-full bg-[#0a0a0e] border border-rose-500/30 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-y-auto max-h-52 hidden flex-col divide-y divide-white/5 py-1 z-50"></div>
+                            <i class="fas fa-trash-alt absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-rose-500/50 text-xs md:text-base group-focus-within:text-rose-400 transition-colors z-30"></i>
+                            <input type="text" id="del-repo-name" autocomplete="off" class="w-full py-2 md:py-3 pl-8 md:pl-11 pr-6 input-dark border-rose-900/50 focus:border-rose-500 rounded-lg md:rounded-xl mono relative z-20" placeholder="Pilih dari daftar...">
+                            <i class="fas fa-chevron-down absolute right-3 md:right-4 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] pointer-events-none z-30"></i>
+                            <div id="dropdown-del-repo" class="absolute left-0 top-full mt-1 w-full bg-[#0a0a0e] border border-rose-500/30 rounded-lg md:rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-y-auto max-h-40 hidden flex-col divide-y divide-white/5 py-1 z-50"></div>
                         </div>
                     </div>
                     
-                    <button type="button" id="btn-trigger-delete" class="w-full btn-action btn-delete text-white font-bold py-3 md:py-3.5 rounded-xl flex justify-center items-center gap-2 focus:outline-none" disabled>
-                        <i class="fas fa-trash-alt"></i> Hapus Repositori Ini
+                    <button type="button" id="btn-trigger-delete" class="w-full btn-action btn-delete text-white font-bold py-2.5 md:py-3.5 rounded-lg md:rounded-xl flex justify-center items-center gap-2 focus:outline-none text-xs md:text-sm" disabled>
+                        <i class="fas fa-trash-alt"></i> Hapus Permanen
                     </button>
                 </div>
             </div>
@@ -545,24 +541,22 @@
     </div>
 
     <div id="modal-delete" class="modal-overlay">
-        <div class="bg-[#0f172a] border border-rose-500/30 rounded-2xl p-6 w-[90%] max-w-md shadow-[0_20px_50px_rgba(0,0,0,0.9)] transform scale-95 transition-transform duration-300" id="modal-delete-content">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto mb-4 border border-rose-500/20">
-                    <i class="fas fa-exclamation-triangle text-3xl"></i>
+        <div class="bg-[#0f172a] border border-rose-500/30 rounded-xl md:rounded-2xl p-4 md:p-6 w-[92%] max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.9)] transform scale-95 transition-transform duration-300" id="modal-delete-content">
+            <div class="text-center mb-4">
+                <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto mb-3 border border-rose-500/20">
+                    <i class="fas fa-exclamation-triangle text-2xl md:text-3xl"></i>
                 </div>
-                <h3 class="text-xl font-bold text-white mb-2">Konfirmasi Hapus</h3>
-                <p class="text-slate-400 text-sm">Anda akan menghapus repositori:</p>
-                <p class="text-rose-400 font-mono font-bold text-lg mt-1" id="modal-repo-target"></p>
-                <p class="text-slate-400 text-sm mt-4 p-3 bg-rose-950/30 rounded-lg border border-rose-900/50">
-                    Ketik nama repositori tersebut di bawah ini untuk mengonfirmasi.
+                <h3 class="text-lg md:text-xl font-bold text-white mb-1">Konfirmasi Hapus</h3>
+                <p class="text-slate-400 text-xs md:text-sm">Anda akan menghapus repositori:</p>
+                <p class="text-rose-400 font-mono font-bold text-sm md:text-lg mt-0.5" id="modal-repo-target"></p>
+                <p class="text-slate-300 text-[10px] md:text-xs mt-3 p-2 bg-rose-950/30 rounded border border-rose-900/50">
+                    Ini tidak dapat di-undo. Lanjutkan?
                 </p>
             </div>
             
-            <input type="text" id="modal-confirm-input" class="w-full py-3 px-4 input-dark border-rose-900/50 focus:border-rose-500 rounded-xl mono mb-6 text-center" placeholder="Ketik nama repo...">
-            
-            <div class="flex gap-3">
-                <button type="button" id="btn-cancel-delete" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-xl transition-colors">Batal</button>
-                <button type="button" id="btn-confirm-delete" class="flex-1 py-3 btn-action btn-delete text-white font-bold rounded-xl" disabled>Hapus Permanen</button>
+            <div class="flex gap-2">
+                <button type="button" id="btn-cancel-delete" class="flex-1 py-2 md:py-3 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-lg md:rounded-xl transition-colors text-xs md:text-sm">Batal</button>
+                <button type="button" id="btn-confirm-delete" class="flex-1 py-2 md:py-3 btn-action btn-delete text-white font-bold rounded-lg md:rounded-xl text-xs md:text-sm">Ya, Hapus!</button>
             </div>
         </div>
     </div>
@@ -572,7 +566,6 @@
         let strippedFiles = []; 
         let isUploading = false;
         
-        // Data Cache
         let userReposCache = [];
         let repoBranchesCache = [];
         let currentOwner = '';
@@ -622,12 +615,12 @@
             delRepoName: document.getElementById('del-repo-name'),
             dropdownDelRepo: document.getElementById('dropdown-del-repo'),
             btnTriggerDelete: document.getElementById('btn-trigger-delete'),
+            lblCreateOwner: document.getElementById('lbl-create-owner'),
             
             // Modal
             modalDelete: document.getElementById('modal-delete'),
             modalContent: document.getElementById('modal-delete-content'),
             modalTarget: document.getElementById('modal-repo-target'),
-            modalInput: document.getElementById('modal-confirm-input'),
             btnCancelDel: document.getElementById('btn-cancel-delete'),
             btnConfirmDel: document.getElementById('btn-confirm-delete')
         };
@@ -688,11 +681,7 @@
             
             // Modal Events
             DOM.btnCancelDel.addEventListener('click', closeDeleteModal);
-            DOM.modalInput.addEventListener('input', () => {
-                const target = DOM.modalTarget.textContent;
-                const match = target.split('/')[1] || target; // if owner/repo, just match repo name, or full
-                DOM.btnConfirmDel.disabled = DOM.modalInput.value !== match && DOM.modalInput.value !== target;
-            });
+            // Tombol Konfirmasi Langsung, hapus event listener input
             DOM.btnConfirmDel.addEventListener('click', executeDeleteRepository);
 
             // Setup Autocomplete
@@ -727,12 +716,17 @@
         }
 
         function showAlert(message, type = 'error') {
-            DOM.alertBox.className = `mt-3 mb-6 p-3 md:p-4 rounded-xl text-xs md:text-sm font-medium border flex items-start gap-3 shadow-inner relative z-10 ${
+            DOM.alertBox.className = `mt-2 md:mt-3 mb-4 p-2.5 md:p-4 rounded-lg md:rounded-xl text-[10px] md:text-sm font-medium border flex items-start gap-2 shadow-inner relative z-10 ${
                 type === 'error' ? 'bg-rose-500/10 text-rose-400 border-rose-500/30' : 
                 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
             }`;
-            DOM.alertBox.innerHTML = `<div class="mt-0.5"><i class="fas ${type === 'error' ? 'fa-times-circle' : 'fa-check-circle'} text-base"></i></div><div class="leading-relaxed flex-1">${message}</div>`;
+            DOM.alertBox.innerHTML = `<div class="mt-0.5"><i class="fas ${type === 'error' ? 'fa-times-circle' : 'fa-check-circle'} text-sm md:text-base"></i></div><div class="leading-relaxed flex-1">${message}</div>`;
             DOM.alertBox.classList.remove('hidden');
+            
+            // Auto hide success alerts after 5 seconds to keep UI clean
+            if (type === 'success') {
+                setTimeout(hideAlert, 5000);
+            }
         }
         function hideAlert() { DOM.alertBox.classList.add('hidden'); }
 
@@ -760,7 +754,7 @@
             
             hideAlert();
             const originalHtml = DOM.btnLoadAccount.innerHTML;
-            DOM.btnLoadAccount.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>Loading...</span>`;
+            DOM.btnLoadAccount.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>...</span>`;
             DOM.btnLoadAccount.disabled = true;
             
             try {
@@ -768,13 +762,17 @@
                 const user = await ghApi('user');
                 currentOwner = user.login;
                 DOM.owner.value = currentOwner;
+                DOM.lblCreateOwner.textContent = currentOwner;
                 
                 DOM.userAvatar.src = user.avatar_url;
                 DOM.avatarGlow.classList.replace('from-purple-500', 'from-emerald-400');
                 DOM.avatarGlow.classList.replace('to-fuchsia-500', 'to-cyan-400');
                 
-                // Get Repos
-                const repos = await ghApi('user/repos?per_page=100&sort=pushed');
+                // PENTING: Ambil LEBIH BANYAK repositori. 
+                // Default API cuma 30. Kita set per_page=100.
+                // Jika user punya lebih dari 100 repo, butuh logic pagination lanjutan, 
+                // tapi 100 biasanya cukup untuk sebagian besar user.
+                const repos = await ghApi('user/repos?per_page=100&sort=updated');
                 userReposCache = repos.map(r => r.name);
                 
                 showAlert(`Terhubung sebagai <strong>${currentOwner}</strong>. Dimuat ${repos.length} repositori.`, 'success');
@@ -804,8 +802,8 @@
                 
                 filtered.forEach(item => {
                     const div = document.createElement('div');
-                    div.className = 'px-4 py-2.5 text-sm font-mono text-slate-300 hover:bg-purple-500/20 hover:text-white cursor-pointer transition-colors';
-                    div.innerHTML = `<i class="fas fa-book mr-2 opacity-50"></i>${item}`;
+                    div.className = 'px-3 md:px-4 py-2 text-[10px] md:text-sm font-mono text-slate-300 hover:bg-purple-500/20 hover:text-white cursor-pointer transition-colors';
+                    div.innerHTML = `<i class="fas fa-book mr-1.5 opacity-50 text-[10px]"></i>${item}`;
                     
                     div.addEventListener('mousedown', (e) => { 
                         e.preventDefault();
@@ -861,18 +859,38 @@
                     auto_init: autoInit
                 });
                 
-                showAlert(`Repositori <strong>${name}</strong> berhasil dibuat!`, 'success');
+                // NOTIFIKASI SUKSES DITAMBAHKAN
+                showAlert(`Repositori <strong class="text-white">${name}</strong> berhasil dibuat!`, 'success');
                 DOM.newRepoName.value = '';
                 DOM.newRepoDesc.value = '';
                 
-                // Refresh list
-                await loadAccountData(); 
+                // Refresh list repositori diam-diam di background agar repo baru masuk ke dropdown
+                ghApi('user/repos?per_page=100&sort=updated').then(repos => {
+                    userReposCache = repos.map(r => r.name);
+                    saveSettings();
+                });
+                
             } catch (error) {
-                showAlert(`Gagal membuat repo: ${error.message}`);
+                let msg = error.message;
+                if(msg.includes('403') || msg.toLowerCase().includes('resource not accessible')) {
+                    msg = "Token tidak memiliki izin 'repo'. Harap centang 'repo' saat membuat token GitHub.";
+                }
+                showAlert(`Gagal membuat repo: ${msg}`);
             } finally {
                 DOM.btnCreateRepo.innerHTML = btnHtml;
                 DOM.btnCreateRepo.disabled = false;
             }
+        }
+
+        function openDeleteModal() {
+            const repo = DOM.delRepoName.value.trim();
+            if(!repo || !currentOwner) return;
+            
+            DOM.modalTarget.textContent = `${currentOwner}/${repo}`;
+            DOM.btnConfirmDel.disabled = false; // Tombol langsung aktif (tidak perlu ketik konfirmasi)
+            
+            DOM.modalDelete.classList.add('active');
+            DOM.modalContent.classList.replace('scale-95', 'scale-100');
         }
 
         function openDeleteModal() {
