@@ -51,10 +51,6 @@
             .input-dark { font-size: 14px !important; } 
         }
         
-        @media (min-width: 768px) {
-            .input-dark { font-size: 13px !important; } 
-        }
-        
         .input-dark:hover {
             border-color: rgba(168, 85, 247, 0.4);
             background-color: rgba(0, 0, 0, 0.7);
@@ -270,6 +266,10 @@
             opacity: 1;
             pointer-events: auto;
         }
+        
+        /* Hilangkan marker panah default dari HTML details */
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
     </style>
 </head>
 
@@ -300,15 +300,53 @@
 
         <div class="p-3 md:p-6 pt-3 md:pt-5 relative">
             
-            <!-- Global Security Info -->
-            <div class="bg-black/40 border border-amber-500/20 rounded-lg p-2.5 md:p-4 mb-4 flex items-start gap-2 md:gap-4 shadow-inner relative overflow-hidden">
+            <!-- Global Security Info (Updated Details Section) -->
+            <div class="bg-black/40 border border-amber-500/20 rounded-lg p-2.5 md:p-4 mb-4 shadow-inner relative overflow-hidden">
                 <div class="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-amber-400 to-orange-500"></div>
-                <div class="bg-amber-500/10 p-1 md:p-2 rounded-md text-amber-400 shrink-0 mt-0.5 hidden sm:block">
-                    <i class="fas fa-shield-halved text-sm md:text-xl"></i>
-                </div>
-                <div class="space-y-0.5 md:space-y-1 text-[10px] md:text-sm text-slate-300 leading-tight">
-                    <p class="font-bold text-white mb-0.5">Info Keamanan</p>
-                    <p>Membutuhkan <strong>Personal Access Token (Classic)</strong> dengan izin <em>repo</em> & <em>delete_repo</em>.</p>
+                
+                <div class="flex items-start gap-2 md:gap-4">
+                    <div class="bg-amber-500/10 p-1 md:p-2 rounded-md text-amber-400 shrink-0 mt-0.5 hidden sm:block">
+                        <i class="fas fa-shield-halved text-sm md:text-xl"></i>
+                    </div>
+                    
+                    <div class="flex-1 text-[10px] md:text-sm text-slate-300 leading-tight w-full">
+                        <details class="group">
+                            <summary class="font-bold text-white mb-0.5 cursor-pointer flex justify-between items-center outline-none select-none">
+                                <span class="flex items-center gap-1.5 hover:text-amber-300 transition-colors">
+                                    <i class="fas fa-info-circle text-amber-400 sm:hidden"></i> Info Keamanan & Cara Dapat Token
+                                </span>
+                                <i class="fas fa-chevron-down text-slate-500 transition-transform duration-300 group-open:rotate-180"></i>
+                            </summary>
+                            
+                            <div class="mt-2.5 space-y-2 text-slate-400 border-t border-amber-500/20 pt-2.5 pb-1">
+                                <p class="mb-1.5">Aplikasi ini membutuhkan <strong>Personal Access Token (Classic)</strong> GitHub. Ikuti langkah mudah ini:</p>
+                                
+                                <ol class="list-decimal list-outside ml-4 space-y-2 marker:text-amber-500/70">
+                                    <li>Buka halaman <a href="https://github.com/settings/tokens" target="_blank" class="text-amber-400 font-semibold hover:text-amber-300 underline underline-offset-2 transition-colors">GitHub Tokens <i class="fas fa-external-link-alt text-[8px] ml-0.5"></i></a> lalu klik tombol <strong>Generate new token (classic)</strong>.</li>
+                                    <li>Isi kolom <strong>Note</strong> (contoh: "Web Uploader") dan atur masa kedaluwarsa (Expiration) sesuai kebutuhan.</li>
+                                    <li>Pada bagian daftar izin (<strong>Select scopes</strong>), Anda <strong class="text-rose-400">wajib mencentang</strong> dua kotak berikut:
+                                        <ul class="list-disc list-outside ml-4 mt-1.5 space-y-1.5 marker:text-rose-500/70">
+                                            <li>
+                                                <code class="text-rose-300 bg-rose-950/50 border border-rose-900/50 px-1 py-0.5 rounded text-[9px] md:text-xs">repo</code> 
+                                                <span class="text-slate-500 text-[9px] md:text-xs block sm:inline sm:ml-1">Memberi akses penuh untuk mengunggah file dan membuat repositori baru.</span>
+                                            </li>
+                                            <li>
+                                                <code class="text-rose-300 bg-rose-950/50 border border-rose-900/50 px-1 py-0.5 rounded text-[9px] md:text-xs">delete_repo</code> 
+                                                <span class="text-slate-500 text-[9px] md:text-xs block sm:inline sm:ml-1">Memberi akses khusus untuk menghapus repositori.</span>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>Gulir ke paling bawah halaman, lalu klik tombol hijau <strong>Generate token</strong>.</li>
+                                    <li>Salin (Copy) token yang berawalan <code class="text-emerald-300 bg-emerald-950/50 border border-emerald-900/50 px-1 py-0.5 rounded text-[9px] md:text-xs">ghp_...</code> dan tempelkan ke kolom <strong>GitHub Token</strong> di bawah ini.</li>
+                                </ol>
+                                
+                                <div class="bg-black/50 p-2 rounded border border-white/5 mt-3 flex gap-2 items-center">
+                                    <i class="fas fa-lock text-slate-500 shrink-0"></i>
+                                    <p class="text-[9px] md:text-xs text-slate-500 leading-tight">Token Anda tidak pernah disimpan di server mana pun. Seluruh proses komunikasi dengan API GitHub dilakukan langsung dan secara lokal dari browser Anda.</p>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
                 </div>
             </div>
 
@@ -725,7 +763,7 @@
             
             // Auto hide success alerts after 5 seconds to keep UI clean
             if (type === 'success') {
-                setTimeout(hideAlert, 5000);
+                setTimeout(hideAlert, 7000); // 7 detik agar cukup waktu membaca
             }
         }
         function hideAlert() { DOM.alertBox.classList.add('hidden'); }
@@ -770,8 +808,6 @@
                 
                 // PENTING: Ambil LEBIH BANYAK repositori. 
                 // Default API cuma 30. Kita set per_page=100.
-                // Jika user punya lebih dari 100 repo, butuh logic pagination lanjutan, 
-                // tapi 100 biasanya cukup untuk sebagian besar user.
                 const repos = await ghApi('user/repos?per_page=100&sort=updated');
                 userReposCache = repos.map(r => r.name);
                 
@@ -873,7 +909,7 @@
             } catch (error) {
                 let msg = error.message;
                 if(msg.includes('403') || msg.toLowerCase().includes('resource not accessible')) {
-                    msg = "Token tidak memiliki izin 'repo'. Harap centang 'repo' saat membuat token GitHub.";
+                    msg = "Token tidak memiliki izin 'repo'. Harap buat/centang izin 'repo' di token Anda.";
                 }
                 showAlert(`Gagal membuat repo: ${msg}`);
             } finally {
@@ -887,23 +923,10 @@
             if(!repo || !currentOwner) return;
             
             DOM.modalTarget.textContent = `${currentOwner}/${repo}`;
-            DOM.btnConfirmDel.disabled = false; // Tombol langsung aktif (tidak perlu ketik konfirmasi)
+            DOM.btnConfirmDel.disabled = false; // Tombol langsung aktif
             
             DOM.modalDelete.classList.add('active');
             DOM.modalContent.classList.replace('scale-95', 'scale-100');
-        }
-
-        function openDeleteModal() {
-            const repo = DOM.delRepoName.value.trim();
-            if(!repo || !currentOwner) return;
-            
-            DOM.modalTarget.textContent = `${currentOwner}/${repo}`;
-            DOM.modalInput.value = '';
-            DOM.btnConfirmDel.disabled = true;
-            
-            DOM.modalDelete.classList.add('active');
-            DOM.modalContent.classList.replace('scale-95', 'scale-100');
-            setTimeout(() => DOM.modalInput.focus(), 100);
         }
 
         function closeDeleteModal() {
@@ -932,7 +955,9 @@
             } catch (error) {
                 closeDeleteModal();
                 let msg = error.message;
-                if(msg.includes('403')) msg = "Token tidak memiliki izin 'delete_repo'. Harap buat token baru dengan izin tersebut dicentang.";
+                if(msg.includes('403') || msg.toLowerCase().includes('resource not accessible')) {
+                    msg = "Token tidak memiliki izin 'delete_repo'. Harap centang izin tersebut saat membuat token.";
+                }
                 showAlert(`Gagal menghapus repo: ${msg}`);
             } finally {
                 DOM.btnConfirmDel.innerHTML = btnHtml;
@@ -994,7 +1019,7 @@
             hideAlert();
             DOM.fileSection.classList.add('hidden');
             const originalBtnHtml = DOM.btnZipTrigger.innerHTML;
-            DOM.btnZipTrigger.innerHTML = `<div class="spinner"></div><span class="mt-3 text-fuchsia-400 font-bold text-sm z-10 relative">Mengekstrak...</span>`;
+            DOM.btnZipTrigger.innerHTML = `<div class="spinner"></div><span class="mt-3 text-fuchsia-400 font-bold text-[10px] md:text-sm z-10 relative">Mengekstrak...</span>`;
 
             try {
                 const zip = await JSZip.loadAsync(file);
@@ -1046,9 +1071,9 @@
                 const tr = document.createElement('tr');
                 tr.className = `hover:bg-white/[0.02] transition-colors`;
                 tr.innerHTML = `
-                    <td class="px-3 py-2 truncate" title="${file.displayPath}"><i class="${file.isDir ? 'fas fa-folder text-amber-500' : 'far fa-file-code text-purple-400'} mr-2 opacity-80"></i>${file.displayPath}</td>
-                    <td class="px-3 py-2 text-right text-slate-500">${file.isDir ? '-' : formatBytes(file.size)}</td>
-                    <td class="px-3 py-2 text-center"><button type="button" class="text-rose-500/70 hover:text-rose-400 p-1 rounded transition" onclick="removeFile(${file.originalIndex})"><i class="fas fa-trash-alt"></i></button></td>
+                    <td class="px-2 md:px-3 py-2 truncate" title="${file.displayPath}"><i class="${file.isDir ? 'fas fa-folder text-amber-500' : 'far fa-file-code text-purple-400'} mr-2 opacity-80"></i>${file.displayPath}</td>
+                    <td class="px-2 md:px-3 py-2 text-right text-slate-500">${file.isDir ? '-' : formatBytes(file.size)}</td>
+                    <td class="px-2 md:px-3 py-2 text-center"><button type="button" class="text-rose-500/70 hover:text-rose-400 p-1 rounded transition" onclick="removeFile(${file.originalIndex})"><i class="fas fa-trash-alt"></i></button></td>
                 `;
                 DOM.fileListBody.appendChild(tr);
             });
