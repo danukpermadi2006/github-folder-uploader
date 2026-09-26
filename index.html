@@ -11,6 +11,10 @@
     <!-- JSZip -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
+    <!-- Ace Editor (Untuk Syntax Highlighting ala VS Code) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.2/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.2/ext-modelist.js"></script>
+    
     <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
@@ -316,7 +320,7 @@
             
             <div class="relative z-10 shrink-0 group cursor-pointer" title="Change Avatar" id="avatar-container">
                 <div class="absolute inset-0 bg-gradient-to-tr from-purple-500 to-fuchsia-500 rounded-full blur-[6px] md:blur-[10px] opacity-60 animate-pulse transition-opacity duration-500" id="avatar-glow"></div>
-                <img src="danuk.jpg" id="user-avatar" alt="User Avatar" class="relative w-10 h-10 md:w-16 md:h-16 rounded-full border-[2px] border-black object-cover z-10 group-hover:scale-105 transition-transform duration-300 bg-slate-900">
+                <img src="https://i.imgur.com/GDSFrlG.png" id="user-avatar" alt="User Avatar" class="relative w-10 h-10 md:w-16 md:h-16 rounded-full border-[2px] border-black object-cover z-10 group-hover:scale-105 transition-transform duration-300 bg-slate-900">
             </div>
 
             <div class="flex items-center relative z-10">
@@ -566,8 +570,14 @@
                             </div>
                          </div>
                          
-                         <div class="flex-1 relative">
-                            <textarea id="file-editor" class="absolute inset-0 w-full h-full bg-[#0a0a0f] text-slate-300 font-mono text-[11px] md:text-[13px] p-3 md:p-4 resize-none focus:outline-none focus:ring-1 focus:ring-blue-500/50 disabled:opacity-50" disabled spellcheck="false" placeholder="Select a file from the tree to edit..."></textarea>
+                         <div class="flex-1 relative bg-[#0a0a0f]">
+                            <!-- Placeholder saat kosong -->
+                            <div id="editor-placeholder" class="absolute inset-0 flex items-center justify-center text-slate-600 font-mono text-[10px] md:text-xs italic select-none">
+                                Select a file from the tree to edit...
+                            </div>
+                            
+                            <!-- Wadah untuk Ace Code Editor -->
+                            <div id="file-editor" class="absolute inset-0 w-full h-full opacity-0 pointer-events-none transition-opacity duration-300 z-0"></div>
                             
                             <div id="editor-loading" class="absolute inset-0 bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center hidden z-10">
                                 <div class="spinner mb-2 border-t-blue-500"></div>
@@ -653,11 +663,12 @@
 
     <!-- Social Media Footer -->
     <div class="flex justify-center gap-6 md:gap-8 mt-2 mb-8 text-slate-500 text-2xl relative z-10">
-        <a href="#" class="hover:text-white transition-transform transform hover:scale-110"><i class="fab fa-tiktok"></i></a>
-        <a href="#" class="hover:text-pink-500 transition-transform transform hover:scale-110"><i class="fab fa-instagram"></i></a>
-        <a href="#" class="hover:text-red-500 transition-transform transform hover:scale-110"><i class="fab fa-youtube"></i></a>
-        <a href="#" class="hover:text-white transition-transform transform hover:scale-110"><i class="fab fa-github"></i></a>
-        <a href="#" class="hover:text-green-500 transition-transform transform hover:scale-110"><i class="fab fa-whatsapp"></i></a>
+        <!-- Silakan ganti URL href di bawah ini dengan link sosmed Anda -->
+        <a href="https://tiktok.com/@username_kamu" target="_blank" class="hover:text-white transition-transform transform hover:scale-110"><i class="fab fa-tiktok"></i></a>
+        <a href="https://instagram.com/username_kamu" target="_blank" class="hover:text-pink-500 transition-transform transform hover:scale-110"><i class="fab fa-instagram"></i></a>
+        <a href="https://youtube.com/@username_kamu" target="_blank" class="hover:text-red-500 transition-transform transform hover:scale-110"><i class="fab fa-youtube"></i></a>
+        <a href="https://github.com/username_kamu" target="_blank" class="hover:text-white transition-transform transform hover:scale-110"><i class="fab fa-github"></i></a>
+        <a href="https://wa.me/6281234567890" target="_blank" class="hover:text-green-500 transition-transform transform hover:scale-110"><i class="fab fa-whatsapp"></i></a>
     </div>
 
     <!-- Delete Repo Modal -->
@@ -713,6 +724,7 @@
         let editingFilePath = null;
         let editingFileSha = null;
         let originalFileContent = "";
+        let aceEditor = null; // Variabel global untuk Code Editor
 
         const DOM = {
             token: document.getElementById('gh-token'),
@@ -758,7 +770,11 @@
             lblEditRepo: document.getElementById('lbl-edit-repo'),
             repoTreeView: document.getElementById('repo-tree-view'),
             treeLoading: document.getElementById('tree-loading'),
-            fileEditor: document.getElementById('file-editor'),
+            
+            // Perubahan elemen editor
+            editorPlaceholder: document.getElementById('editor-placeholder'),
+            fileEditor: document.getElementById('file-editor'), // Code Editor Container
+            
             editorFilePath: document.getElementById('editor-file-path'),
             editorLoading: document.getElementById('editor-loading'),
             btnSaveFile: document.getElementById('btn-save-file'),
@@ -841,8 +857,25 @@
             DOM.btnSaveFile.addEventListener('click', saveEditedFile);
             DOM.btnDeleteFile.addEventListener('click', openDeleteFileModal);
             DOM.btnConfirmDelFile.addEventListener('click', executeDeleteFile);
-            DOM.fileEditor.addEventListener('input', () => {
-                if(DOM.fileEditor.value !== originalFileContent) {
+            
+            // Inisialisasi Ace Editor (Visual Studio Code clone)
+            ace.config.set('basePath', 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.2/');
+            aceEditor = ace.edit("file-editor");
+            aceEditor.setTheme("ace/theme/one_dark"); // Tema gelap keren
+            aceEditor.setOptions({
+                fontSize: window.innerWidth < 768 ? "11px" : "13px",
+                fontFamily: "'JetBrains Mono', monospace",
+                wrap: true, // Otomatis turun ke bawah kalau kepanjangan (Prettier-like visual)
+                showPrintMargin: false,
+                readOnly: true,
+                useWorker: false // Matikan syntax checker bawaan untuk mencegah error worker silang domain
+            });
+            
+            // Event listener saat kode diedit
+            aceEditor.on('change', () => {
+                if(!editingFilePath) return;
+                const currentVal = aceEditor.getValue();
+                if(currentVal !== originalFileContent) {
                     DOM.btnSaveFile.classList.add('btn-action', 'btn-blue');
                     DOM.btnSaveFile.classList.remove('opacity-50');
                     DOM.btnSaveFile.disabled = false;
@@ -1342,7 +1375,7 @@
             
             DOM.editorFilePath.textContent = path;
             DOM.editorLoading.classList.remove('hidden');
-            DOM.fileEditor.disabled = true;
+            aceEditor.setReadOnly(true);
             DOM.btnSaveFile.classList.add('hidden');
             DOM.btnDeleteFile.classList.add('hidden');
             DOM.commitMsgContainer.style.display = 'none';
@@ -1351,15 +1384,25 @@
                 // Fetch file content via API
                 const data = await ghApi(`repos/${currentOwner}/${repo}/contents/${path}?ref=${branch}`);
                 
-                // Content is base64 encoded
+                // Content is base64 encoded (di-decode)
                 const content = decodeURIComponent(escape(atob(data.content)));
                 
-                DOM.fileEditor.value = content;
+                // Deteksi tipe file secara otomatis untuk pewarnaan sintaks yang pas
+                const modelist = ace.require("ace/ext/modelist");
+                const mode = modelist.getModeForPath(path).mode;
+                aceEditor.session.setMode(mode);
+                
+                // Menata antarmuka untuk edit
+                DOM.editorPlaceholder.style.display = 'none';
+                DOM.fileEditor.style.opacity = '1';
+                DOM.fileEditor.style.pointerEvents = 'auto';
+                
+                aceEditor.setValue(content, -1); // -1 untuk membuat kursor berada di atas
                 originalFileContent = content;
                 editingFilePath = path;
-                editingFileSha = data.sha; // Needs to be the latest sha to update/delete
+                editingFileSha = data.sha; 
                 
-                DOM.fileEditor.disabled = false;
+                aceEditor.setReadOnly(false);
                 DOM.btnSaveFile.classList.remove('hidden');
                 DOM.btnSaveFile.classList.add('opacity-50');
                 DOM.btnSaveFile.disabled = true;
@@ -1381,13 +1424,13 @@
             if (!editingFilePath || !editingFileSha) return;
             
             const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
-            const content = DOM.fileEditor.value;
+            const content = aceEditor.getValue();
             const msg = DOM.editCommitMsg.value.trim() || `Update ${editingFilePath}`;
             
             const btnHtml = DOM.btnSaveFile.innerHTML;
             DOM.btnSaveFile.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
             DOM.btnSaveFile.disabled = true;
-            DOM.fileEditor.disabled = true;
+            aceEditor.setReadOnly(true);
             
             try {
                 // Encode content back to base64 safely supporting utf-8
@@ -1420,7 +1463,7 @@
                 DOM.btnSaveFile.innerHTML = btnHtml;
                 DOM.btnSaveFile.disabled = false;
             } finally {
-                DOM.fileEditor.disabled = false;
+                aceEditor.setReadOnly(false);
             }
         }
         
@@ -1429,8 +1472,14 @@
             editingFileSha = null;
             originalFileContent = "";
             DOM.editorFilePath.textContent = "No file selected";
-            DOM.fileEditor.value = "";
-            DOM.fileEditor.disabled = true;
+            
+            // Kembalikan ke Placeholder
+            if(aceEditor) aceEditor.setValue("", -1);
+            if(aceEditor) aceEditor.setReadOnly(true);
+            DOM.editorPlaceholder.style.display = 'flex';
+            DOM.fileEditor.style.opacity = '0';
+            DOM.fileEditor.style.pointerEvents = 'none';
+            
             DOM.btnSaveFile.classList.add('hidden');
             DOM.btnDeleteFile.classList.add('hidden');
             DOM.commitMsgContainer.style.display = 'none';
@@ -1472,11 +1521,14 @@
                  
                  await ghApi(`repos/${currentOwner}/${repo}/contents/${editingFilePath}`, 'DELETE', body);
                  
+                 // PERBAIKAN BUG: Langsung hapus file dari data lokal web untuk mencegah GitHub API Cache memunculkan kembali file tersebut
+                 currentTreeData = currentTreeData.filter(item => item.path !== editingFilePath);
+                 
                  closeDeleteFileModal();
                  showAlert(`File <strong class="text-white">${editingFilePath}</strong> deleted successfully.`, 'success');
                  
                  resetEditor();
-                 fetchRepositoryTree(); // Refresh the tree
+                 renderTree(); // Render ulang langsung dari state lokal yang sudah bersih
                  
              } catch (error) {
                  showAlert(`Failed to delete file: ${error.message}`);
