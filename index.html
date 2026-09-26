@@ -14,6 +14,7 @@
     <!-- Ace Editor (Untuk Syntax Highlighting ala VS Code) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.2/ace.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.2/ext-modelist.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.2/ext-searchbox.js"></script>
     
     <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -307,6 +308,14 @@
             min-height: 250px;
             max-height: 400px;
         }
+
+        /* Mencegah scroll di dalam editor ikut me-scroll halaman secara keseluruhan */
+        #file-editor {
+            overscroll-behavior: none;
+        }
+        .ace_editor {
+            touch-action: pan-x pan-y;
+        }
     </style>
 </head>
 
@@ -561,6 +570,9 @@
                                 <span id="editor-file-path" class="truncate">No file selected</span>
                             </div>
                             <div class="flex gap-2">
+                                <button type="button" id="btn-search-file" class="hidden text-[9px] md:text-xs bg-slate-500/20 text-slate-400 hover:bg-slate-500/30 px-2 py-1 rounded border border-slate-500/30 transition-colors" title="Search in file (Ctrl+F)">
+                                    <i class="fas fa-search"></i>
+                                </button>
                                 <button type="button" id="btn-delete-file" class="hidden text-[9px] md:text-xs bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 px-2 py-1 rounded border border-rose-500/30 transition-colors" title="Delete this file">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
@@ -777,6 +789,7 @@
             
             editorFilePath: document.getElementById('editor-file-path'),
             editorLoading: document.getElementById('editor-loading'),
+            btnSearchFile: document.getElementById('btn-search-file'),
             btnSaveFile: document.getElementById('btn-save-file'),
             btnDeleteFile: document.getElementById('btn-delete-file'),
             commitMsgContainer: document.getElementById('commit-msg-container'),
@@ -854,6 +867,9 @@
             
             // Edit Tab Events
             DOM.btnFetchTree.addEventListener('click', fetchRepositoryTree);
+            DOM.btnSearchFile.addEventListener('click', () => {
+                if(aceEditor) aceEditor.execCommand("find");
+            });
             DOM.btnSaveFile.addEventListener('click', saveEditedFile);
             DOM.btnDeleteFile.addEventListener('click', openDeleteFileModal);
             DOM.btnConfirmDelFile.addEventListener('click', executeDeleteFile);
@@ -1376,6 +1392,7 @@
             DOM.editorFilePath.textContent = path;
             DOM.editorLoading.classList.remove('hidden');
             aceEditor.setReadOnly(true);
+            DOM.btnSearchFile.classList.add('hidden');
             DOM.btnSaveFile.classList.add('hidden');
             DOM.btnDeleteFile.classList.add('hidden');
             DOM.commitMsgContainer.style.display = 'none';
@@ -1403,6 +1420,7 @@
                 editingFileSha = data.sha; 
                 
                 aceEditor.setReadOnly(false);
+                DOM.btnSearchFile.classList.remove('hidden');
                 DOM.btnSaveFile.classList.remove('hidden');
                 DOM.btnSaveFile.classList.add('opacity-50');
                 DOM.btnSaveFile.disabled = true;
@@ -1480,6 +1498,7 @@
             DOM.fileEditor.style.opacity = '0';
             DOM.fileEditor.style.pointerEvents = 'none';
             
+            DOM.btnSearchFile.classList.add('hidden');
             DOM.btnSaveFile.classList.add('hidden');
             DOM.btnDeleteFile.classList.add('hidden');
             DOM.commitMsgContainer.style.display = 'none';
