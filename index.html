@@ -306,7 +306,7 @@
     </style>
 </head>
 
-<body class="antialiased min-h-screen p-1 sm:p-4 md:p-8 flex justify-center items-start">
+<body class="antialiased min-h-screen p-1 sm:p-4 md:p-8 flex flex-col justify-start items-center">
     <div class="w-full max-w-4xl glass-panel rounded-xl sm:rounded-2xl mb-6 md:mb-12 relative z-10">
         
         <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-80 rounded-t-xl sm:rounded-t-2xl pointer-events-none"></div>
@@ -528,7 +528,10 @@
 
             <div id="tab-edit" class="tab-content relative z-10">
                  <div class="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                    <p class="text-[10px] md:text-sm text-slate-400 font-medium">Browse and edit files in the selected repository.</p>
+                    <p class="text-[10px] md:text-sm text-slate-400 font-medium flex-1">
+                        Browse and edit files in: <br class="sm:hidden">
+                        <span id="lbl-active-repo" class="text-blue-400 font-mono font-bold bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20 inline-block mt-1 sm:mt-0">No repo selected</span>
+                    </p>
                     <button type="button" id="btn-fetch-tree" class="w-full sm:w-auto btn-test px-4 py-2 text-slate-300 font-bold rounded-lg flex items-center justify-center gap-2 text-xs md:text-sm">
                         <i class="fas fa-sitemap text-blue-400"></i> Fetch Repo Files
                     </button>
@@ -648,6 +651,15 @@
         </div>
     </div>
 
+    <!-- Social Media Footer -->
+    <div class="flex justify-center gap-6 md:gap-8 mt-2 mb-8 text-slate-500 text-2xl relative z-10">
+        <a href="#" class="hover:text-white transition-transform transform hover:scale-110"><i class="fab fa-tiktok"></i></a>
+        <a href="#" class="hover:text-pink-500 transition-transform transform hover:scale-110"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="hover:text-red-500 transition-transform transform hover:scale-110"><i class="fab fa-youtube"></i></a>
+        <a href="#" class="hover:text-white transition-transform transform hover:scale-110"><i class="fab fa-github"></i></a>
+        <a href="#" class="hover:text-green-500 transition-transform transform hover:scale-110"><i class="fab fa-whatsapp"></i></a>
+    </div>
+
     <!-- Delete Repo Modal -->
     <div id="modal-delete" class="modal-overlay">
         <div class="bg-[#0f172a] border border-rose-500/30 rounded-xl md:rounded-2xl p-4 md:p-6 w-[92%] max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.9)] transform scale-95 transition-transform duration-300" id="modal-delete-content">
@@ -665,7 +677,7 @@
             
             <div class="flex gap-2">
                 <button type="button" id="btn-cancel-delete" class="flex-1 py-2 md:py-3 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-lg md:rounded-xl transition-colors text-xs md:text-sm">Cancel</button>
-                <button type="button" id="btn-confirm-delete" class="flex-1 py-2 md:py-3 btn-action btn-delete text-white font-bold rounded-lg md:rounded-xl text-xs md:text-sm">Yes, Delete!</button>
+                <button type="button" id="btn-confirm-delete" class="flex-1 flex justify-center items-center py-2 md:py-3 btn-action btn-delete text-white font-bold rounded-lg md:rounded-xl text-xs md:text-sm">Yes, Delete!</button>
             </div>
         </div>
     </div>
@@ -682,7 +694,7 @@
             
             <div class="flex gap-2">
                 <button type="button" onclick="closeDeleteFileModal()" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-lg transition-colors text-xs">Cancel</button>
-                <button type="button" id="btn-confirm-delete-file" class="flex-1 py-2 btn-action btn-delete text-white font-bold rounded-lg text-xs">Delete File</button>
+                <button type="button" id="btn-confirm-delete-file" class="flex-1 flex justify-center items-center py-2 btn-action btn-delete text-white font-bold rounded-lg text-xs">Delete File</button>
             </div>
         </div>
     </div>
@@ -742,6 +754,8 @@
             
             // Edit Tab
             btnFetchTree: document.getElementById('btn-fetch-tree'),
+            editActiveRepoBadge: document.getElementById('edit-active-repo-badge'),
+            lblEditRepo: document.getElementById('lbl-edit-repo'),
             repoTreeView: document.getElementById('repo-tree-view'),
             treeLoading: document.getElementById('tree-loading'),
             fileEditor: document.getElementById('file-editor'),
@@ -987,6 +1001,7 @@
             
             // Reset Editor if repo changes
             DOM.repoTreeView.innerHTML = '<div class="text-slate-500 text-center mt-10 italic">Click \'Fetch Repo Files\' to view contents.</div>';
+            if (DOM.editActiveRepoBadge) DOM.editActiveRepoBadge.classList.add('hidden');
             resetEditor();
             
             try {
@@ -1258,6 +1273,10 @@
             resetEditor();
             
             try {
+                // Update Active Repo Label
+                const lblRepo = document.getElementById('lbl-active-repo');
+                if (lblRepo) lblRepo.textContent = `${currentOwner}/${repo} [${branch}]`;
+
                 // Recursive fetch tree
                 const data = await ghApi(`repos/${currentOwner}/${repo}/git/trees/${branch}?recursive=1`);
                 
@@ -1415,6 +1434,9 @@
             DOM.btnSaveFile.classList.add('hidden');
             DOM.btnDeleteFile.classList.add('hidden');
             DOM.commitMsgContainer.style.display = 'none';
+            
+            const lblRepo = document.getElementById('lbl-active-repo');
+            if (lblRepo) lblRepo.textContent = "No repo selected";
         }
 
         // Delete File Modal
@@ -1438,7 +1460,7 @@
              const msg = DOM.delFileCommitMsg.value.trim() || `Delete ${editingFilePath}`;
              
              const btnHtml = DOM.btnConfirmDelFile.innerHTML;
-             DOM.btnConfirmDelFile.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Deleting...`;
+             DOM.btnConfirmDelFile.innerHTML = `<div class="spinner"></div>`;
              DOM.btnConfirmDelFile.disabled = true;
              
              try {
@@ -1533,7 +1555,7 @@
             if(!repo || !currentOwner) return;
 
             const btnHtml = DOM.btnConfirmDel.innerHTML;
-            DOM.btnConfirmDel.innerHTML = `<div class="spinner border-t-white"></div>`;
+            DOM.btnConfirmDel.innerHTML = `<div class="spinner"></div>`;
             DOM.btnConfirmDel.disabled = true;
             DOM.btnCancelDel.disabled = true;
 
