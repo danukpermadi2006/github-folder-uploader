@@ -51,7 +51,7 @@
             .input-dark { font-size: 14px !important; } 
         }
         
-        .input-dark:hover {
+        .input-dark:hover:not(:disabled) {
             border-color: rgba(168, 85, 247, 0.4);
             background-color: rgba(0, 0, 0, 0.7);
         }
@@ -60,6 +60,11 @@
             border-color: #a855f7;
             box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2), inset 0 2px 4px rgba(0,0,0,0.5);
             outline: none;
+        }
+
+        .input-dark:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .cyber-checkbox {
@@ -138,6 +143,15 @@
             box-shadow: 0 6px 30px rgba(16, 185, 129, 0.6);
             transform: translateY(-2px);
         }
+        
+        .btn-blue {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        .btn-blue:hover:not(:disabled) {
+            box-shadow: 0 6px 30px rgba(59, 130, 246, 0.6);
+            transform: translateY(-2px);
+        }
 
         .btn-delete {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
@@ -191,11 +205,12 @@
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
         .file-list-container { max-height: 200px; overflow-y: auto; overflow-x: hidden; }
+        .repo-tree-container { max-height: 300px; overflow-y: auto; overflow-x: auto; }
         
-        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px;}
         ::-webkit-scrollbar-track { background: #000; border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; border: 1px solid #000; }
-        ::-webkit-scrollbar-thumb:hover { background-color: #444; }
+        ::-webkit-scrollbar-thumb:hover { background-color: #555; }
 
         .nav-tabs {
             display: flex;
@@ -207,6 +222,7 @@
             margin-bottom: 1.5rem;
             position: relative;
             z-index: 20;
+            overflow-x: auto; /* allow scroll on small screens if many tabs */
         }
         .nav-tab {
             flex: 1;
@@ -223,6 +239,7 @@
             justify-content: center;
             gap: 0.5rem;
             border: 1px solid transparent;
+            white-space: nowrap;
         }
         .nav-tab:hover:not(.active) {
             background: rgba(255,255,255,0.05);
@@ -267,16 +284,31 @@
             pointer-events: auto;
         }
         
-        /* Hilangkan marker panah default dari HTML details */
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
+        
+        .tree-item {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .tree-item:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+        .tree-item.selected {
+            background-color: rgba(59, 130, 246, 0.2);
+            border-left: 2px solid #3b82f6;
+        }
+        
+        #editor-container {
+            min-height: 250px;
+            max-height: 400px;
+        }
     </style>
 </head>
 
 <body class="antialiased min-h-screen p-1 sm:p-4 md:p-8 flex justify-center items-start">
     <div class="w-full max-w-4xl glass-panel rounded-xl sm:rounded-2xl mb-6 md:mb-12 relative z-10">
         
-        <!-- Top border glow -->
         <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-80 rounded-t-xl sm:rounded-t-2xl pointer-events-none"></div>
 
         <div class="p-3 md:p-6 pb-3 md:pb-4 border-b border-white/5 relative overflow-hidden flex justify-start items-center gap-3 md:gap-5 rounded-t-xl sm:rounded-t-2xl">
@@ -284,7 +316,6 @@
             
             <div class="relative z-10 shrink-0 group cursor-pointer" title="Change Avatar" id="avatar-container">
                 <div class="absolute inset-0 bg-gradient-to-tr from-purple-500 to-fuchsia-500 rounded-full blur-[6px] md:blur-[10px] opacity-60 animate-pulse transition-opacity duration-500" id="avatar-glow"></div>
-                <!-- Default avatar is standard, will change to Github Avatar when loaded -->
                 <img src="https://i.imgur.com/GDSFrlG.png" id="user-avatar" alt="User Avatar" class="relative w-10 h-10 md:w-16 md:h-16 rounded-full border-[2px] border-black object-cover z-10 group-hover:scale-105 transition-transform duration-300 bg-slate-900">
             </div>
 
@@ -293,14 +324,13 @@
                     <h1 class="text-lg md:text-3xl font-extrabold tracking-tight text-white mb-0 md:mb-1 leading-tight">
                         GitHub <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-fuchsia-400">Manager</span>
                     </h1>
-                    <p class="text-slate-400 text-[10px] md:text-sm font-medium leading-tight mt-0.5">Instant Upload & Repository Manager</p>
+                    <p class="text-slate-400 text-[10px] md:text-sm font-medium leading-tight mt-0.5">Upload, Edit & Manage Repositories</p>
                 </div>
             </div>
         </div>
 
         <div class="p-3 md:p-6 pt-3 md:pt-5 relative">
             
-            <!-- Global Security Info (Bahasa Indonesia Kept as Requested) -->
             <div class="bg-black/40 border border-amber-500/20 rounded-lg p-2.5 md:p-4 mb-4 shadow-inner relative overflow-hidden">
                 <div class="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-amber-400 to-orange-500"></div>
                 
@@ -323,12 +353,12 @@
                                 
                                 <ol class="list-decimal list-outside ml-4 space-y-2 marker:text-amber-500/70">
                                     <li>Buka halaman <a href="https://github.com/settings/tokens" target="_blank" class="text-amber-400 font-semibold hover:text-amber-300 underline underline-offset-2 transition-colors">GitHub Tokens <i class="fas fa-external-link-alt text-[8px] ml-0.5"></i></a> lalu klik tombol <strong>Generate new token (classic)</strong>.</li>
-                                    <li>Isi kolom <strong>Note</strong> (contoh: "Web Uploader") dan atur masa kedaluwarsa (Expiration) sesuai kebutuhan.</li>
+                                    <li>Isi kolom <strong>Note</strong> dan atur masa kedaluwarsa (Expiration).</li>
                                     <li>Pada bagian daftar izin (<strong>Select scopes</strong>), Anda <strong class="text-rose-400">wajib mencentang</strong> dua kotak berikut:
                                         <ul class="list-disc list-outside ml-4 mt-1.5 space-y-1.5 marker:text-rose-500/70">
                                             <li>
                                                 <code class="text-rose-300 bg-rose-950/50 border border-rose-900/50 px-1 py-0.5 rounded text-[9px] md:text-xs">repo</code> 
-                                                <span class="text-slate-500 text-[9px] md:text-xs block sm:inline sm:ml-1">Memberi akses penuh untuk mengunggah file dan membuat repositori baru.</span>
+                                                <span class="text-slate-500 text-[9px] md:text-xs block sm:inline sm:ml-1">Memberi akses penuh untuk mengedit, mengunggah file, dan membuat repositori.</span>
                                             </li>
                                             <li>
                                                 <code class="text-rose-300 bg-rose-950/50 border border-rose-900/50 px-1 py-0.5 rounded text-[9px] md:text-xs">delete_repo</code> 
@@ -336,22 +366,16 @@
                                             </li>
                                         </ul>
                                     </li>
-                                    <li>Gulir ke paling bawah halaman, lalu klik tombol hijau <strong>Generate token</strong>.</li>
-                                    <li>Salin (Copy) token yang berawalan <code class="text-emerald-300 bg-emerald-950/50 border border-emerald-900/50 px-1 py-0.5 rounded text-[9px] md:text-xs">ghp_...</code> dan tempelkan ke kolom <strong>GitHub Token</strong> di bawah ini.</li>
+                                    <li>Klik <strong>Generate token</strong> lalu salin token tersebut.</li>
                                 </ol>
-                                
-                                <div class="bg-black/50 p-2 rounded border border-white/5 mt-3 flex gap-2 items-center">
-                                    <i class="fas fa-lock text-slate-500 shrink-0"></i>
-                                    <p class="text-[9px] md:text-xs text-slate-500 leading-tight">Token Anda tidak pernah disimpan di server mana pun. Seluruh proses komunikasi dengan API GitHub dilakukan langsung dan secara lokal dari browser Anda.</p>
-                                </div>
                             </div>
                         </details>
                     </div>
                 </div>
             </div>
 
-            <!-- Global Token & Owner Setup -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3 md:gap-y-5 mb-4 pb-4 border-b border-white/5">
+            <!-- Global Setup -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3 md:gap-y-4 mb-4 pb-4 border-b border-white/5">
                 <div class="md:col-span-2 group">
                     <div class="flex justify-between items-center mb-1">
                         <label class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider group-focus-within:text-purple-400 transition-colors">GitHub Token <span class="text-rose-500">*</span></label>
@@ -374,24 +398,35 @@
                     </div>
                 </div>
                 
-                <div class="group relative md:col-span-2">
-                    <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-purple-400 transition-colors">Connected Account <span class="text-rose-500">*</span></label>
+                <div class="group relative z-50 md:col-span-1">
+                    <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-purple-400 transition-colors">Target Repo <span class="text-rose-500">*</span></label>
                     <div class="relative">
-                        <i class="fas fa-user absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs md:text-base group-focus-within:text-purple-400 transition-colors"></i>
-                        <input type="text" id="gh-owner" class="w-full py-2 md:py-3 pl-8 md:pl-11 pr-3 input-dark rounded-lg md:rounded-xl mono relative z-20" placeholder="Not loaded" disabled>
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-2 z-30">
-                            <span class="text-[9px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded border border-slate-700">Auto</span>
-                        </div>
+                        <i class="fas fa-book-journal-whills absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs md:text-base group-focus-within:text-purple-400 transition-colors z-30"></i>
+                        <input type="text" id="gh-repo" autocomplete="off" class="w-full py-2 md:py-3 pl-8 md:pl-11 pr-6 input-dark rounded-lg md:rounded-xl mono relative z-20" placeholder="repo-name...">
+                        <i class="fas fa-chevron-down absolute right-3 md:right-4 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] pointer-events-none z-30"></i>
+                        <div id="dropdown-repo" class="absolute left-0 top-full mt-1 w-full bg-[#0a0a0e] border border-purple-500/30 rounded-lg md:rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-y-auto max-h-40 hidden flex-col divide-y divide-white/5 py-1 z-50"></div>
+                    </div>
+                </div>
+
+                <div class="group relative z-40 md:col-span-1">
+                    <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-purple-400 transition-colors">Branch <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <i class="fas fa-code-branch absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs md:text-base group-focus-within:text-purple-400 transition-colors z-30"></i>
+                        <input type="text" id="gh-branch" autocomplete="off" class="w-full py-2 md:py-3 pl-8 md:pl-11 pr-6 input-dark rounded-lg md:rounded-xl mono relative z-20" placeholder="main" value="main">
+                        <i class="fas fa-chevron-down absolute right-3 md:right-4 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] pointer-events-none z-30"></i>
+                        <div id="dropdown-branch" class="absolute left-0 top-full mt-1 w-full bg-[#0a0a0e] border border-purple-500/30 rounded-lg md:rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-y-auto max-h-40 hidden flex-col divide-y divide-white/5 py-1 z-50"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Global Alert Box -->
             <div id="alert-box" class="hidden mb-4 p-2.5 md:p-4 rounded-lg md:rounded-xl text-[10px] md:text-sm font-medium border relative z-10"></div>
 
             <div class="nav-tabs mb-4 p-1">
                 <div class="nav-tab active py-2 md:py-3 text-xs md:text-sm" data-target="tab-upload">
                     <i class="fas fa-cloud-upload-alt"></i> Upload
+                </div>
+                <div class="nav-tab py-2 md:py-3 text-xs md:text-sm" data-target="tab-edit">
+                    <i class="fas fa-edit"></i> Edit Files
                 </div>
                 <div class="nav-tab py-2 md:py-3 text-xs md:text-sm" data-target="tab-manage">
                     <i class="fas fa-box-open"></i> Manage Repo
@@ -399,54 +434,37 @@
             </div>
 
             <div id="tab-upload" class="tab-content active relative z-10">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3 md:gap-y-5 mb-4">
-                    <div class="group relative z-50 md:col-span-2">
-                        <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-purple-400 transition-colors">Target Repo <span class="text-rose-500">*</span></label>
-                        <div class="relative">
-                            <i class="fas fa-book-journal-whills absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs md:text-base group-focus-within:text-purple-400 transition-colors z-30"></i>
-                            <input type="text" id="gh-repo" autocomplete="off" class="w-full py-2 md:py-3 pl-8 md:pl-11 pr-6 input-dark rounded-lg md:rounded-xl mono relative z-20" placeholder="Select or type repo...">
-                            <i class="fas fa-chevron-down absolute right-3 md:right-4 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] pointer-events-none z-30"></i>
-                            <div id="dropdown-repo" class="absolute left-0 top-full mt-1 w-full bg-[#0a0a0e] border border-purple-500/30 rounded-lg md:rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-y-auto max-h-40 hidden flex-col divide-y divide-white/5 py-1 z-50"></div>
-                        </div>
-                    </div>
-
-                    <div class="group relative z-40 md:col-span-1">
-                        <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-purple-400 transition-colors">Branch <span class="text-rose-500">*</span></label>
-                        <div class="relative">
-                            <i class="fas fa-code-branch absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs md:text-base group-focus-within:text-purple-400 transition-colors z-30"></i>
-                            <input type="text" id="gh-branch" autocomplete="off" class="w-full py-2 md:py-3 pl-8 md:pl-11 pr-6 input-dark rounded-lg md:rounded-xl mono relative z-20" placeholder="main" value="main">
-                            <i class="fas fa-chevron-down absolute right-3 md:right-4 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] pointer-events-none z-30"></i>
-                            <div id="dropdown-branch" class="absolute left-0 top-full mt-1 w-full bg-[#0a0a0e] border border-purple-500/30 rounded-lg md:rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-y-auto max-h-40 hidden flex-col divide-y divide-white/5 py-1 z-50"></div>
-                        </div>
-                    </div>
-
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3 md:gap-y-4 mb-4">
                     <div class="group relative z-20 md:col-span-1">
-                        <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-purple-400 transition-colors">Path <span class="text-[9px] md:text-[10px] text-slate-500 normal-case">(Optional)</span></label>
+                        <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-purple-400 transition-colors">Target Path <span class="text-[9px] md:text-[10px] text-slate-500 normal-case">(Optional)</span></label>
                         <div class="relative">
                             <i class="fas fa-folder-tree absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs md:text-base group-focus-within:text-purple-400 transition-colors z-30"></i>
-                            <input type="text" id="gh-path" class="w-full py-2 md:py-3 pl-8 md:pl-11 pr-3 input-dark rounded-lg md:rounded-xl mono relative z-20" placeholder="Empty = root">
+                            <input type="text" id="gh-path" class="w-full py-2 md:py-3 pl-8 md:pl-11 pr-3 input-dark rounded-lg md:rounded-xl mono relative z-20" placeholder="Empty = root directory">
                         </div>
                     </div>
-
-                    <div class="md:col-span-2 flex flex-col md:flex-row gap-2 md:gap-4 mt-1 relative z-10">
-                        <div class="flex-1 group">
-                            <div class="relative">
-                                <i class="fas fa-comment-dots absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs md:text-base group-focus-within:text-purple-400 transition-colors"></i>
-                                <input type="text" id="gh-message" class="w-full py-2 md:py-3 pl-8 md:pl-11 pr-3 input-dark rounded-lg md:rounded-xl relative z-20 text-xs md:text-sm" value="Upload files via Web Uploader">
-                            </div>
+                    
+                    <div class="group relative md:col-span-1">
+                        <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-purple-400 transition-colors">Commit Message</label>
+                        <div class="relative">
+                            <i class="fas fa-comment-dots absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs md:text-base group-focus-within:text-purple-400 transition-colors"></i>
+                            <input type="text" id="gh-message" class="w-full py-2 md:py-3 pl-8 md:pl-11 pr-3 input-dark rounded-lg md:rounded-xl relative z-20 text-xs md:text-sm" value="Upload via Web Manager">
                         </div>
-                        <button type="button" id="btn-test" class="btn-test w-full md:w-auto px-4 py-2 md:py-3 text-slate-300 font-bold rounded-lg md:rounded-xl flex items-center justify-center gap-1.5 focus:outline-none relative z-20 text-xs md:text-sm">
-                            <i class="fas fa-plug text-slate-400 text-xs"></i> <span>Test</span>
-                        </button>
                     </div>
                 </div>
 
                 <div class="flex flex-row gap-2 md:gap-4 mb-4 relative z-10 h-24 md:h-32">
+                     <div class="flex-1">
+                        <input type="file" id="input-file" multiple class="hidden">
+                        <button type="button" onclick="document.getElementById('input-file').click()" class="w-full upload-area p-2 md:p-4 rounded-lg md:rounded-xl flex flex-col items-center justify-center h-full group focus:outline-none relative">
+                            <i class="fas fa-file-circle-plus text-2xl md:text-4xl mb-1 text-blue-400 group-hover:scale-110 transition-transform"></i>
+                            <span class="font-bold text-slate-200 text-[10px] md:text-sm text-center">Select Files</span>
+                        </button>
+                    </div>
                     <div class="flex-1">
                         <input type="file" id="input-folder" webkitdirectory multiple class="hidden">
                         <button type="button" onclick="document.getElementById('input-folder').click()" class="w-full upload-area p-2 md:p-4 rounded-lg md:rounded-xl flex flex-col items-center justify-center h-full group focus:outline-none relative">
                             <i class="fas fa-folder-open text-2xl md:text-4xl mb-1 text-purple-400 group-hover:scale-110 transition-transform"></i>
-                            <span class="font-bold text-slate-200 text-[10px] md:text-sm">Select Folder</span>
+                            <span class="font-bold text-slate-200 text-[10px] md:text-sm text-center">Select Folder</span>
                         </button>
                     </div>
                     <div class="flex-1">
@@ -454,7 +472,7 @@
                         <button type="button" id="btn-zip-trigger" onclick="document.getElementById('input-zip').click()" class="w-full upload-area p-2 md:p-4 rounded-lg md:rounded-xl flex flex-col items-center justify-center h-full group focus:outline-none relative">
                             <div id="zip-content-wrap" class="flex flex-col items-center justify-center pointer-events-none">
                                 <i class="fas fa-file-zipper text-2xl md:text-4xl mb-1 text-fuchsia-400 group-hover:scale-110 transition-transform"></i>
-                                <span class="font-bold text-slate-200 text-[10px] md:text-sm">Select ZIP</span>
+                                <span class="font-bold text-slate-200 text-[10px] md:text-sm text-center">Select ZIP</span>
                             </div>
                         </button>
                     </div>
@@ -465,7 +483,7 @@
                         <div class="flex items-center gap-2">
                             <h3 class="text-[10px] md:text-xs font-bold text-slate-300 uppercase tracking-widest"><i class="fas fa-list-ul mr-1 text-purple-400"></i>Queue (<span id="file-count" class="text-purple-400">0</span>)</h3>
                             <button type="button" id="btn-clear-files" class="text-[9px] uppercase font-bold bg-rose-500/10 text-rose-400 px-2 py-0.5 rounded hover:bg-rose-500/20 transition-colors">
-                                <i class="fas fa-trash-alt"></i>
+                                <i class="fas fa-trash-alt"></i> Clear
                             </button>
                         </div>
                         <div class="flex items-center">
@@ -508,9 +526,60 @@
                 </div>
             </div>
 
+            <div id="tab-edit" class="tab-content relative z-10">
+                 <div class="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <p class="text-[10px] md:text-sm text-slate-400 font-medium">Browse and edit files in the selected repository.</p>
+                    <button type="button" id="btn-fetch-tree" class="w-full sm:w-auto btn-test px-4 py-2 text-slate-300 font-bold rounded-lg flex items-center justify-center gap-2 text-xs md:text-sm">
+                        <i class="fas fa-sitemap text-blue-400"></i> Fetch Repo Files
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <!-- File Browser Sidebar -->
+                    <div class="lg:col-span-1 bg-black/40 border border-slate-700/50 rounded-xl overflow-hidden flex flex-col h-[300px] lg:h-[450px]">
+                        <div class="bg-slate-900/80 p-2 md:p-3 border-b border-slate-700/50 font-bold text-[10px] md:text-xs text-slate-300 flex justify-between items-center">
+                            <span><i class="fas fa-folder-tree text-slate-500 mr-2"></i>Repository Tree</span>
+                            <span id="tree-loading" class="hidden"><i class="fas fa-spinner fa-spin text-blue-400"></i></span>
+                        </div>
+                        <div class="p-2 overflow-y-auto flex-1 font-mono text-[10px] md:text-xs text-slate-300" id="repo-tree-view">
+                            <div class="text-slate-500 text-center mt-10 italic">Click 'Fetch Repo Files' to view contents.</div>
+                        </div>
+                    </div>
+
+                    <!-- Editor Area -->
+                    <div class="lg:col-span-2 bg-black/40 border border-slate-700/50 rounded-xl overflow-hidden flex flex-col h-[400px] lg:h-[450px]">
+                         <div class="bg-slate-900/80 p-2 md:p-3 border-b border-slate-700/50 flex justify-between items-center">
+                             <div class="font-mono font-bold text-[10px] md:text-xs text-slate-300 truncate pr-2 flex-1 flex items-center gap-2">
+                                <i class="fas fa-file-code text-blue-400"></i>
+                                <span id="editor-file-path" class="truncate">No file selected</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="button" id="btn-delete-file" class="hidden text-[9px] md:text-xs bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 px-2 py-1 rounded border border-rose-500/30 transition-colors" title="Delete this file">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                                <button type="button" id="btn-save-file" class="hidden text-[9px] md:text-xs font-bold bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 px-3 py-1 rounded border border-blue-500/30 transition-colors flex items-center gap-1" disabled>
+                                    <i class="fas fa-save"></i> <span>Save</span>
+                                </button>
+                            </div>
+                         </div>
+                         
+                         <div class="flex-1 relative">
+                            <textarea id="file-editor" class="absolute inset-0 w-full h-full bg-[#0a0a0f] text-slate-300 font-mono text-[11px] md:text-[13px] p-3 md:p-4 resize-none focus:outline-none focus:ring-1 focus:ring-blue-500/50 disabled:opacity-50" disabled spellcheck="false" placeholder="Select a file from the tree to edit..."></textarea>
+                            
+                            <div id="editor-loading" class="absolute inset-0 bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center hidden z-10">
+                                <div class="spinner mb-2 border-t-blue-500"></div>
+                                <span class="text-blue-400 font-bold text-xs">Loading content...</span>
+                            </div>
+                         </div>
+                         <div class="bg-slate-900/50 p-2 border-t border-slate-700/50 flex gap-2" id="commit-msg-container" style="display:none;">
+                             <input type="text" id="edit-commit-msg" class="flex-1 input-dark py-1.5 px-3 rounded text-[10px] md:text-xs" placeholder="Commit message (e.g., Update index.html)">
+                         </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="tab-manage" class="tab-content relative z-10">
                 <!-- Create Repository Section -->
-                <!-- Removed overflow-hidden, applied rounded corners to gradient inner div -->
                 <div class="mb-4 md:mb-6 bg-black/30 border border-emerald-900/30 rounded-xl md:rounded-2xl p-3 md:p-5 relative">
                      <div class="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-emerald-400 to-teal-500 opacity-50 rounded-l-xl md:rounded-l-2xl"></div>
                     <h3 class="text-sm md:text-lg font-bold text-white mb-0.5 flex items-center gap-2">
@@ -552,7 +621,6 @@
                 </div>
                 
                 <!-- Delete Repository Section -->
-                <!-- Removed overflow-hidden to fix dropdown clipping bug -->
                 <div class="bg-rose-950/20 border border-rose-900/50 rounded-xl md:rounded-2xl p-3 md:p-5 relative">
                     <div class="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-rose-500 to-red-600 rounded-l-xl md:rounded-l-2xl"></div>
                     
@@ -561,7 +629,6 @@
                     </h3>
                     <p class="text-slate-400 text-[10px] md:text-xs mb-3">This action cannot be undone (Permanent).</p>
                     
-                    <!-- z-index bumped to 50 to ensure dropdown goes over bottom items -->
                     <div class="group relative z-50 mb-3">
                         <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-rose-400 transition-colors">Select Repo to Delete <span class="text-rose-500">*</span></label>
                         <div class="relative">
@@ -581,13 +648,14 @@
         </div>
     </div>
 
+    <!-- Delete Repo Modal -->
     <div id="modal-delete" class="modal-overlay">
         <div class="bg-[#0f172a] border border-rose-500/30 rounded-xl md:rounded-2xl p-4 md:p-6 w-[92%] max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.9)] transform scale-95 transition-transform duration-300" id="modal-delete-content">
             <div class="text-center mb-4">
                 <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto mb-3 border border-rose-500/20">
                     <i class="fas fa-exclamation-triangle text-2xl md:text-3xl"></i>
                 </div>
-                <h3 class="text-lg md:text-xl font-bold text-white mb-1">Confirm Deletion</h3>
+                <h3 class="text-lg md:text-xl font-bold text-white mb-1">Confirm Repo Deletion</h3>
                 <p class="text-slate-400 text-xs md:text-sm">You are about to delete the repository:</p>
                 <p class="text-rose-400 font-mono font-bold text-sm md:text-lg mt-0.5" id="modal-repo-target"></p>
                 <p class="text-slate-300 text-[10px] md:text-xs mt-3 p-2 bg-rose-950/30 rounded border border-rose-900/50">
@@ -601,6 +669,23 @@
             </div>
         </div>
     </div>
+    
+    <!-- Delete File Modal -->
+    <div id="modal-delete-file" class="modal-overlay">
+        <div class="bg-[#0f172a] border border-rose-500/30 rounded-xl p-4 w-[92%] max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.9)] transform scale-95 transition-transform duration-300" id="modal-delete-file-content">
+            <div class="text-center mb-4">
+                <h3 class="text-base font-bold text-white mb-1"><i class="fas fa-trash-alt text-rose-500 mr-2"></i>Delete File</h3>
+                <p class="text-slate-400 text-xs">Are you sure you want to delete this file from the repository?</p>
+                <p class="text-rose-400 font-mono font-bold text-[10px] md:text-xs mt-2 break-all" id="modal-file-target"></p>
+                <input type="text" id="del-file-commit-msg" class="w-full mt-3 input-dark py-1.5 px-3 rounded text-[10px] md:text-xs" placeholder="Commit message (Optional)">
+            </div>
+            
+            <div class="flex gap-2">
+                <button type="button" onclick="closeDeleteFileModal()" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-lg transition-colors text-xs">Cancel</button>
+                <button type="button" id="btn-confirm-delete-file" class="flex-1 py-2 btn-action btn-delete text-white font-bold rounded-lg text-xs">Delete File</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         let selectedFiles = []; 
@@ -610,12 +695,17 @@
         let userReposCache = [];
         let repoBranchesCache = [];
         let currentOwner = '';
+        
+        // Editor State
+        let currentTreeData = [];
+        let editingFilePath = null;
+        let editingFileSha = null;
+        let originalFileContent = "";
 
         const DOM = {
             token: document.getElementById('gh-token'),
             rememberToken: document.getElementById('remember-token'),
             toggleToken: document.getElementById('toggle-token'),
-            owner: document.getElementById('gh-owner'),
             btnLoadAccount: document.getElementById('btn-load-account'),
             userAvatar: document.getElementById('user-avatar'),
             avatarGlow: document.getElementById('avatar-glow'),
@@ -625,14 +715,16 @@
             navTabs: document.querySelectorAll('.nav-tab'),
             tabContents: document.querySelectorAll('.tab-content'),
             
-            // Upload Tab
+            // Global Settings
             repo: document.getElementById('gh-repo'),
             branch: document.getElementById('gh-branch'),
-            path: document.getElementById('gh-path'),
-            message: document.getElementById('gh-message'),
-            btnTest: document.getElementById('btn-test'),
             dropdownRepo: document.getElementById('dropdown-repo'),
             dropdownBranch: document.getElementById('dropdown-branch'),
+            
+            // Upload Tab
+            path: document.getElementById('gh-path'),
+            message: document.getElementById('gh-message'),
+            inputFile: document.getElementById('input-file'),
             inputFolder: document.getElementById('input-folder'),
             inputZip: document.getElementById('input-zip'),
             btnZipTrigger: document.getElementById('btn-zip-trigger'),
@@ -648,6 +740,18 @@
             progressPercentage: document.getElementById('progress-percentage'),
             progressDetail: document.getElementById('progress-detail'),
             
+            // Edit Tab
+            btnFetchTree: document.getElementById('btn-fetch-tree'),
+            repoTreeView: document.getElementById('repo-tree-view'),
+            treeLoading: document.getElementById('tree-loading'),
+            fileEditor: document.getElementById('file-editor'),
+            editorFilePath: document.getElementById('editor-file-path'),
+            editorLoading: document.getElementById('editor-loading'),
+            btnSaveFile: document.getElementById('btn-save-file'),
+            btnDeleteFile: document.getElementById('btn-delete-file'),
+            commitMsgContainer: document.getElementById('commit-msg-container'),
+            editCommitMsg: document.getElementById('edit-commit-msg'),
+            
             // Manage Tab
             newRepoName: document.getElementById('new-repo-name'),
             newRepoDesc: document.getElementById('new-repo-desc'),
@@ -658,17 +762,23 @@
             btnTriggerDelete: document.getElementById('btn-trigger-delete'),
             lblCreateOwner: document.getElementById('lbl-create-owner'),
             
-            // Modal
+            // Modals
             modalDelete: document.getElementById('modal-delete'),
             modalContent: document.getElementById('modal-delete-content'),
             modalTarget: document.getElementById('modal-repo-target'),
             btnCancelDel: document.getElementById('btn-cancel-delete'),
-            btnConfirmDel: document.getElementById('btn-confirm-delete')
+            btnConfirmDel: document.getElementById('btn-confirm-delete'),
+            
+            modalDeleteFile: document.getElementById('modal-delete-file'),
+            modalDelFileContent: document.getElementById('modal-delete-file-content'),
+            modalFileTarget: document.getElementById('modal-file-target'),
+            btnConfirmDelFile: document.getElementById('btn-confirm-delete-file'),
+            delFileCommitMsg: document.getElementById('del-file-commit-msg')
         };
 
         function init() {
             // Load Settings
-            const savedSettings = JSON.parse(localStorage.getItem('ghManagerSettingsV2') || '{}');
+            const savedSettings = JSON.parse(localStorage.getItem('ghManagerSettingsV3') || '{}');
             if (savedSettings.rememberToken && savedSettings.token) {
                 DOM.token.value = savedSettings.token;
                 DOM.rememberToken.checked = true;
@@ -676,7 +786,7 @@
             }
             if (savedSettings.owner) {
                 currentOwner = savedSettings.owner;
-                DOM.owner.value = currentOwner;
+                DOM.lblCreateOwner.textContent = currentOwner;
             }
             if (savedSettings.repo) DOM.repo.value = savedSettings.repo;
             if (savedSettings.branch) DOM.branch.value = savedSettings.branch;
@@ -704,17 +814,33 @@
             });
 
             // Upload Tab Events
+            DOM.inputFile.addEventListener('change', handleFileSelection);
             DOM.inputFolder.addEventListener('change', handleFolderSelection);
             DOM.inputZip.addEventListener('change', handleZipSelection);
             setupDragAndDrop();
             DOM.stripRoot.addEventListener('change', updateFileList);
             DOM.btnClearFiles.addEventListener('click', () => { selectedFiles = []; updateFileList(); });
-            DOM.btnTest.addEventListener('click', testConnection);
             DOM.btnUpload.addEventListener('click', startUpload);
+            
+            // Edit Tab Events
+            DOM.btnFetchTree.addEventListener('click', fetchRepositoryTree);
+            DOM.btnSaveFile.addEventListener('click', saveEditedFile);
+            DOM.btnDeleteFile.addEventListener('click', openDeleteFileModal);
+            DOM.btnConfirmDelFile.addEventListener('click', executeDeleteFile);
+            DOM.fileEditor.addEventListener('input', () => {
+                if(DOM.fileEditor.value !== originalFileContent) {
+                    DOM.btnSaveFile.classList.add('btn-action', 'btn-blue');
+                    DOM.btnSaveFile.classList.remove('opacity-50');
+                    DOM.btnSaveFile.disabled = false;
+                } else {
+                    DOM.btnSaveFile.classList.remove('btn-action', 'btn-blue');
+                    DOM.btnSaveFile.classList.add('opacity-50');
+                    DOM.btnSaveFile.disabled = true;
+                }
+            });
             
             // Manage Tab Events
             DOM.btnCreateRepo.addEventListener('click', createRepository);
-            
             DOM.delRepoName.addEventListener('input', () => {
                 DOM.btnTriggerDelete.disabled = DOM.delRepoName.value.trim() === '';
             });
@@ -734,7 +860,6 @@
             const saveInputs = [DOM.repo, DOM.branch, DOM.path, DOM.token, DOM.rememberToken];
             saveInputs.forEach(el => el.addEventListener('change', saveSettings));
             
-            // Try auto-load if cache exists (visuals)
             if(savedSettings.cachedRepos) userReposCache = savedSettings.cachedRepos;
         }
 
@@ -752,7 +877,7 @@
                 token: DOM.rememberToken.checked ? DOM.token.value.trim() : '',
                 cachedRepos: userReposCache
             };
-            localStorage.setItem('ghManagerSettingsV2', JSON.stringify(settings));
+            localStorage.setItem('ghManagerSettingsV3', JSON.stringify(settings));
         }
 
         function showAlert(message, type = 'error') {
@@ -780,7 +905,7 @@
             if (body) options.body = JSON.stringify(body);
 
             const res = await fetch(`https://api.github.com/${endpoint}`, options);
-            if (res.status === 204) return null; // No Content (for delete)
+            if (res.status === 204) return null; // No Content
 
             const data = await res.json().catch(() => ({}));
             if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
@@ -797,17 +922,14 @@
             DOM.btnLoadAccount.disabled = true;
             
             try {
-                // Get User
                 const user = await ghApi('user');
                 currentOwner = user.login;
-                DOM.owner.value = currentOwner;
                 DOM.lblCreateOwner.textContent = currentOwner;
                 
                 DOM.userAvatar.src = user.avatar_url;
                 DOM.avatarGlow.classList.replace('from-purple-500', 'from-emerald-400');
                 DOM.avatarGlow.classList.replace('to-fuchsia-500', 'to-cyan-400');
                 
-                // Fetching up to 100 repositories
                 const repos = await ghApi('user/repos?per_page=100&sort=updated');
                 userReposCache = repos.map(r => r.name);
                 
@@ -841,7 +963,6 @@
                     div.className = 'px-3 md:px-4 py-2 text-[10px] md:text-sm font-mono text-slate-300 hover:bg-purple-500/20 hover:text-white cursor-pointer transition-colors';
                     div.innerHTML = `<i class="fas fa-book mr-1.5 opacity-50 text-[10px]"></i>${item}`;
                     
-                    // Changed to 'click' to be more reliable on mobile devices
                     div.addEventListener('click', (e) => { 
                         e.preventDefault();
                         inputEl.value = item;
@@ -856,17 +977,18 @@
 
             inputEl.addEventListener('focus', render);
             inputEl.addEventListener('input', render);
-            
-            // Timeout fixes the bug where blur hides dropdown before click registers
-            inputEl.addEventListener('blur', () => {
-                setTimeout(() => dropdownEl.classList.add('hidden'), 200);
-            });
+            inputEl.addEventListener('blur', () => setTimeout(() => dropdownEl.classList.add('hidden'), 200));
         }
 
         async function onRepoSelected(repoName) {
             if (!currentOwner || !repoName) return;
             DOM.branch.value = 'Loading...';
             repoBranchesCache = [];
+            
+            // Reset Editor if repo changes
+            DOM.repoTreeView.innerHTML = '<div class="text-slate-500 text-center mt-10 italic">Click \'Fetch Repo Files\' to view contents.</div>';
+            resetEditor();
+            
             try {
                 const repoData = await ghApi(`repos/${currentOwner}/${repoName}`);
                 DOM.branch.value = repoData.default_branch || 'main';
@@ -876,121 +998,6 @@
             } catch (e) {
                 DOM.branch.value = 'main';
             }
-        }
-
-        async function createRepository() {
-            const name = DOM.newRepoName.value.trim();
-            if (!name) return showAlert("Repository name cannot be empty!");
-            if (!currentOwner) return showAlert("Please Load Account first.");
-
-            const desc = DOM.newRepoDesc.value.trim();
-            const isPrivate = document.querySelector('input[name="repo_privacy"]:checked').value === 'private';
-            const autoInit = DOM.newRepoInit.checked;
-
-            hideAlert();
-            const btnHtml = DOM.btnCreateRepo.innerHTML;
-            DOM.btnCreateRepo.innerHTML = `<div class="spinner"></div>`;
-            DOM.btnCreateRepo.disabled = true;
-
-            try {
-                await ghApi('user/repos', 'POST', {
-                    name: name,
-                    description: desc,
-                    private: isPrivate,
-                    auto_init: autoInit
-                });
-                
-                showAlert(`Repository <strong class="text-white">${name}</strong> successfully created!`, 'success');
-                DOM.newRepoName.value = '';
-                DOM.newRepoDesc.value = '';
-                
-                // Update memori lokal langsung tanpa nge-hit API lagi
-                if (!userReposCache.includes(name)) {
-                    userReposCache.unshift(name);
-                }
-                saveSettings();
-                
-                // (Opsional) Otomatis set repo yang baru dibuat ke kolom tab Upload
-                DOM.repo.value = name;
-                DOM.branch.value = 'main';
-                
-            } catch (error) {
-                let msg = error.message;
-                if(msg.includes('403') || msg.toLowerCase().includes('resource not accessible')) {
-                    msg = "Token missing 'repo' scope. Please create/check 'repo' scope on your token.";
-                }
-                showAlert(`Failed to create repo: ${msg}`);
-            } finally {
-                DOM.btnCreateRepo.innerHTML = btnHtml;
-                DOM.btnCreateRepo.disabled = false;
-            }
-        }
-
-        function openDeleteModal() {
-            const repo = DOM.delRepoName.value.trim();
-            if(!repo || !currentOwner) return;
-            
-            DOM.modalTarget.textContent = `${currentOwner}/${repo}`;
-            DOM.btnConfirmDel.disabled = false; 
-            
-            DOM.modalDelete.classList.add('active');
-            DOM.modalContent.classList.replace('scale-95', 'scale-100');
-        }
-
-        function closeDeleteModal() {
-            DOM.modalContent.classList.replace('scale-100', 'scale-95');
-            setTimeout(() => DOM.modalDelete.classList.remove('active'), 200);
-        }
-
-        async function executeDeleteRepository() {
-            const repo = DOM.delRepoName.value.trim();
-            if(!repo || !currentOwner) return;
-
-            const btnHtml = DOM.btnConfirmDel.innerHTML;
-            DOM.btnConfirmDel.innerHTML = `<div class="spinner border-t-white"></div>`;
-            DOM.btnConfirmDel.disabled = true;
-            DOM.btnCancelDel.disabled = true;
-
-            try {
-                await ghApi(`repos/${currentOwner}/${repo}`, 'DELETE');
-                closeDeleteModal();
-                showAlert(`Repository <strong class="text-white">${repo}</strong> successfully deleted permanently.`, 'success');
-                DOM.delRepoName.value = '';
-                DOM.btnTriggerDelete.disabled = true;
-                
-                // Hapus dari memori lokal langsung tanpa perlu load ulang API
-                userReposCache = userReposCache.filter(r => r !== repo);
-                saveSettings();
-                
-                // Jika repo yang dihapus kebetulan sedang terpilih di form Upload, kosongkan
-                if (DOM.repo.value === repo) {
-                    DOM.repo.value = '';
-                }
-            } catch (error) {
-                closeDeleteModal();
-                let msg = error.message;
-                if(msg.includes('403') || msg.toLowerCase().includes('resource not accessible')) {
-                    msg = "Token missing 'delete_repo' scope. Please check this permission when creating the token.";
-                }
-                showAlert(`Failed to delete repo: ${msg}`);
-            } finally {
-                DOM.btnConfirmDel.innerHTML = btnHtml;
-                DOM.btnCancelDel.disabled = false;
-            }
-        }
-
-        function setupDragAndDrop() {
-            const dropZone = DOM.btnZipTrigger;
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => dropZone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); }, false));
-            ['dragenter', 'dragover'].forEach(evt => dropZone.addEventListener(evt, () => dropZone.classList.add('drag-over'), false));
-            ['dragleave', 'drop'].forEach(evt => dropZone.addEventListener(evt, () => dropZone.classList.remove('drag-over'), false));
-            dropZone.addEventListener('drop', (e) => {
-                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-                    if (e.dataTransfer.files[0].name.toLowerCase().endsWith('.zip')) {
-                        handleZipSelection({ target: { files: [e.dataTransfer.files[0]] } });
-                    } else showAlert("Please drop a .zip file", "error");
-                }
-            }, false);
         }
 
         function formatBytes(bytes) {
@@ -1011,6 +1018,29 @@
                 else break;
             }
             return common.length > 0 ? common.join('/') + '/' : '';
+        }
+        
+        function blobToBase64(blob) {
+            return new Promise((res, rej) => {
+                const reader = new FileReader();
+                reader.onloadend = () => res(reader.result.split(',')[1]);
+                reader.onerror = rej;
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        async function handleFileSelection(e) {
+            if (!e.target.files.length) return;
+            selectedFiles = []; // replace current queue
+            let hasLargeFiles = false;
+            for (let f of e.target.files) {
+                if (f.size > 100 * 1024 * 1024) { hasLargeFiles = true; continue; }
+                selectedFiles.push({ originalPath: f.name, fileData: f, size: f.size, isDir: false });
+            }
+            DOM.inputFile.value = ''; 
+            if (hasLargeFiles) showAlert("Some files were skipped because they exceed 100MB limit.", "error");
+            else hideAlert();
+            updateFileList();
         }
 
         async function handleFolderSelection(e) {
@@ -1062,6 +1092,15 @@
             finally { DOM.inputZip.value = ''; DOM.btnZipTrigger.innerHTML = originalBtnHtml; }
         }
 
+        function setupDragAndDrop() {
+            const dropZones = document.querySelectorAll('.upload-area');
+            dropZones.forEach(dropZone => {
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => dropZone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); }, false));
+                ['dragenter', 'dragover'].forEach(evt => dropZone.addEventListener(evt, () => dropZone.classList.add('drag-over'), false));
+                ['dragleave', 'drop'].forEach(evt => dropZone.addEventListener(evt, () => dropZone.classList.remove('drag-over'), false));
+            });
+        }
+
         function updateFileList() {
             if (selectedFiles.length === 0) { DOM.fileSection.classList.add('hidden'); return; }
             DOM.fileSection.classList.remove('hidden');
@@ -1094,38 +1133,6 @@
         }
         window.removeFile = function(idx) { selectedFiles.splice(idx, 1); updateFileList(); };
 
-        async function testConnection() {
-            hideAlert(); saveSettings();
-            const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
-            if (!currentOwner || !repo || !branch) return showAlert("Load Account, Repo, and Branch are required.");
-
-            const btnHtml = DOM.btnTest.innerHTML;
-            DOM.btnTest.innerHTML = `<div class="spinner"></div>`;
-            DOM.btnTest.disabled = true;
-
-            try {
-                const repoData = await ghApi(`repos/${currentOwner}/${repo}`);
-                let msg = `Valid repository: <strong class="text-white">${repoData.full_name}</strong>.<br>`;
-                try {
-                    await ghApi(`repos/${currentOwner}/${repo}/branches/${branch}`);
-                    msg += `Branch <span class="text-fuchsia-300">${branch}</span> found. Ready to upload!`;
-                } catch (e) {
-                    msg += `Branch <span class="text-amber-300">${branch}</span> will be auto-created during upload.`;
-                }
-                showAlert(msg, 'success');
-            } catch (error) { showAlert(`Connection failed: ${error.message}`); } 
-            finally { DOM.btnTest.innerHTML = btnHtml; DOM.btnTest.disabled = false; }
-        }
-
-        function blobToBase64(blob) {
-            return new Promise((res, rej) => {
-                const reader = new FileReader();
-                reader.onloadend = () => res(reader.result.split(',')[1]);
-                reader.onerror = rej;
-                reader.readAsDataURL(blob);
-            });
-        }
-
         function setUpdate(text, progress) {
             DOM.progressText.textContent = text;
             DOM.progressDetail.textContent = text;
@@ -1138,7 +1145,7 @@
             if (strippedFiles.length === 0) return showAlert("No files in queue.");
             
             const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
-            if (!currentOwner || !repo || !branch) return showAlert("Load Account, Repo, and Branch are required.");
+            if (!currentOwner || !repo || !branch) return showAlert("Owner, Repo, and Branch are required. Make sure Account is loaded.");
 
             hideAlert(); isUploading = true;
             DOM.btnUpload.innerHTML = `<div class="spinner"></div> <span class="ml-2 uppercase tracking-widest text-sm relative z-10">Uploading...</span>`;
@@ -1148,7 +1155,15 @@
             try {
                 const basePath = DOM.path.value.trim().replace(/^\/|\/$/g, ''); 
                 const commitMsg = DOM.message.value.trim() || "Upload files via Web Uploader";
-                const defaultBranch = (await ghApi(`repos/${currentOwner}/${repo}`)).default_branch;
+                
+                // Get default branch info
+                let repoInfo;
+                try {
+                     repoInfo = await ghApi(`repos/${currentOwner}/${repo}`);
+                } catch(e) {
+                     throw new Error(`Repo not found or access denied: ${e.message}`);
+                }
+                const defaultBranch = repoInfo.default_branch;
 
                 setUpdate("Checking Branch...", 5);
                 let latestCommitSha, baseTreeSha, isNewBranch = false;
@@ -1170,7 +1185,7 @@
                     else if (!file.isDir) filesToUpload.push({ path: file.displayPath, blobData: file.fileData, isBinary: true });
                 }
 
-                // Upload Blobs Concurrently (Max 5 at a time to prevent rate limiting)
+                // Upload Blobs Concurrently
                 const concurrencyLimit = 5;
                 let activePromises = [], processedCount = 0;
 
@@ -1201,7 +1216,7 @@
                         });
                     }
                 }
-                await Promise.all(activePromises); // Wait for the rest
+                await Promise.all(activePromises);
 
                 setUpdate("Building Git Tree...", 92);
                 const newTree = await ghApi(`repos/${currentOwner}/${repo}/git/trees`, 'POST', { base_tree: baseTreeSha, tree: treeEntries });
@@ -1215,13 +1230,336 @@
 
                 setUpdate("Done!", 100);
                 showAlert(`Success! ${filesToUpload.length} files uploaded to <strong class="text-white">${repo}:${branch}</strong>.`, 'success');
-                setTimeout(() => { DOM.progressContainer.classList.add('hidden'); DOM.fileSection.classList.add('hidden'); selectedFiles = []; strippedFiles = []; }, 3500);
+                
+                // Reset form
+                setTimeout(() => { 
+                    DOM.progressContainer.classList.add('hidden'); 
+                    DOM.fileSection.classList.add('hidden'); 
+                    selectedFiles = []; strippedFiles = []; 
+                }, 3500);
 
-            } catch (error) { showAlert(`Failed: ${error.message}`); DOM.progressContainer.classList.add('hidden'); } 
-            finally {
+            } catch (error) { 
+                showAlert(`Failed: ${error.message}`); 
+                DOM.progressContainer.classList.add('hidden'); 
+            } finally {
                 isUploading = false;
                 DOM.btnUpload.innerHTML = `<i class="fas fa-cloud-upload-alt"></i> <span class="relative z-10">Upload to GitHub</span>`;
                 DOM.btnUpload.disabled = false;
+            }
+        }
+
+        async function fetchRepositoryTree() {
+            const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
+            if (!currentOwner || !repo || !branch) return showAlert("Owner, Repo, and Branch are required to fetch files.");
+            
+            hideAlert();
+            DOM.treeLoading.classList.remove('hidden');
+            DOM.btnFetchTree.disabled = true;
+            resetEditor();
+            
+            try {
+                // Recursive fetch tree
+                const data = await ghApi(`repos/${currentOwner}/${repo}/git/trees/${branch}?recursive=1`);
+                
+                if (data.truncated) {
+                    showAlert("Warning: Repository is too large, some files may not be visible.", "error");
+                }
+                
+                currentTreeData = data.tree.sort((a, b) => {
+                    // Folders first, then files alphabetically
+                    if (a.type === b.type) return a.path.localeCompare(b.path);
+                    return a.type === 'tree' ? -1 : 1;
+                });
+                
+                renderTree();
+                
+            } catch (error) {
+                showAlert(`Failed to fetch tree: ${error.message}`);
+                DOM.repoTreeView.innerHTML = '<div class="text-rose-500 text-center mt-10">Failed to load repository files.</div>';
+            } finally {
+                DOM.treeLoading.classList.add('hidden');
+                DOM.btnFetchTree.disabled = false;
+            }
+        }
+        
+        function renderTree() {
+            if (!currentTreeData || currentTreeData.length === 0) {
+                DOM.repoTreeView.innerHTML = '<div class="text-slate-500 text-center mt-10">Repository is empty.</div>';
+                return;
+            }
+            
+            DOM.repoTreeView.innerHTML = '';
+            
+            // Build hierarchical view (simplified flat view with indentation for now)
+            currentTreeData.forEach(item => {
+                const depth = (item.path.match(/\//g) || []).length;
+                const indent = depth * 15;
+                const name = item.path.split('/').pop();
+                
+                const div = document.createElement('div');
+                div.className = `tree-item p-1.5 flex items-center rounded my-0.5 truncate`;
+                div.style.paddingLeft = `${indent + 8}px`;
+                div.title = item.path;
+                
+                if (item.type === 'tree') {
+                    div.innerHTML = `<i class="fas fa-folder text-amber-500 mr-2 w-4 text-center"></i> <span class="truncate">${name}</span>`;
+                } else if (item.type === 'blob') {
+                    div.innerHTML = `<i class="far fa-file-code text-blue-400 mr-2 w-4 text-center"></i> <span class="truncate">${name}</span>`;
+                    div.dataset.path = item.path;
+                    div.dataset.sha = item.sha;
+                    div.addEventListener('click', () => loadFileContent(item.path, item.sha, div));
+                }
+                
+                DOM.repoTreeView.appendChild(div);
+            });
+        }
+        
+        async function loadFileContent(path, sha, element) {
+            const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
+            
+            // Highlight selected item in tree
+            document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('selected'));
+            if(element) element.classList.add('selected');
+            
+            DOM.editorFilePath.textContent = path;
+            DOM.editorLoading.classList.remove('hidden');
+            DOM.fileEditor.disabled = true;
+            DOM.btnSaveFile.classList.add('hidden');
+            DOM.btnDeleteFile.classList.add('hidden');
+            DOM.commitMsgContainer.style.display = 'none';
+            
+            try {
+                // Fetch file content via API
+                const data = await ghApi(`repos/${currentOwner}/${repo}/contents/${path}?ref=${branch}`);
+                
+                // Content is base64 encoded
+                const content = decodeURIComponent(escape(atob(data.content)));
+                
+                DOM.fileEditor.value = content;
+                originalFileContent = content;
+                editingFilePath = path;
+                editingFileSha = data.sha; // Needs to be the latest sha to update/delete
+                
+                DOM.fileEditor.disabled = false;
+                DOM.btnSaveFile.classList.remove('hidden');
+                DOM.btnSaveFile.classList.add('opacity-50');
+                DOM.btnSaveFile.disabled = true;
+                DOM.btnSaveFile.classList.remove('btn-action', 'btn-blue');
+                
+                DOM.btnDeleteFile.classList.remove('hidden');
+                DOM.commitMsgContainer.style.display = 'flex';
+                DOM.editCommitMsg.value = `Update ${path.split('/').pop()}`;
+                
+            } catch (error) {
+                showAlert(`Failed to load file: ${error.message}`);
+                resetEditor();
+            } finally {
+                DOM.editorLoading.classList.add('hidden');
+            }
+        }
+        
+        async function saveEditedFile() {
+            if (!editingFilePath || !editingFileSha) return;
+            
+            const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
+            const content = DOM.fileEditor.value;
+            const msg = DOM.editCommitMsg.value.trim() || `Update ${editingFilePath}`;
+            
+            const btnHtml = DOM.btnSaveFile.innerHTML;
+            DOM.btnSaveFile.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+            DOM.btnSaveFile.disabled = true;
+            DOM.fileEditor.disabled = true;
+            
+            try {
+                // Encode content back to base64 safely supporting utf-8
+                const base64Content = btoa(unescape(encodeURIComponent(content)));
+                
+                const body = {
+                    message: msg,
+                    content: base64Content,
+                    sha: editingFileSha,
+                    branch: branch
+                };
+                
+                const response = await ghApi(`repos/${currentOwner}/${repo}/contents/${editingFilePath}`, 'PUT', body);
+                
+                originalFileContent = content; // Update baseline
+                editingFileSha = response.content.sha; // Update SHA for subsequent edits
+                
+                showAlert(`File <strong class="text-white">${editingFilePath}</strong> saved successfully.`, 'success');
+                
+                // Update save button state
+                DOM.btnSaveFile.innerHTML = `<i class="fas fa-check"></i> <span>Saved</span>`;
+                setTimeout(() => {
+                    DOM.btnSaveFile.innerHTML = `<i class="fas fa-save"></i> <span>Save</span>`;
+                    DOM.btnSaveFile.classList.remove('btn-action', 'btn-blue');
+                    DOM.btnSaveFile.classList.add('opacity-50');
+                }, 2000);
+                
+            } catch (error) {
+                showAlert(`Failed to save file: ${error.message}`);
+                DOM.btnSaveFile.innerHTML = btnHtml;
+                DOM.btnSaveFile.disabled = false;
+            } finally {
+                DOM.fileEditor.disabled = false;
+            }
+        }
+        
+        function resetEditor() {
+            editingFilePath = null;
+            editingFileSha = null;
+            originalFileContent = "";
+            DOM.editorFilePath.textContent = "No file selected";
+            DOM.fileEditor.value = "";
+            DOM.fileEditor.disabled = true;
+            DOM.btnSaveFile.classList.add('hidden');
+            DOM.btnDeleteFile.classList.add('hidden');
+            DOM.commitMsgContainer.style.display = 'none';
+        }
+
+        // Delete File Modal
+        function openDeleteFileModal() {
+            if(!editingFilePath) return;
+            DOM.modalFileTarget.textContent = editingFilePath;
+            DOM.delFileCommitMsg.value = `Delete ${editingFilePath.split('/').pop()}`;
+            DOM.modalDeleteFile.classList.add('active');
+            DOM.modalDelFileContent.classList.replace('scale-95', 'scale-100');
+        }
+        
+        function closeDeleteFileModal() {
+            DOM.modalDelFileContent.classList.replace('scale-100', 'scale-95');
+            setTimeout(() => DOM.modalDeleteFile.classList.remove('active'), 200);
+        }
+        
+        async function executeDeleteFile() {
+             if(!editingFilePath || !editingFileSha) return;
+             
+             const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
+             const msg = DOM.delFileCommitMsg.value.trim() || `Delete ${editingFilePath}`;
+             
+             const btnHtml = DOM.btnConfirmDelFile.innerHTML;
+             DOM.btnConfirmDelFile.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Deleting...`;
+             DOM.btnConfirmDelFile.disabled = true;
+             
+             try {
+                 const body = {
+                     message: msg,
+                     sha: editingFileSha,
+                     branch: branch
+                 };
+                 
+                 await ghApi(`repos/${currentOwner}/${repo}/contents/${editingFilePath}`, 'DELETE', body);
+                 
+                 closeDeleteFileModal();
+                 showAlert(`File <strong class="text-white">${editingFilePath}</strong> deleted successfully.`, 'success');
+                 
+                 resetEditor();
+                 fetchRepositoryTree(); // Refresh the tree
+                 
+             } catch (error) {
+                 showAlert(`Failed to delete file: ${error.message}`);
+                 closeDeleteFileModal();
+             } finally {
+                 DOM.btnConfirmDelFile.innerHTML = btnHtml;
+                 DOM.btnConfirmDelFile.disabled = false;
+             }
+        }
+
+        // Manage Repo
+        async function createRepository() {
+            const name = DOM.newRepoName.value.trim();
+            if (!name) return showAlert("Repository name cannot be empty!");
+            if (!currentOwner) return showAlert("Please Load Account first.");
+
+            const desc = DOM.newRepoDesc.value.trim();
+            const isPrivate = document.querySelector('input[name="repo_privacy"]:checked').value === 'private';
+            const autoInit = DOM.newRepoInit.checked;
+
+            hideAlert();
+            const btnHtml = DOM.btnCreateRepo.innerHTML;
+            DOM.btnCreateRepo.innerHTML = `<div class="spinner"></div>`;
+            DOM.btnCreateRepo.disabled = true;
+
+            try {
+                await ghApi('user/repos', 'POST', {
+                    name: name,
+                    description: desc,
+                    private: isPrivate,
+                    auto_init: autoInit
+                });
+                
+                showAlert(`Repository <strong class="text-white">${name}</strong> successfully created!`, 'success');
+                DOM.newRepoName.value = '';
+                DOM.newRepoDesc.value = '';
+                
+                if (!userReposCache.includes(name)) {
+                    userReposCache.unshift(name);
+                }
+                saveSettings();
+                
+                DOM.repo.value = name;
+                DOM.branch.value = 'main';
+                
+            } catch (error) {
+                let msg = error.message;
+                if(msg.includes('403') || msg.toLowerCase().includes('resource not accessible')) {
+                    msg = "Token missing 'repo' scope. Please create/check 'repo' scope on your token.";
+                }
+                showAlert(`Failed to create repo: ${msg}`);
+            } finally {
+                DOM.btnCreateRepo.innerHTML = btnHtml;
+                DOM.btnCreateRepo.disabled = false;
+            }
+        }
+
+        function openDeleteModal() {
+            const repo = DOM.delRepoName.value.trim();
+            if(!repo || !currentOwner) return;
+            
+            DOM.modalTarget.textContent = `${currentOwner}/${repo}`;
+            DOM.btnConfirmDel.disabled = false; 
+            
+            DOM.modalDelete.classList.add('active');
+            DOM.modalContent.classList.replace('scale-95', 'scale-100');
+        }
+
+        function closeDeleteModal() {
+            DOM.modalContent.classList.replace('scale-100', 'scale-95');
+            setTimeout(() => DOM.modalDelete.classList.remove('active'), 200);
+        }
+
+        async function executeDeleteRepository() {
+            const repo = DOM.delRepoName.value.trim();
+            if(!repo || !currentOwner) return;
+
+            const btnHtml = DOM.btnConfirmDel.innerHTML;
+            DOM.btnConfirmDel.innerHTML = `<div class="spinner border-t-white"></div>`;
+            DOM.btnConfirmDel.disabled = true;
+            DOM.btnCancelDel.disabled = true;
+
+            try {
+                await ghApi(`repos/${currentOwner}/${repo}`, 'DELETE');
+                closeDeleteModal();
+                showAlert(`Repository <strong class="text-white">${repo}</strong> successfully deleted permanently.`, 'success');
+                DOM.delRepoName.value = '';
+                DOM.btnTriggerDelete.disabled = true;
+                
+                userReposCache = userReposCache.filter(r => r !== repo);
+                saveSettings();
+                
+                if (DOM.repo.value === repo) {
+                    DOM.repo.value = '';
+                }
+            } catch (error) {
+                closeDeleteModal();
+                let msg = error.message;
+                if(msg.includes('403') || msg.toLowerCase().includes('resource not accessible')) {
+                    msg = "Token missing 'delete_repo' scope. Please check this permission when creating the token.";
+                }
+                showAlert(`Failed to delete repo: ${msg}`);
+            } finally {
+                DOM.btnConfirmDel.innerHTML = btnHtml;
+                DOM.btnCancelDel.disabled = false;
             }
         }
 
