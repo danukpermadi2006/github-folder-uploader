@@ -329,7 +329,7 @@
             
             <div class="relative z-10 shrink-0 group cursor-pointer" title="Change Avatar" id="avatar-container">
                 <div class="absolute inset-0 bg-gradient-to-tr from-purple-500 to-fuchsia-500 rounded-full blur-[6px] md:blur-[10px] opacity-60 animate-pulse transition-opacity duration-500" id="avatar-glow"></div>
-                <img src="danuk.jpg" id="user-avatar" alt="User Avatar" class="relative w-10 h-10 md:w-16 md:h-16 rounded-full border-[2px] border-black object-cover z-10 group-hover:scale-105 transition-transform duration-300 bg-slate-900">
+                <img src="https://i.imgur.com/GDSFrlG.png" id="user-avatar" alt="User Avatar" class="relative w-10 h-10 md:w-16 md:h-16 rounded-full border-[2px] border-black object-cover z-10 group-hover:scale-105 transition-transform duration-300 bg-slate-900">
             </div>
 
             <div class="flex items-center relative z-10">
@@ -570,6 +570,9 @@
                                 <span id="editor-file-path" class="truncate">No file selected</span>
                             </div>
                             <div class="flex gap-2">
+                                <button type="button" id="btn-download-file" class="hidden text-[9px] md:text-xs bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 px-2 py-1 rounded border border-emerald-500/30 transition-colors" title="Download this file">
+                                    <i class="fas fa-download"></i>
+                                </button>
                                 <button type="button" id="btn-search-file" class="hidden text-[9px] md:text-xs bg-slate-500/20 text-slate-400 hover:bg-slate-500/30 px-2 py-1 rounded border border-slate-500/30 transition-colors" title="Search in file (Ctrl+F)">
                                     <i class="fas fa-search"></i>
                                 </button>
@@ -674,13 +677,13 @@
     </div>
 
     <!-- Social Media Footer -->
-    <div class="flex justify-center gap-6 md:gap-8 mt-2 mb-8 text-slate-500 text-2xl relative z-10">
+    <div class="flex justify-center gap-6 md:gap-8 mt-1 mb-4 text-slate-500 text-2xl relative z-10">
         <!-- Silakan ganti URL href di bawah ini dengan link sosmed Anda -->
-        <a href="https://www.tiktok.com/@danukmobilador?_r=1&_t=ZS-9A3KVzabV5T" target="_blank" class="hover:text-white transition-transform transform hover:scale-110"><i class="fab fa-tiktok"></i></a>
-        <a href="https://www.instagram.com/danukpermadi2006?stkn=MTF3ZDV0NWI0MjZ5ZQ==" target="_blank" class="hover:text-pink-500 transition-transform transform hover:scale-110"><i class="fab fa-instagram"></i></a>
-        <a href="https://youtube.com/@danukmobilador" target="_blank" class="hover:text-red-500 transition-transform transform hover:scale-110"><i class="fab fa-youtube"></i></a>
-        <a href="https://github.com/danukpermadi2006" target="_blank" class="hover:text-white transition-transform transform hover:scale-110"><i class="fab fa-github"></i></a>
-        <a href="https://wa.me/6285129769015" target="_blank" class="hover:text-green-500 transition-transform transform hover:scale-110"><i class="fab fa-whatsapp"></i></a>
+        <a href="https://tiktok.com/@username_kamu" target="_blank" class="hover:text-white transition-transform transform hover:scale-110"><i class="fab fa-tiktok"></i></a>
+        <a href="https://instagram.com/username_kamu" target="_blank" class="hover:text-pink-500 transition-transform transform hover:scale-110"><i class="fab fa-instagram"></i></a>
+        <a href="https://youtube.com/@username_kamu" target="_blank" class="hover:text-red-500 transition-transform transform hover:scale-110"><i class="fab fa-youtube"></i></a>
+        <a href="https://github.com/username_kamu" target="_blank" class="hover:text-white transition-transform transform hover:scale-110"><i class="fab fa-github"></i></a>
+        <a href="https://wa.me/6281234567890" target="_blank" class="hover:text-green-500 transition-transform transform hover:scale-110"><i class="fab fa-whatsapp"></i></a>
     </div>
 
     <!-- Delete Repo Modal -->
@@ -789,6 +792,7 @@
             
             editorFilePath: document.getElementById('editor-file-path'),
             editorLoading: document.getElementById('editor-loading'),
+            btnDownloadFile: document.getElementById('btn-download-file'),
             btnSearchFile: document.getElementById('btn-search-file'),
             btnSaveFile: document.getElementById('btn-save-file'),
             btnDeleteFile: document.getElementById('btn-delete-file'),
@@ -867,6 +871,7 @@
             
             // Edit Tab Events
             DOM.btnFetchTree.addEventListener('click', fetchRepositoryTree);
+            DOM.btnDownloadFile.addEventListener('click', downloadCurrentFile);
             DOM.btnSearchFile.addEventListener('click', () => {
                 if(aceEditor) aceEditor.execCommand("find");
             });
@@ -1392,6 +1397,7 @@
             DOM.editorFilePath.textContent = path;
             DOM.editorLoading.classList.remove('hidden');
             aceEditor.setReadOnly(true);
+            DOM.btnDownloadFile.classList.add('hidden');
             DOM.btnSearchFile.classList.add('hidden');
             DOM.btnSaveFile.classList.add('hidden');
             DOM.btnDeleteFile.classList.add('hidden');
@@ -1420,6 +1426,7 @@
                 editingFileSha = data.sha; 
                 
                 aceEditor.setReadOnly(false);
+                DOM.btnDownloadFile.classList.remove('hidden');
                 DOM.btnSearchFile.classList.remove('hidden');
                 DOM.btnSaveFile.classList.remove('hidden');
                 DOM.btnSaveFile.classList.add('opacity-50');
@@ -1498,6 +1505,7 @@
             DOM.fileEditor.style.opacity = '0';
             DOM.fileEditor.style.pointerEvents = 'none';
             
+            DOM.btnDownloadFile.classList.add('hidden');
             DOM.btnSearchFile.classList.add('hidden');
             DOM.btnSaveFile.classList.add('hidden');
             DOM.btnDeleteFile.classList.add('hidden');
@@ -1505,6 +1513,29 @@
             
             const lblRepo = document.getElementById('lbl-active-repo');
             if (lblRepo) lblRepo.textContent = "No repo selected";
+        }
+
+        function downloadCurrentFile() {
+            if (!editingFilePath) return;
+            
+            // Ambil konten dari editor (termasuk jika ada perubahan yang belum disave)
+            const content = aceEditor.getValue();
+            const filename = editingFilePath.split('/').pop();
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            
+            document.body.appendChild(a);
+            a.click();
+            
+            // Bersihkan object URL
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
         }
 
         // Delete File Modal
