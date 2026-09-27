@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub Uploader & Manager</title>
     
-    <!-- Performance Optimizations (Point 5) -->
+    <!-- Performance Optimizations -->
     <link rel="preconnect" href="https://api.github.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -199,25 +199,22 @@
 
         @keyframes shine { 100% { left: 200%; } }
 
-        .spinner { 
-            width: 16px;
-            height: 16px;
+        /* Premium Pulsing Glow Spinner */
+        .spinner-cyber {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(168, 85, 247, 0.2);
+            border-top-color: #a855f7;
             border-radius: 50%;
-            background: conic-gradient(from 0deg at 50% 50%, transparent 0%, #fff 100%);
-            animation: spin 1s linear infinite;
-            position: relative;
+            animation: spinCyber 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
         }
-        .spinner::before {
-            content: '';
-            position: absolute;
-            inset: 2px;
-            background: #000;
-            border-radius: 50%;
+        @keyframes spinCyber {
+            0% { transform: rotate(0deg) scale(1); box-shadow: 0 0 0 rgba(168, 85, 247, 0); }
+            50% { transform: rotate(180deg) scale(1.1); box-shadow: 0 0 15px rgba(168, 85, 247, 0.5); }
+            100% { transform: rotate(360deg) scale(1); box-shadow: 0 0 0 rgba(168, 85, 247, 0); }
         }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
 
         .file-list-container { max-height: 200px; overflow-y: auto; overflow-x: hidden; }
-        .repo-tree-container { max-height: 300px; overflow-y: auto; overflow-x: auto; }
         
         ::-webkit-scrollbar { width: 6px; height: 6px;}
         ::-webkit-scrollbar-track { background: #000; border-radius: 4px; }
@@ -319,11 +316,6 @@
             padding-left: 4px;
         }
         
-        #editor-container {
-            min-height: 250px;
-            max-height: 400px;
-        }
-
         #file-editor {
             overscroll-behavior: none;
         }
@@ -552,7 +544,6 @@
                         <button type="button" id="btn-upload" class="flex-1 btn-action btn-upload text-white font-bold py-2.5 md:py-4 rounded-lg md:rounded-xl flex justify-center items-center gap-2 focus:outline-none text-sm md:text-base">
                             <i class="fas fa-cloud-upload-alt"></i> Upload to GitHub
                         </button>
-                        <!-- New Cancel Button (Point 4) -->
                         <button type="button" id="btn-cancel-upload" class="hidden w-20 md:w-32 bg-slate-800 hover:bg-rose-900 border border-rose-900 text-rose-400 hover:text-rose-300 font-bold py-2.5 md:py-4 rounded-lg md:rounded-xl flex justify-center items-center gap-2 focus:outline-none text-xs md:text-sm transition-colors">
                             <i class="fas fa-times"></i> Cancel
                         </button>
@@ -562,34 +553,29 @@
 
             <!-- TAB EDIT -->
             <div id="tab-edit" class="tab-content relative z-10">
-                 <div class="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                    <p class="text-[10px] md:text-sm text-slate-400 font-medium flex-1">
-                        Browse and edit files in: <br class="sm:hidden">
-                        <span id="lbl-active-repo" class="text-blue-400 font-mono font-bold bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20 inline-block mt-1 sm:mt-0">No repo selected</span>
+                 <div class="mb-3 flex justify-between items-center gap-2">
+                    <p class="text-[10px] md:text-sm text-slate-400 font-medium truncate">
+                        Repo: <span id="lbl-active-repo" class="text-blue-400 font-mono font-bold bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20">No repo selected</span>
                     </p>
-                    <div class="w-full sm:w-auto flex gap-2">
-                        <!-- New Create File/Folder Buttons (Point 2) -->
-                        <button type="button" id="btn-new-folder" class="flex-1 sm:flex-none btn-blue px-3 py-2 text-white font-bold rounded-lg flex items-center justify-center gap-1.5 text-xs">
-                            <i class="fas fa-folder-plus"></i><span class="hidden md:inline"> Folder</span>
-                        </button>
-                        <button type="button" id="btn-new-file" class="flex-1 sm:flex-none btn-create px-3 py-2 text-white font-bold rounded-lg flex items-center justify-center gap-1.5 text-xs">
-                            <i class="fas fa-file-medical"></i><span class="hidden md:inline"> File</span>
-                        </button>
-                        <button type="button" id="btn-fetch-tree" class="flex-1 sm:flex-none btn-test px-3 py-2 text-slate-300 font-bold rounded-lg flex items-center justify-center gap-1.5 text-xs">
-                            <i class="fas fa-sitemap text-blue-400"></i><span class="hidden md:inline"> Fetch</span>
-                        </button>
-                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     <!-- File Browser Sidebar -->
-                    <div class="lg:col-span-1 bg-black/40 border border-slate-700/50 rounded-xl overflow-hidden flex flex-col h-[300px] lg:h-[450px]">
-                        <div class="bg-slate-900/80 p-2 md:p-3 border-b border-slate-700/50 font-bold text-[10px] md:text-xs text-slate-300 flex justify-between items-center">
-                            <span><i class="fas fa-folder-tree text-slate-500 mr-2"></i>Repository Tree</span>
-                            <span id="tree-loading" class="hidden"><i class="fas fa-spinner fa-spin text-blue-400"></i></span>
+                    <div class="lg:col-span-1 bg-black/40 border border-slate-700/50 rounded-xl overflow-hidden flex flex-col h-[320px] lg:h-[450px]">
+                        <div class="bg-slate-900/80 p-2.5 md:p-3 border-b border-slate-700/50 font-bold text-[10px] md:text-xs text-slate-300 flex justify-between items-center">
+                            <span class="flex items-center gap-1.5"><i class="fas fa-folder-tree text-slate-400"></i> Repository Tree</span>
+                            <div class="flex items-center gap-1">
+                                <span id="tree-loading" class="hidden mr-1"><i class="fas fa-spinner fa-spin text-blue-400"></i></span>
+                                <!-- Right-aligned Mobile-friendly Toolbar inside Tree Header -->
+                                <button type="button" id="btn-fetch-tree" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-blue-400 rounded transition" title="Fetch Repository Tree"><i class="fas fa-sitemap text-xs"></i></button>
+                                <button type="button" id="btn-new-folder" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded transition" title="Create New Folder"><i class="fas fa-folder-plus text-xs"></i></button>
+                                <button type="button" id="btn-new-file" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded transition" title="Create New File"><i class="fas fa-file-medical text-xs"></i></button>
+                                <button type="button" id="btn-tree-download" class="hidden p-1.5 bg-emerald-950/60 hover:bg-emerald-900 text-emerald-400 rounded transition border border-emerald-800/50" title="Download Selected Item"><i class="fas fa-download text-xs"></i></button>
+                                <button type="button" id="btn-tree-delete" class="hidden p-1.5 bg-rose-950/60 hover:bg-rose-900 text-rose-400 rounded transition border border-rose-800/50" title="Delete Selected Item"><i class="fas fa-trash-alt text-xs"></i></button>
+                            </div>
                         </div>
                         <div class="p-2 overflow-y-auto flex-1 font-mono text-[10px] md:text-xs text-slate-300" id="repo-tree-view">
-                            <div class="text-slate-500 text-center mt-10 italic">Click 'Fetch' to view contents.</div>
+                            <div class="text-slate-500 text-center mt-10 italic">Click the sitemap icon above to fetch files.</div>
                         </div>
                     </div>
 
@@ -601,14 +587,8 @@
                                 <span id="editor-file-path" class="truncate">No file selected</span>
                             </div>
                             <div class="flex gap-2">
-                                <button type="button" id="btn-download-file" class="hidden text-[9px] md:text-xs bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 px-2 py-1 rounded border border-emerald-500/30 transition-colors" title="Download this file">
-                                    <i class="fas fa-download"></i>
-                                </button>
                                 <button type="button" id="btn-search-file" class="hidden text-[9px] md:text-xs bg-slate-500/20 text-slate-400 hover:bg-slate-500/30 px-2 py-1 rounded border border-slate-500/30 transition-colors" title="Search in file (Ctrl+F)">
                                     <i class="fas fa-search"></i>
-                                </button>
-                                <button type="button" id="btn-delete-file" class="hidden text-[9px] md:text-xs bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 px-2 py-1 rounded border border-rose-500/30 transition-colors" title="Delete this file">
-                                    <i class="fas fa-trash-alt"></i>
                                 </button>
                                 <button type="button" id="btn-save-file" class="hidden text-[9px] md:text-xs font-bold bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 px-3 py-1 rounded border border-blue-500/30 transition-colors flex items-center gap-1" disabled>
                                     <i class="fas fa-save"></i> <span>Save</span>
@@ -618,12 +598,12 @@
                          
                          <div class="flex-1 relative bg-[#0a0a0f]">
                             <div id="editor-placeholder" class="absolute inset-0 flex items-center justify-center text-slate-600 font-mono text-[10px] md:text-xs italic select-none">
-                                Select a file from the tree to edit...
+                                Select a file from the tree to view/edit...
                             </div>
                             <div id="file-editor" class="absolute inset-0 w-full h-full opacity-0 pointer-events-none transition-opacity duration-300 z-0"></div>
                             <div id="editor-loading" class="absolute inset-0 bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center hidden z-10">
-                                <div class="spinner mb-2 border-t-blue-500"></div>
-                                <span class="text-blue-400 font-bold text-xs" id="editor-loading-text">Loading content...</span>
+                                <div class="spinner-cyber mb-3"></div>
+                                <span class="text-purple-400 font-bold text-xs tracking-wider" id="editor-loading-text">Loading content...</span>
                             </div>
                          </div>
                          <div class="bg-slate-900/50 p-2 border-t border-slate-700/50 flex gap-2" id="commit-msg-container" style="display:none;">
@@ -733,12 +713,12 @@
         </div>
     </div>
     
-    <!-- Delete File Modal -->
+    <!-- Delete File/Folder Modal -->
     <div id="modal-delete-file" class="modal-overlay">
         <div class="bg-[#0f172a] border border-rose-500/30 rounded-xl p-4 w-[92%] max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.9)] transform scale-95 transition-transform duration-300" id="modal-delete-file-content">
             <div class="text-center mb-4">
-                <h3 class="text-base font-bold text-white mb-1"><i class="fas fa-trash-alt text-rose-500 mr-2"></i>Delete File</h3>
-                <p class="text-slate-400 text-xs">Are you sure you want to delete this file?</p>
+                <h3 class="text-base font-bold text-white mb-1"><i class="fas fa-trash-alt text-rose-500 mr-2"></i>Delete Item</h3>
+                <p class="text-slate-400 text-xs">Are you sure you want to delete this item?</p>
                 <p class="text-rose-400 font-mono font-bold text-[10px] md:text-xs mt-2 break-all" id="modal-file-target"></p>
                 <input type="text" id="del-file-commit-msg" class="w-full mt-3 input-dark py-1.5 px-3 rounded text-[10px] md:text-xs" placeholder="Commit message (Optional)">
             </div>
@@ -749,7 +729,7 @@
         </div>
     </div>
 
-    <!-- Create File/Folder Modal (Point 2) -->
+    <!-- Create File/Folder Modal -->
     <div id="modal-create" class="modal-overlay">
         <div class="bg-[#0f172a] border border-blue-500/30 rounded-xl p-4 w-[92%] max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.9)] transform scale-95 transition-transform duration-300" id="modal-create-content">
             <div class="text-center mb-4">
@@ -768,7 +748,7 @@
         let selectedFiles = []; 
         let strippedFiles = []; 
         let isUploading = false;
-        let uploadAbortController = null; // Point 4: Cancel Upload Controller
+        let uploadAbortController = null;
         
         let userReposCache = [];
         let repoBranchesCache = [];
@@ -776,12 +756,13 @@
         
         // Editor State
         let currentTreeData = [];
+        let activeTreeSelection = null; // Stores selected tree node item {path, type, sha}
         let editingFilePath = null;
         let editingFileSha = null;
         let originalFileContent = "";
         let aceEditor = null; 
         
-        let pendingCreateType = 'file'; // 'file' or 'folder' (Point 2)
+        let pendingCreateType = 'file';
 
         const DOM = {
             token: document.getElementById('gh-token'),
@@ -812,7 +793,7 @@
             btnClearFiles: document.getElementById('btn-clear-files'),
             stripRoot: document.getElementById('strip-root'),
             btnUpload: document.getElementById('btn-upload'),
-            btnCancelUpload: document.getElementById('btn-cancel-upload'), // Point 4
+            btnCancelUpload: document.getElementById('btn-cancel-upload'),
             progressContainer: document.getElementById('progress-container'),
             progressBar: document.getElementById('progress-bar'),
             progressText: document.getElementById('progress-text'),
@@ -820,8 +801,10 @@
             progressDetail: document.getElementById('progress-detail'),
             
             btnFetchTree: document.getElementById('btn-fetch-tree'),
-            btnNewFile: document.getElementById('btn-new-file'), // Point 2
-            btnNewFolder: document.getElementById('btn-new-folder'), // Point 2
+            btnNewFile: document.getElementById('btn-new-file'),
+            btnNewFolder: document.getElementById('btn-new-folder'),
+            btnTreeDownload: document.getElementById('btn-tree-download'),
+            btnTreeDelete: document.getElementById('btn-tree-delete'),
             lblActiveRepo: document.getElementById('lbl-active-repo'),
             repoTreeView: document.getElementById('repo-tree-view'),
             treeLoading: document.getElementById('tree-loading'),
@@ -831,10 +814,8 @@
             editorFilePath: document.getElementById('editor-file-path'),
             editorLoading: document.getElementById('editor-loading'),
             editorLoadingText: document.getElementById('editor-loading-text'),
-            btnDownloadFile: document.getElementById('btn-download-file'),
             btnSearchFile: document.getElementById('btn-search-file'),
             btnSaveFile: document.getElementById('btn-save-file'),
-            btnDeleteFile: document.getElementById('btn-delete-file'),
             commitMsgContainer: document.getElementById('commit-msg-container'),
             editCommitMsg: document.getElementById('edit-commit-msg'),
             
@@ -867,7 +848,6 @@
         };
 
         function init() {
-            // Point 1: localStorage Token System (Untouched)
             const savedSettings = JSON.parse(localStorage.getItem('ghManagerSettingsV3') || '{}');
             if (savedSettings.rememberToken && savedSettings.token) {
                 DOM.token.value = savedSettings.token;
@@ -909,16 +889,16 @@
             DOM.btnClearFiles.addEventListener('click', () => { selectedFiles = []; updateFileList(); });
             
             DOM.btnUpload.addEventListener('click', startUpload);
-            DOM.btnCancelUpload.addEventListener('click', cancelUpload); // Point 4
+            DOM.btnCancelUpload.addEventListener('click', cancelUpload);
 
             DOM.btnFetchTree.addEventListener('click', fetchRepositoryTree);
-            DOM.btnDownloadFile.addEventListener('click', downloadCurrentFile);
+            DOM.btnTreeDownload.addEventListener('click', downloadActiveTreeSelection);
+            DOM.btnTreeDelete.addEventListener('click', promptDeleteActiveSelection);
+            
             DOM.btnSearchFile.addEventListener('click', () => { if(aceEditor) aceEditor.execCommand("find"); });
             DOM.btnSaveFile.addEventListener('click', saveEditedFile);
-            DOM.btnDeleteFile.addEventListener('click', () => openModal('modal-delete-file', 'modal-delete-file-content'));
-            DOM.btnConfirmDelFile.addEventListener('click', executeDeleteFile);
+            DOM.btnConfirmDelFile.addEventListener('click', executeDeleteSelection);
             
-            // Point 2: New File & Folder Actions
             DOM.btnNewFile.addEventListener('click', () => promptCreateItem('file'));
             DOM.btnNewFolder.addEventListener('click', () => promptCreateItem('folder'));
             DOM.btnConfirmCreate.addEventListener('click', executeCreateItem);
@@ -939,7 +919,6 @@
                 aceEditor.on('change', () => {
                     if(!editingFilePath) return;
                     const currentVal = aceEditor.getValue();
-                    // Original content is empty string when creating a new file
                     if(currentVal !== originalFileContent) {
                         DOM.btnSaveFile.classList.add('btn-action', 'btn-blue');
                         DOM.btnSaveFile.classList.remove('opacity-50');
@@ -1016,7 +995,7 @@
                 headers: { 'Accept': 'application/vnd.github.v3+json', 'Authorization': `Bearer ${token}` }
             };
             if (body) options.body = JSON.stringify(body);
-            if (signal) options.signal = signal; // Support AbortController (Point 4)
+            if (signal) options.signal = signal;
 
             const res = await fetch(`https://api.github.com/${endpoint}`, options);
             if (res.status === 204) return null; 
@@ -1026,7 +1005,6 @@
             return data;
         }
 
-        // Point 3: Paginated API call handling for large accounts/repos
         async function ghApiPaginated(endpoint) {
             const token = DOM.token.value.trim();
             if (!token) throw new Error("GitHub Token is required.");
@@ -1040,16 +1018,12 @@
                 if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
                 
                 results = results.concat(data);
-                
-                // Parse Link header for pagination
                 const linkHeader = res.headers.get('Link');
                 url = null;
                 if (linkHeader) {
                     const links = linkHeader.split(',');
                     const nextLink = links.find(link => link.includes('rel="next"'));
-                    if (nextLink) {
-                        url = nextLink.match(/<([^>]+)>/)[1];
-                    }
+                    if (nextLink) url = nextLink.match(/<([^>]+)>/)[1];
                 }
             }
             return results;
@@ -1061,7 +1035,7 @@
             
             hideAlert();
             const originalHtml = DOM.btnLoadAccount.innerHTML;
-            DOM.btnLoadAccount.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>...</span>`;
+            DOM.btnLoadAccount.innerHTML = `<div class="spinner-cyber !w-4 !h-4 mx-auto"></div>`;
             DOM.btnLoadAccount.disabled = true;
             
             try {
@@ -1072,7 +1046,6 @@
                 DOM.avatarGlow.classList.replace('from-purple-500', 'from-emerald-400');
                 DOM.avatarGlow.classList.replace('to-fuchsia-500', 'to-cyan-400');
                 
-                // Point 3: Fetching paginated repos
                 const repos = await ghApiPaginated('user/repos?per_page=100&sort=updated');
                 userReposCache = repos.map(r => r.name);
                 
@@ -1124,14 +1097,13 @@
             DOM.branch.value = 'Loading...';
             repoBranchesCache = [];
             
-            DOM.repoTreeView.innerHTML = '<div class="text-slate-500 text-center mt-10 italic">Click \'Fetch\' to view contents.</div>';
+            DOM.repoTreeView.innerHTML = '<div class="text-slate-500 text-center mt-10 italic">Click the sitemap icon to view contents.</div>';
             resetEditor();
             
             try {
                 const repoData = await ghApi(`repos/${currentOwner}/${repoName}`);
                 DOM.branch.value = repoData.default_branch || 'main';
                 
-                // Point 3: Fetching paginated branches
                 const branches = await ghApiPaginated(`repos/${currentOwner}/${repoName}/branches?per_page=100`);
                 repoBranchesCache = branches.map(b => b.name);
                 saveSettings();
@@ -1191,7 +1163,7 @@
             hideAlert();
             DOM.fileSection.classList.add('hidden');
             const originalBtnHtml = DOM.btnZipTrigger.innerHTML;
-            DOM.btnZipTrigger.innerHTML = `<div class="spinner"></div><span class="mt-3 text-fuchsia-400 font-bold text-[10px] md:text-sm z-10 relative">Extracting...</span>`;
+            DOM.btnZipTrigger.innerHTML = `<div class="spinner-cyber mb-2"></div><span class="text-fuchsia-400 font-bold text-[10px] md:text-sm z-10 relative">Extracting...</span>`;
 
             try {
                 const zip = await JSZip.loadAsync(file);
@@ -1267,7 +1239,6 @@
             DOM.progressBar.style.width = progress + '%';
         }
 
-        // Point 4: Cancel Upload Implementation
         function cancelUpload() {
             if (uploadAbortController) {
                 uploadAbortController.abort();
@@ -1288,17 +1259,17 @@
             if (!currentOwner || !repo || !branch) return showAlert("Owner, Repo, and Branch are required. Make sure Account is loaded.");
 
             hideAlert(); isUploading = true;
-            uploadAbortController = new AbortController(); // Point 4
+            uploadAbortController = new AbortController();
             const signal = uploadAbortController.signal;
 
-            DOM.btnUpload.innerHTML = `<div class="spinner"></div> <span class="ml-2 uppercase tracking-widest text-sm relative z-10">Uploading...</span>`;
+            DOM.btnUpload.innerHTML = `<div class="spinner-cyber !w-4 !h-4 inline-block mr-2 align-middle"></div> <span class="uppercase tracking-widest text-sm relative z-10">Uploading...</span>`;
             DOM.btnUpload.disabled = true;
-            DOM.btnCancelUpload.classList.remove('hidden'); // Show cancel button
+            DOM.btnCancelUpload.classList.remove('hidden');
             DOM.progressContainer.classList.remove('hidden');
             
             try {
                 const basePath = DOM.path.value.trim().replace(/^\/|\/$/g, ''); 
-                const commitMsg = DOM.message.value.trim() || "Upload files via Web Uploader";
+                const commitMsg = DOM.message.value.trim() || "Upload files via Web Manager";
                 
                 let repoInfo = await ghApi(`repos/${currentOwner}/${repo}`, 'GET', null, signal);
                 const defaultBranch = repoInfo.default_branch;
@@ -1390,7 +1361,6 @@
             }
         }
 
-        // Point 3: Advanced Tree fetching handling truncations
         async function fetchRepositoryTree() {
             const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
             if (!currentOwner || !repo || !branch) return showAlert("Owner, Repo, and Branch are required to fetch files.");
@@ -1405,10 +1375,9 @@
                 const data = await ghApi(`repos/${currentOwner}/${repo}/git/trees/${branch}?recursive=1`);
                 
                 if (data.truncated) {
-                    showAlert("Warning: Repository is very large. Some folders may be lazy-loaded when clicked.", "error"); // Point 3: UX message
+                    showAlert("Warning: Repository is very large. Some folders may be lazy-loaded when clicked.", "error");
                 }
                 
-                // Construct nested structure
                 const treeMap = {};
                 const root = [];
                 
@@ -1419,18 +1388,17 @@
                     if (parts.length === 1) {
                         root.push(item);
                     } else {
-                        parts.pop(); // remove name
+                        parts.pop();
                         const parentPath = parts.join('/');
                         if (treeMap[parentPath]) {
                             treeMap[parentPath].children.push(item);
                         } else {
-                            // If parent not in tree (rare but happens in some git trees), put to root
                             root.push(item);
                         }
                     }
                 });
                 
-                currentTreeData = data.tree; // Global cache
+                currentTreeData = data.tree;
                 DOM.repoTreeView.innerHTML = '';
                 renderTreeLevel(root, DOM.repoTreeView, 0, data.truncated);
                 
@@ -1444,7 +1412,6 @@
         }
         
         function renderTreeLevel(nodes, container, depth, isTruncated) {
-            // Sort: folders first, then files alphabetically
             nodes.sort((a, b) => {
                 if (a.type === b.type) return a.path.split('/').pop().localeCompare(b.path.split('/').pop());
                 return a.type === 'tree' ? -1 : 1;
@@ -1466,14 +1433,14 @@
                     
                     header.addEventListener('click', async (e) => {
                         e.stopPropagation();
-                        // Point 3: Lazy loading for truncated folders
+                        setActiveTreeSelection(item, header);
+                        
                         if (isTruncated && item.children.length === 0 && childrenContainer.innerHTML === '') {
                             const icon = header.querySelector('i');
                             icon.className = 'fas fa-spinner fa-spin text-amber-500 mr-2 w-4 text-center';
                             try {
                                 const repo = DOM.repo.value.trim();
                                 const subTree = await ghApi(`repos/${currentOwner}/${repo}/git/trees/${item.sha}`);
-                                // Re-map paths relative to this folder
                                 subTree.tree.forEach(subItem => {
                                     subItem.path = `${item.path}/${subItem.path}`;
                                     subItem.children = [];
@@ -1498,10 +1465,9 @@
                     
                 } else if (item.type === 'blob') {
                     header.innerHTML = `<i class="far fa-file-code text-blue-400 mr-2 w-4 text-center"></i> <span class="truncate">${name}</span>`;
-                    header.dataset.path = item.path;
-                    header.dataset.sha = item.sha;
                     header.addEventListener('click', (e) => {
                         e.stopPropagation();
+                        setActiveTreeSelection(item, header);
                         loadFileContent(item.path, item.sha, header);
                     });
                     div.appendChild(header);
@@ -1510,29 +1476,33 @@
                 container.appendChild(div);
             });
         }
+
+        function setActiveTreeSelection(item, element) {
+            document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('selected'));
+            if(element) element.classList.add('selected');
+            activeTreeSelection = item;
+            
+            // Show action buttons in tree toolbar
+            DOM.btnTreeDownload.classList.remove('hidden');
+            DOM.btnTreeDelete.classList.remove('hidden');
+        }
         
         async function loadFileContent(path, sha, element) {
-            // Point 2: Prevent loading binary files into Ace Editor
             const binaryExts = ['.png','.jpg','.jpeg','.gif','.ico','.pdf','.exe','.dll','.zip','.tar','.gz','.mp4','.mp3','.wav'];
             const isBinary = binaryExts.some(ext => path.toLowerCase().endsWith(ext));
             if(isBinary) {
-                showAlert(`Cannot edit binary file: <b>${path.split('/').pop()}</b>`, "error");
+                showAlert(`Cannot edit binary file: <b>${path.split('/').pop()}</b>. Use Download button instead.`, "error");
                 return;
             }
 
             const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
-            document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('selected'));
-            if(element) element.classList.add('selected');
-            
             DOM.editorFilePath.textContent = path;
             DOM.editorLoading.classList.remove('hidden');
-            DOM.editorLoadingText.textContent = "Loading content...";
+            DOM.editorLoadingText.textContent = "Loading file data...";
             if(aceEditor) aceEditor.setReadOnly(true);
             
-            DOM.btnDownloadFile.classList.add('hidden');
             DOM.btnSearchFile.classList.add('hidden');
             DOM.btnSaveFile.classList.add('hidden');
-            DOM.btnDeleteFile.classList.add('hidden');
             DOM.commitMsgContainer.style.display = 'none';
             
             try {
@@ -1553,14 +1523,12 @@
                 editingFileSha = data.sha; 
                 
                 aceEditor.setReadOnly(false);
-                DOM.btnDownloadFile.classList.remove('hidden');
                 DOM.btnSearchFile.classList.remove('hidden');
                 DOM.btnSaveFile.classList.remove('hidden');
                 DOM.btnSaveFile.classList.add('opacity-50');
                 DOM.btnSaveFile.disabled = true;
                 DOM.btnSaveFile.classList.remove('btn-action', 'btn-blue');
                 
-                DOM.btnDeleteFile.classList.remove('hidden');
                 DOM.commitMsgContainer.style.display = 'flex';
                 DOM.editCommitMsg.value = `Update ${path.split('/').pop()}`;
                 
@@ -1573,21 +1541,21 @@
         }
         
         async function saveEditedFile() {
-            if (!editingFilePath) return; // allows saving new file without SHA
+            if (!editingFilePath) return;
             
             const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
             const content = aceEditor.getValue();
             const msg = DOM.editCommitMsg.value.trim() || `Update ${editingFilePath.split('/').pop()}`;
             
             const btnHtml = DOM.btnSaveFile.innerHTML;
-            DOM.btnSaveFile.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+            DOM.btnSaveFile.innerHTML = `<div class="spinner-cyber !w-3 !h-3 inline-block"></div>`;
             DOM.btnSaveFile.disabled = true;
             if(aceEditor) aceEditor.setReadOnly(true);
             
             try {
                 const base64Content = btoa(unescape(encodeURIComponent(content)));
                 const body = { message: msg, content: base64Content, branch: branch };
-                if (editingFileSha) body.sha = editingFileSha; // Include sha only if editing existing
+                if (editingFileSha) body.sha = editingFileSha;
                 
                 const response = await ghApi(`repos/${currentOwner}/${repo}/contents/${editingFilePath}`, 'PUT', body);
                 
@@ -1597,7 +1565,6 @@
                 showAlert(`File <strong class="text-white">${editingFilePath}</strong> saved successfully.`, 'success');
                 DOM.btnSaveFile.innerHTML = `<i class="fas fa-check"></i> <span>Saved</span>`;
                 
-                // If it was a new file, refresh tree
                 if(!editingFileSha) fetchRepositoryTree();
 
                 setTimeout(() => {
@@ -1627,30 +1594,157 @@
             DOM.fileEditor.style.opacity = '0';
             DOM.fileEditor.style.pointerEvents = 'none';
             
-            DOM.btnDownloadFile.classList.add('hidden');
             DOM.btnSearchFile.classList.add('hidden');
             DOM.btnSaveFile.classList.add('hidden');
-            DOM.btnDeleteFile.classList.add('hidden');
             DOM.commitMsgContainer.style.display = 'none';
         }
 
-        function downloadCurrentFile() {
-            if (!editingFilePath || !aceEditor) return;
-            const content = aceEditor.getValue();
-            const filename = editingFilePath.split('/').pop();
-            const blob = new Blob([content], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
+        async function downloadActiveTreeSelection() {
+            if (!activeTreeSelection) return showAlert("Please select a file or folder from the tree first.");
+            const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
+            const item = activeTreeSelection;
+
+            DOM.editorLoading.classList.remove('hidden');
+            DOM.editorLoadingText.textContent = item.type === 'blob' ? "Downloading file..." : "Zipping folder...";
+
+            try {
+                if (item.type === 'blob') {
+                    const data = await ghApi(`repos/${currentOwner}/${repo}/contents/${item.path}?ref=${branch}`);
+                    const binaryString = atob(data.content);
+                    const len = binaryString.length;
+                    const bytes = new Uint8Array(len);
+                    for (let i = 0; i < len; i++) { bytes[i] = binaryString.charCodeAt(i); }
+                    
+                    const blob = new Blob([bytes], { type: 'application/octet-stream' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = item.path.split('/').pop();
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                } else if (item.type === 'tree') {
+                    // Download Folder as ZIP using JSZip
+                    const zip = new JSZip();
+                    const folderPrefix = item.path.endsWith('/') ? item.path : item.path + '/';
+                    
+                    // Filter all blobs starting with folderPrefix
+                    const filesToZip = currentTreeData.filter(node => node.type === 'blob' && node.path.startsWith(folderPrefix));
+                    if (filesToZip.length === 0) throw new Error("Folder is empty.");
+
+                    let fetchedCount = 0;
+                    for (let fileNode of filesToZip) {
+                        DOM.editorLoadingText.textContent = `Fetching (${++fetchedCount}/${filesToZip.length})...`;
+                        const resData = await ghApi(`repos/${currentOwner}/${repo}/contents/${fileNode.path}?ref=${branch}`);
+                        const binStr = atob(resData.content);
+                        const len = binStr.length;
+                        const bytes = new Uint8Array(len);
+                        for (let i = 0; i < len; i++) { bytes[i] = binStr.charCodeAt(i); }
+                        
+                        const relativePath = fileNode.path.substring(folderPrefix.length);
+                        zip.file(relativePath, bytes);
+                    }
+
+                    DOM.editorLoadingText.textContent = "Generating ZIP archive...";
+                    const content = await zip.generateAsync({ type: "blob" });
+                    const url = window.URL.createObjectURL(content);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `${item.path.split('/').pop()}.zip`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                }
+                showAlert(`Successfully downloaded <b>${item.path.split('/').pop()}</b>`, "success");
+            } catch (err) {
+                showAlert(`Download failed: ${err.message}`);
+            } finally {
+                DOM.editorLoading.classList.add('hidden');
+            }
         }
 
-        // Modals Management
+        function promptDeleteActiveSelection() {
+            if (!activeTreeSelection) return showAlert("Please select a file or folder from the tree first.");
+            DOM.modalFileTarget.textContent = activeTreeSelection.path;
+            DOM.delFileCommitMsg.value = `Delete ${activeTreeSelection.path}`;
+            openModal('modal-delete-file', 'modal-delete-file-content');
+        }
+
+        async function executeDeleteSelection() {
+            if (!activeTreeSelection) return;
+            const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
+            const item = activeTreeSelection;
+            const msg = DOM.delFileCommitMsg.value.trim() || `Delete ${item.path}`;
+
+            const btnHtml = DOM.btnConfirmDelFile.innerHTML;
+            DOM.btnConfirmDelFile.innerHTML = `<div class="spinner-cyber !w-4 !h-4"></div>`;
+            DOM.btnConfirmDelFile.disabled = true;
+
+            try {
+                if (item.type === 'blob') {
+                    const body = { message: msg, sha: item.sha, branch: branch };
+                    await ghApi(`repos/${currentOwner}/${repo}/contents/${item.path}`, 'DELETE', body);
+                    currentTreeData = currentTreeData.filter(node => node.path !== item.path);
+                    if (editingFilePath === item.path) resetEditor();
+                } else if (item.type === 'tree') {
+                    // Delete folder using Git Tree API (build new tree excluding items with prefix)
+                    const folderPrefix = item.path.endsWith('/') ? item.path : item.path + '/';
+                    const itemsToKeep = currentTreeData.filter(node => !(node.type === 'blob' && node.path.startsWith(folderPrefix)));
+                    
+                    const latestCommitSha = (await ghApi(`repos/${currentOwner}/${repo}/git/ref/heads/${branch}`)).object.sha;
+                    const baseTreeSha = (await ghApi(`repos/${currentOwner}/${repo}/git/commits/${latestCommitSha}`)).tree.sha;
+
+                    const treeEntries = itemsToKeep.filter(n => n.type === 'blob').map(n => ({
+                        path: n.path,
+                        mode: "100644",
+                        type: "blob",
+                        sha: n.sha
+                    }));
+
+                    const newTree = await ghApi(`repos/${currentOwner}/${repo}/git/trees`, 'POST', { base_tree: baseTreeSha, tree: treeEntries });
+                    const newCommit = await ghApi(`repos/${currentOwner}/${repo}/git/commits`, 'POST', { message: msg, tree: newTree.sha, parents: [latestCommitSha] });
+                    await ghApi(`repos/${currentOwner}/${repo}/git/refs/heads/${branch}`, 'PATCH', { sha: newCommit.sha, force: false });
+
+                    currentTreeData = itemsToKeep;
+                }
+
+                closeModal('modal-delete-file', 'modal-delete-file-content');
+                showAlert(`Successfully deleted <b>${item.path}</b>`, "success");
+                activeTreeSelection = null;
+                DOM.btnTreeDownload.classList.add('hidden');
+                DOM.btnTreeDelete.classList.add('hidden');
+                
+                // Re-render tree
+                const root = [];
+                const treeMap = {};
+                currentTreeData.forEach(node => {
+                    node.children = [];
+                    treeMap[node.path] = node;
+                    const parts = node.path.split('/');
+                    if (parts.length === 1) root.push(node);
+                    else {
+                        parts.pop();
+                        const pPath = parts.join('/');
+                        if (treeMap[pPath]) treeMap[pPath].children.push(node);
+                        else root.push(node);
+                    }
+                });
+                DOM.repoTreeView.innerHTML = '';
+                renderTreeLevel(root, DOM.repoTreeView, 0, false);
+
+            } catch (err) {
+                showAlert(`Delete failed: ${err.message}`);
+                closeModal('modal-delete-file', 'modal-delete-file-content');
+            } finally {
+                DOM.btnConfirmDelFile.innerHTML = btnHtml;
+                DOM.btnConfirmDelFile.disabled = false;
+            }
+        }
+
         function openModal(modalId, contentId) {
             document.getElementById(modalId).classList.add('active');
             document.getElementById(contentId).classList.replace('scale-95', 'scale-100');
@@ -1660,13 +1754,12 @@
             setTimeout(() => document.getElementById(modalId).classList.remove('active'), 200);
         }
 
-        // Point 2: Create New File or Folder directly from Editor UI
         function promptCreateItem(type) {
             const repo = DOM.repo.value.trim();
-            if (!currentOwner || !repo) return showAlert("Owner and Repo are required to create files.");
+            if (!currentOwner || !repo) return showAlert("Owner and Repo are required to create items.");
             pendingCreateType = type;
             DOM.modalCreateTitle.innerHTML = type === 'file' ? `<i class="fas fa-file-medical text-blue-500 mr-2"></i>Create New File` : `<i class="fas fa-folder-plus text-blue-500 mr-2"></i>Create New Folder`;
-            DOM.createItemPath.value = '';
+            DOM.createItemPath.value = activeTreeSelection && activeTreeSelection.type === 'tree' ? activeTreeSelection.path + '/' : '';
             DOM.createItemPath.placeholder = type === 'file' ? 'src/components/button.js' : 'src/new-folder';
             openModal('modal-create', 'modal-create-content');
         }
@@ -1674,33 +1767,30 @@
         async function executeCreateItem() {
             let path = DOM.createItemPath.value.trim();
             if (!path) return;
-            
             closeModal('modal-create', 'modal-create-content');
             
             if (pendingCreateType === 'folder') {
-                // To create a folder in Git, we must create a file inside it
                 path = path.replace(/\/$/, '') + '/.gitkeep';
                 DOM.editorLoading.classList.remove('hidden');
-                DOM.editorLoadingText.textContent = "Creating folder...";
+                DOM.editorLoadingText.textContent = "Creating folder structure...";
                 
                 try {
                     const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
                     const body = { message: `Create folder ${path.split('/')[0]}`, content: btoa(""), branch: branch };
                     await ghApi(`repos/${currentOwner}/${repo}/contents/${path}`, 'PUT', body);
                     showAlert(`Folder created successfully.`, 'success');
-                    fetchRepositoryTree(); // Refresh UI
+                    fetchRepositoryTree();
                 } catch(e) {
                     showAlert(`Failed to create folder: ${e.message}`);
                 } finally {
                     DOM.editorLoading.classList.add('hidden');
                 }
             } else {
-                // Open empty editor for the new file
                 resetEditor();
                 document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('selected'));
                 DOM.editorFilePath.textContent = path;
                 editingFilePath = path;
-                editingFileSha = null; // Important: null triggers create instead of update on save
+                editingFileSha = null; 
                 originalFileContent = "";
                 
                 const modelist = ace.require("ace/ext/modelist");
@@ -1714,40 +1804,15 @@
                     aceEditor.setReadOnly(false);
                 }
                 
-                DOM.btnDownloadFile.classList.remove('hidden');
                 DOM.btnSearchFile.classList.remove('hidden');
                 DOM.btnSaveFile.classList.remove('hidden');
                 DOM.btnSaveFile.classList.remove('opacity-50');
                 DOM.btnSaveFile.classList.add('btn-action', 'btn-blue');
-                DOM.btnSaveFile.disabled = false; // Enable immediately for empty new files
+                DOM.btnSaveFile.disabled = false;
                 
                 DOM.commitMsgContainer.style.display = 'flex';
                 DOM.editCommitMsg.value = `Create ${path.split('/').pop()}`;
             }
-        }
-
-        async function executeDeleteFile() {
-             if(!editingFilePath || !editingFileSha) return;
-             const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
-             const msg = DOM.delFileCommitMsg.value.trim() || `Delete ${editingFilePath}`;
-             
-             const btnHtml = DOM.btnConfirmDelFile.innerHTML;
-             DOM.btnConfirmDelFile.innerHTML = `<div class="spinner"></div>`;
-             DOM.btnConfirmDelFile.disabled = true;
-             
-             try {
-                 const body = { message: msg, sha: editingFileSha, branch: branch };
-                 await ghApi(`repos/${currentOwner}/${repo}/contents/${editingFilePath}`, 'DELETE', body);
-                 closeModal('modal-delete-file', 'modal-delete-file-content');
-                 showAlert(`File <strong class="text-white">${editingFilePath}</strong> deleted successfully.`, 'success');
-                 fetchRepositoryTree(); // Fetch to rebuild structure cleanly
-             } catch (error) {
-                 showAlert(`Failed to delete file: ${error.message}`);
-                 closeModal('modal-delete-file', 'modal-delete-file-content');
-             } finally {
-                 DOM.btnConfirmDelFile.innerHTML = btnHtml;
-                 DOM.btnConfirmDelFile.disabled = false;
-             }
         }
 
         async function createRepository() {
@@ -1761,7 +1826,7 @@
 
             hideAlert();
             const btnHtml = DOM.btnCreateRepo.innerHTML;
-            DOM.btnCreateRepo.innerHTML = `<div class="spinner"></div>`;
+            DOM.btnCreateRepo.innerHTML = `<div class="spinner-cyber !w-4 !h-4 mx-auto"></div>`;
             DOM.btnCreateRepo.disabled = true;
 
             try {
@@ -1793,7 +1858,7 @@
             if(!repo || !currentOwner) return;
 
             const btnHtml = DOM.btnConfirmDel.innerHTML;
-            DOM.btnConfirmDel.innerHTML = `<div class="spinner"></div>`;
+            DOM.btnConfirmDel.innerHTML = `<div class="spinner-cyber !w-4 !h-4 mx-auto"></div>`;
             DOM.btnConfirmDel.disabled = true;
             DOM.btnCancelDel.disabled = true;
 
@@ -1816,7 +1881,7 @@
                 showAlert(`Failed to delete repo: ${msg}`);
             } finally {
                 DOM.btnConfirmDel.innerHTML = btnHtml;
-                DOM.btnCancelDel.disabled = false;
+                DOM.btnConfirmDel.disabled = false;
             }
         }
 
