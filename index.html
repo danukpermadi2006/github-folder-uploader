@@ -5,16 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub Uploader & Manager</title>
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Performance Optimizations (Point 5) -->
+    <link rel="preconnect" href="https://api.github.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+
+    <!-- Tailwind CSS (Deferred for performance) -->
+    <script src="https://cdn.tailwindcss.com" defer></script>
     
-    <!-- JSZip -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- JSZip (Deferred) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
     
-    <!-- Ace Editor (Untuk Syntax Highlighting ala VS Code) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.2/ace.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.2/ext-modelist.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.2/ext-searchbox.js"></script>
+    <!-- Ace Editor (Deferred) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.2/ace.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.2/ext-modelist.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.2/ext-searchbox.js" defer></script>
     
     <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -227,7 +234,7 @@
             margin-bottom: 1.5rem;
             position: relative;
             z-index: 20;
-            overflow-x: auto; /* allow scroll on small screens if many tabs */
+            overflow-x: auto;
         }
         .nav-tab {
             flex: 1;
@@ -270,7 +277,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Modal Overlay for Danger Actions */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -294,7 +300,10 @@
         
         .tree-item {
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            user-select: none;
         }
         .tree-item:hover {
             background-color: rgba(255,255,255,0.05);
@@ -302,6 +311,12 @@
         .tree-item.selected {
             background-color: rgba(59, 130, 246, 0.2);
             border-left: 2px solid #3b82f6;
+            color: #fff;
+        }
+        .tree-children {
+            border-left: 1px solid rgba(255,255,255,0.1);
+            margin-left: 10px;
+            padding-left: 4px;
         }
         
         #editor-container {
@@ -309,7 +324,6 @@
             max-height: 400px;
         }
 
-        /* Mencegah scroll di dalam editor ikut me-scroll halaman secara keseluruhan */
         #file-editor {
             overscroll-behavior: none;
         }
@@ -329,7 +343,7 @@
             
             <div class="relative z-10 shrink-0 group cursor-pointer" title="Change Avatar" id="avatar-container">
                 <div class="absolute inset-0 bg-gradient-to-tr from-purple-500 to-fuchsia-500 rounded-full blur-[6px] md:blur-[10px] opacity-60 animate-pulse transition-opacity duration-500" id="avatar-glow"></div>
-                <img src="danuk.jpg" id="user-avatar" alt="User Avatar" class="relative w-10 h-10 md:w-16 md:h-16 rounded-full border-[2px] border-black object-cover z-10 group-hover:scale-105 transition-transform duration-300 bg-slate-900">
+                <img src="danuk.jpg" id="user-avatar" onerror="this.src='https://placehold.co/100x100/1e293b/a855f7?text=U'" alt="User Avatar" class="relative w-10 h-10 md:w-16 md:h-16 rounded-full border-[2px] border-black object-cover z-10 group-hover:scale-105 transition-transform duration-300 bg-slate-900">
             </div>
 
             <div class="flex items-center relative z-10">
@@ -446,6 +460,7 @@
                 </div>
             </div>
 
+            <!-- TAB UPLOAD -->
             <div id="tab-upload" class="tab-content active relative z-10">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3 md:gap-y-4 mb-4">
                     <div class="group relative z-20 md:col-span-1">
@@ -533,21 +548,37 @@
                         <p id="progress-detail" class="text-[9px] md:text-[10px] text-slate-500 mt-1 truncate font-mono"></p>
                     </div>
 
-                    <button type="button" id="btn-upload" class="w-full btn-action btn-upload text-white font-bold py-2.5 md:py-4 rounded-lg md:rounded-xl flex justify-center items-center gap-2 focus:outline-none text-sm md:text-base">
-                        <i class="fas fa-cloud-upload-alt"></i> Upload to GitHub
-                    </button>
+                    <div class="flex gap-2">
+                        <button type="button" id="btn-upload" class="flex-1 btn-action btn-upload text-white font-bold py-2.5 md:py-4 rounded-lg md:rounded-xl flex justify-center items-center gap-2 focus:outline-none text-sm md:text-base">
+                            <i class="fas fa-cloud-upload-alt"></i> Upload to GitHub
+                        </button>
+                        <!-- New Cancel Button (Point 4) -->
+                        <button type="button" id="btn-cancel-upload" class="hidden w-20 md:w-32 bg-slate-800 hover:bg-rose-900 border border-rose-900 text-rose-400 hover:text-rose-300 font-bold py-2.5 md:py-4 rounded-lg md:rounded-xl flex justify-center items-center gap-2 focus:outline-none text-xs md:text-sm transition-colors">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
                 </div>
             </div>
 
+            <!-- TAB EDIT -->
             <div id="tab-edit" class="tab-content relative z-10">
                  <div class="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                     <p class="text-[10px] md:text-sm text-slate-400 font-medium flex-1">
                         Browse and edit files in: <br class="sm:hidden">
                         <span id="lbl-active-repo" class="text-blue-400 font-mono font-bold bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20 inline-block mt-1 sm:mt-0">No repo selected</span>
                     </p>
-                    <button type="button" id="btn-fetch-tree" class="w-full sm:w-auto btn-test px-4 py-2 text-slate-300 font-bold rounded-lg flex items-center justify-center gap-2 text-xs md:text-sm">
-                        <i class="fas fa-sitemap text-blue-400"></i> Fetch Repo Files
-                    </button>
+                    <div class="w-full sm:w-auto flex gap-2">
+                        <!-- New Create File/Folder Buttons (Point 2) -->
+                        <button type="button" id="btn-new-folder" class="flex-1 sm:flex-none btn-blue px-3 py-2 text-white font-bold rounded-lg flex items-center justify-center gap-1.5 text-xs">
+                            <i class="fas fa-folder-plus"></i><span class="hidden md:inline"> Folder</span>
+                        </button>
+                        <button type="button" id="btn-new-file" class="flex-1 sm:flex-none btn-create px-3 py-2 text-white font-bold rounded-lg flex items-center justify-center gap-1.5 text-xs">
+                            <i class="fas fa-file-medical"></i><span class="hidden md:inline"> File</span>
+                        </button>
+                        <button type="button" id="btn-fetch-tree" class="flex-1 sm:flex-none btn-test px-3 py-2 text-slate-300 font-bold rounded-lg flex items-center justify-center gap-1.5 text-xs">
+                            <i class="fas fa-sitemap text-blue-400"></i><span class="hidden md:inline"> Fetch</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -558,7 +589,7 @@
                             <span id="tree-loading" class="hidden"><i class="fas fa-spinner fa-spin text-blue-400"></i></span>
                         </div>
                         <div class="p-2 overflow-y-auto flex-1 font-mono text-[10px] md:text-xs text-slate-300" id="repo-tree-view">
-                            <div class="text-slate-500 text-center mt-10 italic">Click 'Fetch Repo Files' to view contents.</div>
+                            <div class="text-slate-500 text-center mt-10 italic">Click 'Fetch' to view contents.</div>
                         </div>
                     </div>
 
@@ -586,17 +617,13 @@
                          </div>
                          
                          <div class="flex-1 relative bg-[#0a0a0f]">
-                            <!-- Placeholder saat kosong -->
                             <div id="editor-placeholder" class="absolute inset-0 flex items-center justify-center text-slate-600 font-mono text-[10px] md:text-xs italic select-none">
                                 Select a file from the tree to edit...
                             </div>
-                            
-                            <!-- Wadah untuk Ace Code Editor -->
                             <div id="file-editor" class="absolute inset-0 w-full h-full opacity-0 pointer-events-none transition-opacity duration-300 z-0"></div>
-                            
                             <div id="editor-loading" class="absolute inset-0 bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center hidden z-10">
                                 <div class="spinner mb-2 border-t-blue-500"></div>
-                                <span class="text-blue-400 font-bold text-xs">Loading content...</span>
+                                <span class="text-blue-400 font-bold text-xs" id="editor-loading-text">Loading content...</span>
                             </div>
                          </div>
                          <div class="bg-slate-900/50 p-2 border-t border-slate-700/50 flex gap-2" id="commit-msg-container" style="display:none;">
@@ -606,8 +633,8 @@
                 </div>
             </div>
 
+            <!-- TAB MANAGE -->
             <div id="tab-manage" class="tab-content relative z-10">
-                <!-- Create Repository Section -->
                 <div class="mb-4 md:mb-6 bg-black/30 border border-emerald-900/30 rounded-xl md:rounded-2xl p-3 md:p-5 relative">
                      <div class="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-emerald-400 to-teal-500 opacity-50 rounded-l-xl md:rounded-l-2xl"></div>
                     <h3 class="text-sm md:text-lg font-bold text-white mb-0.5 flex items-center gap-2">
@@ -648,7 +675,6 @@
                     </button>
                 </div>
                 
-                <!-- Delete Repository Section -->
                 <div class="bg-rose-950/20 border border-rose-900/50 rounded-xl md:rounded-2xl p-3 md:p-5 relative">
                     <div class="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-rose-500 to-red-600 rounded-l-xl md:rounded-l-2xl"></div>
                     
@@ -678,7 +704,6 @@
 
     <!-- Social Media Footer -->
     <div class="flex justify-center gap-6 md:gap-8 mt-1 mb-4 text-slate-500 text-2xl relative z-10">
-        <!-- Silakan ganti URL href di bawah ini dengan link sosmed Anda -->
         <a href="https://www.tiktok.com/@danukmobilador?_r=1&_t=ZS-9A3KVzabV5T" target="_blank" class="hover:text-white transition-transform transform hover:scale-110"><i class="fab fa-tiktok"></i></a>
         <a href="https://www.instagram.com/danukpermadi2006?stkn=MTF3ZDV0NWI0MjZ5ZQ==" target="_blank" class="hover:text-pink-500 transition-transform transform hover:scale-110"><i class="fab fa-instagram"></i></a>
         <a href="https://youtube.com/@danukmobilador" target="_blank" class="hover:text-red-500 transition-transform transform hover:scale-110"><i class="fab fa-youtube"></i></a>
@@ -713,14 +738,28 @@
         <div class="bg-[#0f172a] border border-rose-500/30 rounded-xl p-4 w-[92%] max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.9)] transform scale-95 transition-transform duration-300" id="modal-delete-file-content">
             <div class="text-center mb-4">
                 <h3 class="text-base font-bold text-white mb-1"><i class="fas fa-trash-alt text-rose-500 mr-2"></i>Delete File</h3>
-                <p class="text-slate-400 text-xs">Are you sure you want to delete this file from the repository?</p>
+                <p class="text-slate-400 text-xs">Are you sure you want to delete this file?</p>
                 <p class="text-rose-400 font-mono font-bold text-[10px] md:text-xs mt-2 break-all" id="modal-file-target"></p>
                 <input type="text" id="del-file-commit-msg" class="w-full mt-3 input-dark py-1.5 px-3 rounded text-[10px] md:text-xs" placeholder="Commit message (Optional)">
             </div>
-            
             <div class="flex gap-2">
-                <button type="button" onclick="closeDeleteFileModal()" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-lg transition-colors text-xs">Cancel</button>
-                <button type="button" id="btn-confirm-delete-file" class="flex-1 flex justify-center items-center py-2 btn-action btn-delete text-white font-bold rounded-lg text-xs">Delete File</button>
+                <button type="button" onclick="closeModal('modal-delete-file', 'modal-delete-file-content')" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-lg transition-colors text-xs">Cancel</button>
+                <button type="button" id="btn-confirm-delete-file" class="flex-1 flex justify-center items-center py-2 btn-action btn-delete text-white font-bold rounded-lg text-xs">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create File/Folder Modal (Point 2) -->
+    <div id="modal-create" class="modal-overlay">
+        <div class="bg-[#0f172a] border border-blue-500/30 rounded-xl p-4 w-[92%] max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.9)] transform scale-95 transition-transform duration-300" id="modal-create-content">
+            <div class="text-center mb-4">
+                <h3 class="text-base font-bold text-white mb-1" id="modal-create-title"><i class="fas fa-plus text-blue-500 mr-2"></i>Create Items</h3>
+                <p class="text-slate-400 text-[10px] md:text-xs text-left mb-1">Enter path (e.g., <code class="bg-black px-1 rounded text-blue-300">src/components/button.js</code>)</p>
+                <input type="text" id="create-item-path" class="w-full input-dark py-2 px-3 rounded text-xs mono" placeholder="path/to/item">
+            </div>
+            <div class="flex gap-2">
+                <button type="button" onclick="closeModal('modal-create', 'modal-create-content')" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-lg transition-colors text-xs">Cancel</button>
+                <button type="button" id="btn-confirm-create" class="flex-1 flex justify-center items-center py-2 btn-action btn-blue text-white font-bold rounded-lg text-xs">Create</button>
             </div>
         </div>
     </div>
@@ -729,6 +768,7 @@
         let selectedFiles = []; 
         let strippedFiles = []; 
         let isUploading = false;
+        let uploadAbortController = null; // Point 4: Cancel Upload Controller
         
         let userReposCache = [];
         let repoBranchesCache = [];
@@ -739,7 +779,9 @@
         let editingFilePath = null;
         let editingFileSha = null;
         let originalFileContent = "";
-        let aceEditor = null; // Variabel global untuk Code Editor
+        let aceEditor = null; 
+        
+        let pendingCreateType = 'file'; // 'file' or 'folder' (Point 2)
 
         const DOM = {
             token: document.getElementById('gh-token'),
@@ -750,17 +792,14 @@
             avatarGlow: document.getElementById('avatar-glow'),
             alertBox: document.getElementById('alert-box'),
             
-            // Tab Elements
             navTabs: document.querySelectorAll('.nav-tab'),
             tabContents: document.querySelectorAll('.tab-content'),
             
-            // Global Settings
             repo: document.getElementById('gh-repo'),
             branch: document.getElementById('gh-branch'),
             dropdownRepo: document.getElementById('dropdown-repo'),
             dropdownBranch: document.getElementById('dropdown-branch'),
             
-            // Upload Tab
             path: document.getElementById('gh-path'),
             message: document.getElementById('gh-message'),
             inputFile: document.getElementById('input-file'),
@@ -773,25 +812,25 @@
             btnClearFiles: document.getElementById('btn-clear-files'),
             stripRoot: document.getElementById('strip-root'),
             btnUpload: document.getElementById('btn-upload'),
+            btnCancelUpload: document.getElementById('btn-cancel-upload'), // Point 4
             progressContainer: document.getElementById('progress-container'),
             progressBar: document.getElementById('progress-bar'),
             progressText: document.getElementById('progress-text'),
             progressPercentage: document.getElementById('progress-percentage'),
             progressDetail: document.getElementById('progress-detail'),
             
-            // Edit Tab
             btnFetchTree: document.getElementById('btn-fetch-tree'),
-            editActiveRepoBadge: document.getElementById('edit-active-repo-badge'),
-            lblEditRepo: document.getElementById('lbl-edit-repo'),
+            btnNewFile: document.getElementById('btn-new-file'), // Point 2
+            btnNewFolder: document.getElementById('btn-new-folder'), // Point 2
+            lblActiveRepo: document.getElementById('lbl-active-repo'),
             repoTreeView: document.getElementById('repo-tree-view'),
             treeLoading: document.getElementById('tree-loading'),
             
-            // Perubahan elemen editor
             editorPlaceholder: document.getElementById('editor-placeholder'),
-            fileEditor: document.getElementById('file-editor'), // Code Editor Container
-            
+            fileEditor: document.getElementById('file-editor'),
             editorFilePath: document.getElementById('editor-file-path'),
             editorLoading: document.getElementById('editor-loading'),
+            editorLoadingText: document.getElementById('editor-loading-text'),
             btnDownloadFile: document.getElementById('btn-download-file'),
             btnSearchFile: document.getElementById('btn-search-file'),
             btnSaveFile: document.getElementById('btn-save-file'),
@@ -799,7 +838,6 @@
             commitMsgContainer: document.getElementById('commit-msg-container'),
             editCommitMsg: document.getElementById('edit-commit-msg'),
             
-            // Manage Tab
             newRepoName: document.getElementById('new-repo-name'),
             newRepoDesc: document.getElementById('new-repo-desc'),
             newRepoInit: document.getElementById('new-repo-init'),
@@ -809,7 +847,6 @@
             btnTriggerDelete: document.getElementById('btn-trigger-delete'),
             lblCreateOwner: document.getElementById('lbl-create-owner'),
             
-            // Modals
             modalDelete: document.getElementById('modal-delete'),
             modalContent: document.getElementById('modal-delete-content'),
             modalTarget: document.getElementById('modal-repo-target'),
@@ -820,11 +857,17 @@
             modalDelFileContent: document.getElementById('modal-delete-file-content'),
             modalFileTarget: document.getElementById('modal-file-target'),
             btnConfirmDelFile: document.getElementById('btn-confirm-delete-file'),
-            delFileCommitMsg: document.getElementById('del-file-commit-msg')
+            delFileCommitMsg: document.getElementById('del-file-commit-msg'),
+            
+            modalCreate: document.getElementById('modal-create'),
+            modalCreateContent: document.getElementById('modal-create-content'),
+            modalCreateTitle: document.getElementById('modal-create-title'),
+            createItemPath: document.getElementById('create-item-path'),
+            btnConfirmCreate: document.getElementById('btn-confirm-create')
         };
 
         function init() {
-            // Load Settings
+            // Point 1: localStorage Token System (Untouched)
             const savedSettings = JSON.parse(localStorage.getItem('ghManagerSettingsV3') || '{}');
             if (savedSettings.rememberToken && savedSettings.token) {
                 DOM.token.value = savedSettings.token;
@@ -839,7 +882,6 @@
             if (savedSettings.branch) DOM.branch.value = savedSettings.branch;
             if (savedSettings.path) DOM.path.value = savedSettings.path;
 
-            // Events Global
             DOM.toggleToken.addEventListener('click', () => {
                 const isPass = DOM.token.type === 'password';
                 DOM.token.type = isPass ? 'text' : 'password';
@@ -849,7 +891,6 @@
             DOM.token.addEventListener('input', checkTokenLength);
             DOM.btnLoadAccount.addEventListener('click', loadAccountData);
 
-            // Tab Navigation
             DOM.navTabs.forEach(tab => {
                 tab.addEventListener('click', () => {
                     DOM.navTabs.forEach(t => t.classList.remove('active'));
@@ -860,65 +901,72 @@
                 });
             });
 
-            // Upload Tab Events
             DOM.inputFile.addEventListener('change', handleFileSelection);
             DOM.inputFolder.addEventListener('change', handleFolderSelection);
             DOM.inputZip.addEventListener('change', handleZipSelection);
             setupDragAndDrop();
             DOM.stripRoot.addEventListener('change', updateFileList);
             DOM.btnClearFiles.addEventListener('click', () => { selectedFiles = []; updateFileList(); });
-            DOM.btnUpload.addEventListener('click', startUpload);
             
-            // Edit Tab Events
+            DOM.btnUpload.addEventListener('click', startUpload);
+            DOM.btnCancelUpload.addEventListener('click', cancelUpload); // Point 4
+
             DOM.btnFetchTree.addEventListener('click', fetchRepositoryTree);
             DOM.btnDownloadFile.addEventListener('click', downloadCurrentFile);
-            DOM.btnSearchFile.addEventListener('click', () => {
-                if(aceEditor) aceEditor.execCommand("find");
-            });
+            DOM.btnSearchFile.addEventListener('click', () => { if(aceEditor) aceEditor.execCommand("find"); });
             DOM.btnSaveFile.addEventListener('click', saveEditedFile);
-            DOM.btnDeleteFile.addEventListener('click', openDeleteFileModal);
+            DOM.btnDeleteFile.addEventListener('click', () => openModal('modal-delete-file', 'modal-delete-file-content'));
             DOM.btnConfirmDelFile.addEventListener('click', executeDeleteFile);
             
-            // Inisialisasi Ace Editor (Visual Studio Code clone)
-            ace.config.set('basePath', 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.2/');
-            aceEditor = ace.edit("file-editor");
-            aceEditor.setTheme("ace/theme/one_dark"); // Tema gelap keren
-            aceEditor.setOptions({
-                fontSize: window.innerWidth < 768 ? "11px" : "13px",
-                fontFamily: "'JetBrains Mono', monospace",
-                wrap: true, // Otomatis turun ke bawah kalau kepanjangan (Prettier-like visual)
-                showPrintMargin: false,
-                readOnly: true,
-                useWorker: false // Matikan syntax checker bawaan untuk mencegah error worker silang domain
-            });
+            // Point 2: New File & Folder Actions
+            DOM.btnNewFile.addEventListener('click', () => promptCreateItem('file'));
+            DOM.btnNewFolder.addEventListener('click', () => promptCreateItem('folder'));
+            DOM.btnConfirmCreate.addEventListener('click', executeCreateItem);
             
-            // Event listener saat kode diedit
-            aceEditor.on('change', () => {
-                if(!editingFilePath) return;
-                const currentVal = aceEditor.getValue();
-                if(currentVal !== originalFileContent) {
-                    DOM.btnSaveFile.classList.add('btn-action', 'btn-blue');
-                    DOM.btnSaveFile.classList.remove('opacity-50');
-                    DOM.btnSaveFile.disabled = false;
-                } else {
-                    DOM.btnSaveFile.classList.remove('btn-action', 'btn-blue');
-                    DOM.btnSaveFile.classList.add('opacity-50');
-                    DOM.btnSaveFile.disabled = true;
-                }
-            });
+            if (window.ace) {
+                ace.config.set('basePath', 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.2/');
+                aceEditor = ace.edit("file-editor");
+                aceEditor.setTheme("ace/theme/one_dark");
+                aceEditor.setOptions({
+                    fontSize: window.innerWidth < 768 ? "11px" : "13px",
+                    fontFamily: "'JetBrains Mono', monospace",
+                    wrap: true,
+                    showPrintMargin: false,
+                    readOnly: true,
+                    useWorker: false 
+                });
+                
+                aceEditor.on('change', () => {
+                    if(!editingFilePath) return;
+                    const currentVal = aceEditor.getValue();
+                    // Original content is empty string when creating a new file
+                    if(currentVal !== originalFileContent) {
+                        DOM.btnSaveFile.classList.add('btn-action', 'btn-blue');
+                        DOM.btnSaveFile.classList.remove('opacity-50');
+                        DOM.btnSaveFile.disabled = false;
+                    } else {
+                        DOM.btnSaveFile.classList.remove('btn-action', 'btn-blue');
+                        DOM.btnSaveFile.classList.add('opacity-50');
+                        DOM.btnSaveFile.disabled = true;
+                    }
+                });
+            }
             
-            // Manage Tab Events
             DOM.btnCreateRepo.addEventListener('click', createRepository);
             DOM.delRepoName.addEventListener('input', () => {
                 DOM.btnTriggerDelete.disabled = DOM.delRepoName.value.trim() === '';
             });
-            DOM.btnTriggerDelete.addEventListener('click', openDeleteModal);
+            DOM.btnTriggerDelete.addEventListener('click', () => {
+                const repo = DOM.delRepoName.value.trim();
+                if(!repo || !currentOwner) return;
+                DOM.modalTarget.textContent = `${currentOwner}/${repo}`;
+                DOM.btnConfirmDel.disabled = false; 
+                openModal('modal-delete', 'modal-delete-content');
+            });
             
-            // Modal Events
-            DOM.btnCancelDel.addEventListener('click', closeDeleteModal);
+            DOM.btnCancelDel.addEventListener('click', () => closeModal('modal-delete', 'modal-delete-content'));
             DOM.btnConfirmDel.addEventListener('click', executeDeleteRepository);
 
-            // Setup Autocomplete
             setupAutocomplete(DOM.repo, DOM.dropdownRepo, () => userReposCache, onRepoSelected);
             setupAutocomplete(DOM.branch, DOM.dropdownBranch, () => repoBranchesCache);
             setupAutocomplete(DOM.delRepoName, DOM.dropdownDelRepo, () => userReposCache, (repo) => {
@@ -955,14 +1003,11 @@
             }`;
             DOM.alertBox.innerHTML = `<div class="mt-0.5"><i class="fas ${type === 'error' ? 'fa-times-circle' : 'fa-check-circle'} text-sm md:text-base"></i></div><div class="leading-relaxed flex-1">${message}</div>`;
             DOM.alertBox.classList.remove('hidden');
-            
-            if (type === 'success') {
-                setTimeout(hideAlert, 7000); 
-            }
+            if (type === 'success') setTimeout(hideAlert, 7000); 
         }
         function hideAlert() { DOM.alertBox.classList.add('hidden'); }
 
-        async function ghApi(endpoint, method = 'GET', body = null) {
+        async function ghApi(endpoint, method = 'GET', body = null, signal = null) {
             const token = DOM.token.value.trim();
             if (!token) throw new Error("GitHub Token is required.");
 
@@ -971,13 +1016,43 @@
                 headers: { 'Accept': 'application/vnd.github.v3+json', 'Authorization': `Bearer ${token}` }
             };
             if (body) options.body = JSON.stringify(body);
+            if (signal) options.signal = signal; // Support AbortController (Point 4)
 
             const res = await fetch(`https://api.github.com/${endpoint}`, options);
-            if (res.status === 204) return null; // No Content
+            if (res.status === 204) return null; 
 
             const data = await res.json().catch(() => ({}));
             if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
             return data;
+        }
+
+        // Point 3: Paginated API call handling for large accounts/repos
+        async function ghApiPaginated(endpoint) {
+            const token = DOM.token.value.trim();
+            if (!token) throw new Error("GitHub Token is required.");
+            
+            let results = [];
+            let url = `https://api.github.com/${endpoint}`;
+            
+            while(url) {
+                const res = await fetch(url, { headers: { 'Accept': 'application/vnd.github.v3+json', 'Authorization': `Bearer ${token}` } });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
+                
+                results = results.concat(data);
+                
+                // Parse Link header for pagination
+                const linkHeader = res.headers.get('Link');
+                url = null;
+                if (linkHeader) {
+                    const links = linkHeader.split(',');
+                    const nextLink = links.find(link => link.includes('rel="next"'));
+                    if (nextLink) {
+                        url = nextLink.match(/<([^>]+)>/)[1];
+                    }
+                }
+            }
+            return results;
         }
 
         async function loadAccountData() {
@@ -993,17 +1068,16 @@
                 const user = await ghApi('user');
                 currentOwner = user.login;
                 DOM.lblCreateOwner.textContent = currentOwner;
-                
                 DOM.userAvatar.src = user.avatar_url;
                 DOM.avatarGlow.classList.replace('from-purple-500', 'from-emerald-400');
                 DOM.avatarGlow.classList.replace('to-fuchsia-500', 'to-cyan-400');
                 
-                const repos = await ghApi('user/repos?per_page=100&sort=updated');
+                // Point 3: Fetching paginated repos
+                const repos = await ghApiPaginated('user/repos?per_page=100&sort=updated');
                 userReposCache = repos.map(r => r.name);
                 
                 showAlert(`Connected as <strong>${currentOwner}</strong>. Loaded ${repos.length} repositories.`, 'success');
                 saveSettings();
-                
             } catch (err) {
                 showAlert('Failed to load account. Make sure the token is valid. ' + err.message);
             } finally {
@@ -1021,10 +1095,7 @@
                 const filtered = items.filter(item => item.toLowerCase().includes(query));
                 
                 dropdownEl.innerHTML = '';
-                if (filtered.length === 0) {
-                    dropdownEl.classList.add('hidden');
-                    return;
-                }
+                if (filtered.length === 0) return dropdownEl.classList.add('hidden');
                 
                 filtered.forEach(item => {
                     const div = document.createElement('div');
@@ -1053,15 +1124,15 @@
             DOM.branch.value = 'Loading...';
             repoBranchesCache = [];
             
-            // Reset Editor if repo changes
-            DOM.repoTreeView.innerHTML = '<div class="text-slate-500 text-center mt-10 italic">Click \'Fetch Repo Files\' to view contents.</div>';
-            if (DOM.editActiveRepoBadge) DOM.editActiveRepoBadge.classList.add('hidden');
+            DOM.repoTreeView.innerHTML = '<div class="text-slate-500 text-center mt-10 italic">Click \'Fetch\' to view contents.</div>';
             resetEditor();
             
             try {
                 const repoData = await ghApi(`repos/${currentOwner}/${repoName}`);
                 DOM.branch.value = repoData.default_branch || 'main';
-                const branches = await ghApi(`repos/${currentOwner}/${repoName}/branches?per_page=100`);
+                
+                // Point 3: Fetching paginated branches
+                const branches = await ghApiPaginated(`repos/${currentOwner}/${repoName}/branches?per_page=100`);
                 repoBranchesCache = branches.map(b => b.name);
                 saveSettings();
             } catch (e) {
@@ -1098,33 +1169,21 @@
             });
         }
 
-        async function handleFileSelection(e) {
-            if (!e.target.files.length) return;
-            selectedFiles = []; // replace current queue
+        function filterFiles(filesList, isWebKitDir = false) {
+            selectedFiles = [];
             let hasLargeFiles = false;
-            for (let f of e.target.files) {
+            for (let f of filesList) {
                 if (f.size > 100 * 1024 * 1024) { hasLargeFiles = true; continue; }
-                selectedFiles.push({ originalPath: f.name, fileData: f, size: f.size, isDir: false });
+                const path = isWebKitDir ? f.webkitRelativePath : f.name;
+                selectedFiles.push({ originalPath: path, fileData: f, size: f.size, isDir: false });
             }
-            DOM.inputFile.value = ''; 
             if (hasLargeFiles) showAlert("Some files were skipped because they exceed 100MB limit.", "error");
             else hideAlert();
             updateFileList();
         }
 
-        async function handleFolderSelection(e) {
-            if (!e.target.files.length) return;
-            selectedFiles = [];
-            let hasLargeFiles = false;
-            for (let f of e.target.files) {
-                if (f.size > 100 * 1024 * 1024) { hasLargeFiles = true; continue; }
-                selectedFiles.push({ originalPath: f.webkitRelativePath, fileData: f, size: f.size, isDir: false });
-            }
-            DOM.inputFolder.value = ''; 
-            if (hasLargeFiles) showAlert("Some files were skipped because they exceed 100MB limit.", "error");
-            else hideAlert();
-            updateFileList();
-        }
+        function handleFileSelection(e) { if(e.target.files.length) filterFiles(e.target.files, false); DOM.inputFile.value = ''; }
+        function handleFolderSelection(e) { if(e.target.files.length) filterFiles(e.target.files, true); DOM.inputFolder.value = ''; }
 
         async function handleZipSelection(e) {
             const file = e.target.files[0];
@@ -1153,9 +1212,8 @@
                         );
                     }
                 });
-
                 await Promise.all(promises);
-                if (hasLargeFiles) showAlert("Some files in ZIP were skipped because they exceed 100MB limit.", "error");
+                if (hasLargeFiles) showAlert("Some files in ZIP were skipped (max 100MB limit).", "error");
                 updateFileList();
             } catch (err) { showAlert("Failed to read ZIP: " + err.message); } 
             finally { DOM.inputZip.value = ''; DOM.btnZipTrigger.innerHTML = originalBtnHtml; }
@@ -1209,6 +1267,19 @@
             DOM.progressBar.style.width = progress + '%';
         }
 
+        // Point 4: Cancel Upload Implementation
+        function cancelUpload() {
+            if (uploadAbortController) {
+                uploadAbortController.abort();
+                isUploading = false;
+                DOM.progressContainer.classList.add('hidden');
+                DOM.btnCancelUpload.classList.add('hidden');
+                DOM.btnUpload.innerHTML = `<i class="fas fa-cloud-upload-alt"></i> <span class="relative z-10">Upload to GitHub</span>`;
+                DOM.btnUpload.disabled = false;
+                showAlert("Upload aborted by user.", "error");
+            }
+        }
+
         async function startUpload() {
             if (isUploading) return;
             if (strippedFiles.length === 0) return showAlert("No files in queue.");
@@ -1217,35 +1288,34 @@
             if (!currentOwner || !repo || !branch) return showAlert("Owner, Repo, and Branch are required. Make sure Account is loaded.");
 
             hideAlert(); isUploading = true;
+            uploadAbortController = new AbortController(); // Point 4
+            const signal = uploadAbortController.signal;
+
             DOM.btnUpload.innerHTML = `<div class="spinner"></div> <span class="ml-2 uppercase tracking-widest text-sm relative z-10">Uploading...</span>`;
             DOM.btnUpload.disabled = true;
+            DOM.btnCancelUpload.classList.remove('hidden'); // Show cancel button
             DOM.progressContainer.classList.remove('hidden');
             
             try {
                 const basePath = DOM.path.value.trim().replace(/^\/|\/$/g, ''); 
                 const commitMsg = DOM.message.value.trim() || "Upload files via Web Uploader";
                 
-                // Get default branch info
-                let repoInfo;
-                try {
-                     repoInfo = await ghApi(`repos/${currentOwner}/${repo}`);
-                } catch(e) {
-                     throw new Error(`Repo not found or access denied: ${e.message}`);
-                }
+                let repoInfo = await ghApi(`repos/${currentOwner}/${repo}`, 'GET', null, signal);
                 const defaultBranch = repoInfo.default_branch;
 
                 setUpdate("Checking Branch...", 5);
                 let latestCommitSha, baseTreeSha, isNewBranch = false;
 
                 try {
-                    latestCommitSha = (await ghApi(`repos/${currentOwner}/${repo}/git/ref/heads/${branch}`)).object.sha;
+                    latestCommitSha = (await ghApi(`repos/${currentOwner}/${repo}/git/ref/heads/${branch}`, 'GET', null, signal)).object.sha;
                 } catch (e) {
+                    if (e.name === 'AbortError') throw e;
                     setUpdate(`Cloning from default branch (${defaultBranch})...`, 10);
-                    latestCommitSha = (await ghApi(`repos/${currentOwner}/${repo}/git/ref/heads/${defaultBranch}`)).object.sha;
+                    latestCommitSha = (await ghApi(`repos/${currentOwner}/${repo}/git/ref/heads/${defaultBranch}`, 'GET', null, signal)).object.sha;
                     isNewBranch = true;
                 }
 
-                baseTreeSha = (await ghApi(`repos/${currentOwner}/${repo}/git/commits/${latestCommitSha}`)).tree.sha;
+                baseTreeSha = (await ghApi(`repos/${currentOwner}/${repo}/git/commits/${latestCommitSha}`, 'GET', null, signal)).tree.sha;
 
                 const filesToUpload = [], treeEntries = [];
                 for (let file of strippedFiles) {
@@ -1254,20 +1324,22 @@
                     else if (!file.isDir) filesToUpload.push({ path: file.displayPath, blobData: file.fileData, isBinary: true });
                 }
 
-                // Upload Blobs Concurrently
                 const concurrencyLimit = 5;
                 let activePromises = [], processedCount = 0;
 
                 for (let i = 0; i < filesToUpload.length; i++) {
+                    if (signal.aborted) throw new DOMException("Aborted", "AbortError");
+                    
                     const item = filesToUpload[i];
                     let fullPath = basePath ? `${basePath}/${item.path}` : item.path;
                     
                     const uploadTask = (async () => {
                         let blobSha;
-                        if (!item.isBinary) blobSha = (await ghApi(`repos/${currentOwner}/${repo}/git/blobs`, 'POST', { content: item.content, encoding: 'utf-8' })).sha;
-                        else {
+                        if (!item.isBinary) {
+                            blobSha = (await ghApi(`repos/${currentOwner}/${repo}/git/blobs`, 'POST', { content: item.content, encoding: 'utf-8' }, signal)).sha;
+                        } else {
                             const base64Data = await blobToBase64(item.blobData);
-                            blobSha = (await ghApi(`repos/${currentOwner}/${repo}/git/blobs`, 'POST', { content: base64Data, encoding: 'base64' })).sha;
+                            blobSha = (await ghApi(`repos/${currentOwner}/${repo}/git/blobs`, 'POST', { content: base64Data, encoding: 'base64' }, signal)).sha;
                         }
                         treeEntries.push({ path: fullPath, mode: "100644", type: "blob", sha: blobSha });
                         
@@ -1286,21 +1358,21 @@
                     }
                 }
                 await Promise.all(activePromises);
+                if (signal.aborted) throw new DOMException("Aborted", "AbortError");
 
                 setUpdate("Building Git Tree...", 92);
-                const newTree = await ghApi(`repos/${currentOwner}/${repo}/git/trees`, 'POST', { base_tree: baseTreeSha, tree: treeEntries });
+                const newTree = await ghApi(`repos/${currentOwner}/${repo}/git/trees`, 'POST', { base_tree: baseTreeSha, tree: treeEntries }, signal);
 
                 setUpdate("Creating Commit...", 95);
-                const newCommit = await ghApi(`repos/${currentOwner}/${repo}/git/commits`, 'POST', { message: commitMsg, tree: newTree.sha, parents: [latestCommitSha] });
+                const newCommit = await ghApi(`repos/${currentOwner}/${repo}/git/commits`, 'POST', { message: commitMsg, tree: newTree.sha, parents: [latestCommitSha] }, signal);
 
                 setUpdate("Pushing to GitHub...", 98);
-                if (isNewBranch) await ghApi(`repos/${currentOwner}/${repo}/git/refs`, 'POST', { ref: `refs/heads/${branch}`, sha: newCommit.sha });
-                else await ghApi(`repos/${currentOwner}/${repo}/git/refs/heads/${branch}`, 'PATCH', { sha: newCommit.sha, force: false });
+                if (isNewBranch) await ghApi(`repos/${currentOwner}/${repo}/git/refs`, 'POST', { ref: `refs/heads/${branch}`, sha: newCommit.sha }, signal);
+                else await ghApi(`repos/${currentOwner}/${repo}/git/refs/heads/${branch}`, 'PATCH', { sha: newCommit.sha, force: false }, signal);
 
                 setUpdate("Done!", 100);
                 showAlert(`Success! ${filesToUpload.length} files uploaded to <strong class="text-white">${repo}:${branch}</strong>.`, 'success');
                 
-                // Reset form
                 setTimeout(() => { 
                     DOM.progressContainer.classList.add('hidden'); 
                     DOM.fileSection.classList.add('hidden'); 
@@ -1308,15 +1380,17 @@
                 }, 3500);
 
             } catch (error) { 
-                showAlert(`Failed: ${error.message}`); 
+                if (error.name !== "AbortError") showAlert(`Failed: ${error.message}`); 
                 DOM.progressContainer.classList.add('hidden'); 
             } finally {
                 isUploading = false;
+                DOM.btnCancelUpload.classList.add('hidden');
                 DOM.btnUpload.innerHTML = `<i class="fas fa-cloud-upload-alt"></i> <span class="relative z-10">Upload to GitHub</span>`;
                 DOM.btnUpload.disabled = false;
             }
         }
 
+        // Point 3: Advanced Tree fetching handling truncations
         async function fetchRepositoryTree() {
             const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
             if (!currentOwner || !repo || !branch) return showAlert("Owner, Repo, and Branch are required to fetch files.");
@@ -1327,24 +1401,38 @@
             resetEditor();
             
             try {
-                // Update Active Repo Label
-                const lblRepo = document.getElementById('lbl-active-repo');
-                if (lblRepo) lblRepo.textContent = `${currentOwner}/${repo} [${branch}]`;
-
-                // Recursive fetch tree
+                DOM.lblActiveRepo.textContent = `${currentOwner}/${repo} [${branch}]`;
                 const data = await ghApi(`repos/${currentOwner}/${repo}/git/trees/${branch}?recursive=1`);
                 
                 if (data.truncated) {
-                    showAlert("Warning: Repository is too large, some files may not be visible.", "error");
+                    showAlert("Warning: Repository is very large. Some folders may be lazy-loaded when clicked.", "error"); // Point 3: UX message
                 }
                 
-                currentTreeData = data.tree.sort((a, b) => {
-                    // Folders first, then files alphabetically
-                    if (a.type === b.type) return a.path.localeCompare(b.path);
-                    return a.type === 'tree' ? -1 : 1;
+                // Construct nested structure
+                const treeMap = {};
+                const root = [];
+                
+                data.tree.forEach(item => {
+                    item.children = [];
+                    treeMap[item.path] = item;
+                    const parts = item.path.split('/');
+                    if (parts.length === 1) {
+                        root.push(item);
+                    } else {
+                        parts.pop(); // remove name
+                        const parentPath = parts.join('/');
+                        if (treeMap[parentPath]) {
+                            treeMap[parentPath].children.push(item);
+                        } else {
+                            // If parent not in tree (rare but happens in some git trees), put to root
+                            root.push(item);
+                        }
+                    }
                 });
                 
-                renderTree();
+                currentTreeData = data.tree; // Global cache
+                DOM.repoTreeView.innerHTML = '';
+                renderTreeLevel(root, DOM.repoTreeView, 0, data.truncated);
                 
             } catch (error) {
                 showAlert(`Failed to fetch tree: ${error.message}`);
@@ -1355,48 +1443,92 @@
             }
         }
         
-        function renderTree() {
-            if (!currentTreeData || currentTreeData.length === 0) {
-                DOM.repoTreeView.innerHTML = '<div class="text-slate-500 text-center mt-10">Repository is empty.</div>';
-                return;
-            }
+        function renderTreeLevel(nodes, container, depth, isTruncated) {
+            // Sort: folders first, then files alphabetically
+            nodes.sort((a, b) => {
+                if (a.type === b.type) return a.path.split('/').pop().localeCompare(b.path.split('/').pop());
+                return a.type === 'tree' ? -1 : 1;
+            });
             
-            DOM.repoTreeView.innerHTML = '';
-            
-            // Build hierarchical view (simplified flat view with indentation for now)
-            currentTreeData.forEach(item => {
-                const depth = (item.path.match(/\//g) || []).length;
-                const indent = depth * 15;
+            nodes.forEach(item => {
                 const name = item.path.split('/').pop();
-                
                 const div = document.createElement('div');
-                div.className = `tree-item p-1.5 flex items-center rounded my-0.5 truncate`;
-                div.style.paddingLeft = `${indent + 8}px`;
-                div.title = item.path;
+                
+                const header = document.createElement('div');
+                header.className = `tree-item p-1.5 rounded my-0.5 truncate`;
+                header.title = item.path;
                 
                 if (item.type === 'tree') {
-                    div.innerHTML = `<i class="fas fa-folder text-amber-500 mr-2 w-4 text-center"></i> <span class="truncate">${name}</span>`;
+                    header.innerHTML = `<i class="fas fa-folder text-amber-500 mr-2 w-4 text-center"></i> <span class="truncate font-bold">${name}</span>`;
+                    
+                    const childrenContainer = document.createElement('div');
+                    childrenContainer.className = 'tree-children hidden';
+                    
+                    header.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        // Point 3: Lazy loading for truncated folders
+                        if (isTruncated && item.children.length === 0 && childrenContainer.innerHTML === '') {
+                            const icon = header.querySelector('i');
+                            icon.className = 'fas fa-spinner fa-spin text-amber-500 mr-2 w-4 text-center';
+                            try {
+                                const repo = DOM.repo.value.trim();
+                                const subTree = await ghApi(`repos/${currentOwner}/${repo}/git/trees/${item.sha}`);
+                                // Re-map paths relative to this folder
+                                subTree.tree.forEach(subItem => {
+                                    subItem.path = `${item.path}/${subItem.path}`;
+                                    subItem.children = [];
+                                    item.children.push(subItem);
+                                });
+                                renderTreeLevel(item.children, childrenContainer, depth + 1, false);
+                                childrenContainer.classList.remove('hidden');
+                            } catch(e) {
+                                showAlert("Failed to fetch folder contents.");
+                            }
+                            icon.className = 'fas fa-folder-open text-amber-400 mr-2 w-4 text-center';
+                        } else {
+                            const isHidden = childrenContainer.classList.toggle('hidden');
+                            const icon = header.querySelector('i');
+                            icon.className = isHidden ? 'fas fa-folder text-amber-500 mr-2 w-4 text-center' : 'fas fa-folder-open text-amber-400 mr-2 w-4 text-center';
+                            if (!isHidden && childrenContainer.innerHTML === '') renderTreeLevel(item.children, childrenContainer, depth + 1, isTruncated);
+                        }
+                    });
+                    
+                    div.appendChild(header);
+                    div.appendChild(childrenContainer);
+                    
                 } else if (item.type === 'blob') {
-                    div.innerHTML = `<i class="far fa-file-code text-blue-400 mr-2 w-4 text-center"></i> <span class="truncate">${name}</span>`;
-                    div.dataset.path = item.path;
-                    div.dataset.sha = item.sha;
-                    div.addEventListener('click', () => loadFileContent(item.path, item.sha, div));
+                    header.innerHTML = `<i class="far fa-file-code text-blue-400 mr-2 w-4 text-center"></i> <span class="truncate">${name}</span>`;
+                    header.dataset.path = item.path;
+                    header.dataset.sha = item.sha;
+                    header.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        loadFileContent(item.path, item.sha, header);
+                    });
+                    div.appendChild(header);
                 }
                 
-                DOM.repoTreeView.appendChild(div);
+                container.appendChild(div);
             });
         }
         
         async function loadFileContent(path, sha, element) {
+            // Point 2: Prevent loading binary files into Ace Editor
+            const binaryExts = ['.png','.jpg','.jpeg','.gif','.ico','.pdf','.exe','.dll','.zip','.tar','.gz','.mp4','.mp3','.wav'];
+            const isBinary = binaryExts.some(ext => path.toLowerCase().endsWith(ext));
+            if(isBinary) {
+                showAlert(`Cannot edit binary file: <b>${path.split('/').pop()}</b>`, "error");
+                return;
+            }
+
             const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
-            
-            // Highlight selected item in tree
             document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('selected'));
             if(element) element.classList.add('selected');
             
             DOM.editorFilePath.textContent = path;
             DOM.editorLoading.classList.remove('hidden');
-            aceEditor.setReadOnly(true);
+            DOM.editorLoadingText.textContent = "Loading content...";
+            if(aceEditor) aceEditor.setReadOnly(true);
+            
             DOM.btnDownloadFile.classList.add('hidden');
             DOM.btnSearchFile.classList.add('hidden');
             DOM.btnSaveFile.classList.add('hidden');
@@ -1404,23 +1536,18 @@
             DOM.commitMsgContainer.style.display = 'none';
             
             try {
-                // Fetch file content via API
                 const data = await ghApi(`repos/${currentOwner}/${repo}/contents/${path}?ref=${branch}`);
-                
-                // Content is base64 encoded (di-decode)
                 const content = decodeURIComponent(escape(atob(data.content)));
                 
-                // Deteksi tipe file secara otomatis untuk pewarnaan sintaks yang pas
                 const modelist = ace.require("ace/ext/modelist");
                 const mode = modelist.getModeForPath(path).mode;
                 aceEditor.session.setMode(mode);
                 
-                // Menata antarmuka untuk edit
                 DOM.editorPlaceholder.style.display = 'none';
                 DOM.fileEditor.style.opacity = '1';
                 DOM.fileEditor.style.pointerEvents = 'auto';
                 
-                aceEditor.setValue(content, -1); // -1 untuk membuat kursor berada di atas
+                aceEditor.setValue(content, -1);
                 originalFileContent = content;
                 editingFilePath = path;
                 editingFileSha = data.sha; 
@@ -1446,37 +1573,33 @@
         }
         
         async function saveEditedFile() {
-            if (!editingFilePath || !editingFileSha) return;
+            if (!editingFilePath) return; // allows saving new file without SHA
             
             const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
             const content = aceEditor.getValue();
-            const msg = DOM.editCommitMsg.value.trim() || `Update ${editingFilePath}`;
+            const msg = DOM.editCommitMsg.value.trim() || `Update ${editingFilePath.split('/').pop()}`;
             
             const btnHtml = DOM.btnSaveFile.innerHTML;
             DOM.btnSaveFile.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
             DOM.btnSaveFile.disabled = true;
-            aceEditor.setReadOnly(true);
+            if(aceEditor) aceEditor.setReadOnly(true);
             
             try {
-                // Encode content back to base64 safely supporting utf-8
                 const base64Content = btoa(unescape(encodeURIComponent(content)));
-                
-                const body = {
-                    message: msg,
-                    content: base64Content,
-                    sha: editingFileSha,
-                    branch: branch
-                };
+                const body = { message: msg, content: base64Content, branch: branch };
+                if (editingFileSha) body.sha = editingFileSha; // Include sha only if editing existing
                 
                 const response = await ghApi(`repos/${currentOwner}/${repo}/contents/${editingFilePath}`, 'PUT', body);
                 
-                originalFileContent = content; // Update baseline
-                editingFileSha = response.content.sha; // Update SHA for subsequent edits
+                originalFileContent = content; 
+                editingFileSha = response.content.sha; 
                 
                 showAlert(`File <strong class="text-white">${editingFilePath}</strong> saved successfully.`, 'success');
-                
-                // Update save button state
                 DOM.btnSaveFile.innerHTML = `<i class="fas fa-check"></i> <span>Saved</span>`;
+                
+                // If it was a new file, refresh tree
+                if(!editingFileSha) fetchRepositoryTree();
+
                 setTimeout(() => {
                     DOM.btnSaveFile.innerHTML = `<i class="fas fa-save"></i> <span>Save</span>`;
                     DOM.btnSaveFile.classList.remove('btn-action', 'btn-blue');
@@ -1488,7 +1611,7 @@
                 DOM.btnSaveFile.innerHTML = btnHtml;
                 DOM.btnSaveFile.disabled = false;
             } finally {
-                aceEditor.setReadOnly(false);
+                if(aceEditor) aceEditor.setReadOnly(false);
             }
         }
         
@@ -1498,7 +1621,6 @@
             originalFileContent = "";
             DOM.editorFilePath.textContent = "No file selected";
             
-            // Kembalikan ke Placeholder
             if(aceEditor) aceEditor.setValue("", -1);
             if(aceEditor) aceEditor.setReadOnly(true);
             DOM.editorPlaceholder.style.display = 'flex';
@@ -1510,51 +1632,102 @@
             DOM.btnSaveFile.classList.add('hidden');
             DOM.btnDeleteFile.classList.add('hidden');
             DOM.commitMsgContainer.style.display = 'none';
-            
-            const lblRepo = document.getElementById('lbl-active-repo');
-            if (lblRepo) lblRepo.textContent = "No repo selected";
         }
 
         function downloadCurrentFile() {
-            if (!editingFilePath) return;
-            
-            // Ambil konten dari editor (termasuk jika ada perubahan yang belum disave)
+            if (!editingFilePath || !aceEditor) return;
             const content = aceEditor.getValue();
             const filename = editingFilePath.split('/').pop();
-            
             const blob = new Blob([content], { type: 'text/plain' });
             const url = window.URL.createObjectURL(blob);
-            
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = url;
             a.download = filename;
-            
             document.body.appendChild(a);
             a.click();
-            
-            // Bersihkan object URL
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
         }
 
-        // Delete File Modal
-        function openDeleteFileModal() {
-            if(!editingFilePath) return;
-            DOM.modalFileTarget.textContent = editingFilePath;
-            DOM.delFileCommitMsg.value = `Delete ${editingFilePath.split('/').pop()}`;
-            DOM.modalDeleteFile.classList.add('active');
-            DOM.modalDelFileContent.classList.replace('scale-95', 'scale-100');
+        // Modals Management
+        function openModal(modalId, contentId) {
+            document.getElementById(modalId).classList.add('active');
+            document.getElementById(contentId).classList.replace('scale-95', 'scale-100');
         }
-        
-        function closeDeleteFileModal() {
-            DOM.modalDelFileContent.classList.replace('scale-100', 'scale-95');
-            setTimeout(() => DOM.modalDeleteFile.classList.remove('active'), 200);
+        function closeModal(modalId, contentId) {
+            document.getElementById(contentId).classList.replace('scale-100', 'scale-95');
+            setTimeout(() => document.getElementById(modalId).classList.remove('active'), 200);
         }
-        
+
+        // Point 2: Create New File or Folder directly from Editor UI
+        function promptCreateItem(type) {
+            const repo = DOM.repo.value.trim();
+            if (!currentOwner || !repo) return showAlert("Owner and Repo are required to create files.");
+            pendingCreateType = type;
+            DOM.modalCreateTitle.innerHTML = type === 'file' ? `<i class="fas fa-file-medical text-blue-500 mr-2"></i>Create New File` : `<i class="fas fa-folder-plus text-blue-500 mr-2"></i>Create New Folder`;
+            DOM.createItemPath.value = '';
+            DOM.createItemPath.placeholder = type === 'file' ? 'src/components/button.js' : 'src/new-folder';
+            openModal('modal-create', 'modal-create-content');
+        }
+
+        async function executeCreateItem() {
+            let path = DOM.createItemPath.value.trim();
+            if (!path) return;
+            
+            closeModal('modal-create', 'modal-create-content');
+            
+            if (pendingCreateType === 'folder') {
+                // To create a folder in Git, we must create a file inside it
+                path = path.replace(/\/$/, '') + '/.gitkeep';
+                DOM.editorLoading.classList.remove('hidden');
+                DOM.editorLoadingText.textContent = "Creating folder...";
+                
+                try {
+                    const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
+                    const body = { message: `Create folder ${path.split('/')[0]}`, content: btoa(""), branch: branch };
+                    await ghApi(`repos/${currentOwner}/${repo}/contents/${path}`, 'PUT', body);
+                    showAlert(`Folder created successfully.`, 'success');
+                    fetchRepositoryTree(); // Refresh UI
+                } catch(e) {
+                    showAlert(`Failed to create folder: ${e.message}`);
+                } finally {
+                    DOM.editorLoading.classList.add('hidden');
+                }
+            } else {
+                // Open empty editor for the new file
+                resetEditor();
+                document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('selected'));
+                DOM.editorFilePath.textContent = path;
+                editingFilePath = path;
+                editingFileSha = null; // Important: null triggers create instead of update on save
+                originalFileContent = "";
+                
+                const modelist = ace.require("ace/ext/modelist");
+                const mode = modelist.getModeForPath(path).mode;
+                if(aceEditor) {
+                    aceEditor.session.setMode(mode);
+                    DOM.editorPlaceholder.style.display = 'none';
+                    DOM.fileEditor.style.opacity = '1';
+                    DOM.fileEditor.style.pointerEvents = 'auto';
+                    aceEditor.setValue("", -1);
+                    aceEditor.setReadOnly(false);
+                }
+                
+                DOM.btnDownloadFile.classList.remove('hidden');
+                DOM.btnSearchFile.classList.remove('hidden');
+                DOM.btnSaveFile.classList.remove('hidden');
+                DOM.btnSaveFile.classList.remove('opacity-50');
+                DOM.btnSaveFile.classList.add('btn-action', 'btn-blue');
+                DOM.btnSaveFile.disabled = false; // Enable immediately for empty new files
+                
+                DOM.commitMsgContainer.style.display = 'flex';
+                DOM.editCommitMsg.value = `Create ${path.split('/').pop()}`;
+            }
+        }
+
         async function executeDeleteFile() {
              if(!editingFilePath || !editingFileSha) return;
-             
              const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
              const msg = DOM.delFileCommitMsg.value.trim() || `Delete ${editingFilePath}`;
              
@@ -1563,33 +1736,20 @@
              DOM.btnConfirmDelFile.disabled = true;
              
              try {
-                 const body = {
-                     message: msg,
-                     sha: editingFileSha,
-                     branch: branch
-                 };
-                 
+                 const body = { message: msg, sha: editingFileSha, branch: branch };
                  await ghApi(`repos/${currentOwner}/${repo}/contents/${editingFilePath}`, 'DELETE', body);
-                 
-                 // PERBAIKAN BUG: Langsung hapus file dari data lokal web untuk mencegah GitHub API Cache memunculkan kembali file tersebut
-                 currentTreeData = currentTreeData.filter(item => item.path !== editingFilePath);
-                 
-                 closeDeleteFileModal();
+                 closeModal('modal-delete-file', 'modal-delete-file-content');
                  showAlert(`File <strong class="text-white">${editingFilePath}</strong> deleted successfully.`, 'success');
-                 
-                 resetEditor();
-                 renderTree(); // Render ulang langsung dari state lokal yang sudah bersih
-                 
+                 fetchRepositoryTree(); // Fetch to rebuild structure cleanly
              } catch (error) {
                  showAlert(`Failed to delete file: ${error.message}`);
-                 closeDeleteFileModal();
+                 closeModal('modal-delete-file', 'modal-delete-file-content');
              } finally {
                  DOM.btnConfirmDelFile.innerHTML = btnHtml;
                  DOM.btnConfirmDelFile.disabled = false;
              }
         }
 
-        // Manage Repo
         async function createRepository() {
             const name = DOM.newRepoName.value.trim();
             if (!name) return showAlert("Repository name cannot be empty!");
@@ -1605,20 +1765,12 @@
             DOM.btnCreateRepo.disabled = true;
 
             try {
-                await ghApi('user/repos', 'POST', {
-                    name: name,
-                    description: desc,
-                    private: isPrivate,
-                    auto_init: autoInit
-                });
-                
+                await ghApi('user/repos', 'POST', { name, description: desc, private: isPrivate, auto_init: autoInit });
                 showAlert(`Repository <strong class="text-white">${name}</strong> successfully created!`, 'success');
                 DOM.newRepoName.value = '';
                 DOM.newRepoDesc.value = '';
                 
-                if (!userReposCache.includes(name)) {
-                    userReposCache.unshift(name);
-                }
+                if (!userReposCache.includes(name)) userReposCache.unshift(name);
                 saveSettings();
                 
                 DOM.repo.value = name;
@@ -1636,22 +1788,6 @@
             }
         }
 
-        function openDeleteModal() {
-            const repo = DOM.delRepoName.value.trim();
-            if(!repo || !currentOwner) return;
-            
-            DOM.modalTarget.textContent = `${currentOwner}/${repo}`;
-            DOM.btnConfirmDel.disabled = false; 
-            
-            DOM.modalDelete.classList.add('active');
-            DOM.modalContent.classList.replace('scale-95', 'scale-100');
-        }
-
-        function closeDeleteModal() {
-            DOM.modalContent.classList.replace('scale-100', 'scale-95');
-            setTimeout(() => DOM.modalDelete.classList.remove('active'), 200);
-        }
-
         async function executeDeleteRepository() {
             const repo = DOM.delRepoName.value.trim();
             if(!repo || !currentOwner) return;
@@ -1663,19 +1799,16 @@
 
             try {
                 await ghApi(`repos/${currentOwner}/${repo}`, 'DELETE');
-                closeDeleteModal();
+                closeModal('modal-delete', 'modal-delete-content');
                 showAlert(`Repository <strong class="text-white">${repo}</strong> successfully deleted permanently.`, 'success');
                 DOM.delRepoName.value = '';
                 DOM.btnTriggerDelete.disabled = true;
                 
                 userReposCache = userReposCache.filter(r => r !== repo);
                 saveSettings();
-                
-                if (DOM.repo.value === repo) {
-                    DOM.repo.value = '';
-                }
+                if (DOM.repo.value === repo) DOM.repo.value = '';
             } catch (error) {
-                closeDeleteModal();
+                closeModal('modal-delete', 'modal-delete-content');
                 let msg = error.message;
                 if(msg.includes('403') || msg.toLowerCase().includes('resource not accessible')) {
                     msg = "Token missing 'delete_repo' scope. Please check this permission when creating the token.";
