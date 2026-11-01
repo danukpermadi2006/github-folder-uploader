@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GitHub Uploader & Manager</title>
     
     <!-- Performance Optimizations -->
@@ -114,6 +114,12 @@
             box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
         }
         .cyber-checkbox:checked::before { transform: scale(1); }
+        
+        .cyber-checkbox.green:checked {
+            background-color: #10b981;
+            border-color: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+        }
 
         .btn-action {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -214,7 +220,7 @@
             100% { transform: rotate(360deg) scale(1); box-shadow: 0 0 0 rgba(168, 85, 247, 0); }
         }
 
-        .file-list-container { max-height: 200px; overflow-y: auto; overflow-x: hidden; }
+        .file-list-container { max-height: 220px; overflow-y: auto; overflow-x: auto; }
         
         ::-webkit-scrollbar { width: 6px; height: 6px;}
         ::-webkit-scrollbar-track { background: #000; border-radius: 4px; }
@@ -499,27 +505,34 @@
                 </div>
 
                 <div id="file-section" class="hidden animate-[fadeIn_0.3s_ease] relative z-10">
-                    <div class="flex justify-between items-center mb-2 gap-2">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-2">
                         <div class="flex items-center gap-2">
                             <h3 class="text-[10px] md:text-xs font-bold text-slate-300 uppercase tracking-widest"><i class="fas fa-list-ul mr-1 text-purple-400"></i>Queue (<span id="file-count" class="text-purple-400">0</span>)</h3>
                             <button type="button" id="btn-clear-files" class="text-[9px] uppercase font-bold bg-rose-500/10 text-rose-400 px-2 py-0.5 rounded hover:bg-rose-500/20 transition-colors">
                                 <i class="fas fa-trash-alt"></i> Clear
                             </button>
                         </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="strip-root" class="cyber-checkbox origin-right scale-75 md:scale-100" checked>
-                            <label for="strip-root" class="ml-1 text-[9px] md:text-xs font-medium text-slate-400 cursor-pointer select-none">Strip root</label>
+                        <div class="flex items-center gap-3 bg-black/30 px-2 py-1 rounded border border-white/5">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="strip-root" class="cyber-checkbox origin-right scale-75 md:scale-100" checked>
+                                <label for="strip-root" class="ml-1 text-[9px] md:text-xs font-medium text-slate-400 cursor-pointer select-none">Strip root</label>
+                            </div>
+                            <div class="h-4 w-px bg-slate-700/50"></div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="auto-route" class="cyber-checkbox green origin-right scale-75 md:scale-100" checked>
+                                <label for="auto-route" class="ml-1 text-[9px] md:text-xs font-bold text-emerald-400 cursor-pointer select-none" title="Auto move .jpg to images/ and .enc to data/">Smart Route</label>
+                            </div>
                         </div>
                     </div>
 
                     <div class="border border-slate-700/50 bg-[#020202] rounded-lg md:rounded-xl overflow-hidden mb-4 shadow-inner">
                         <div class="file-list-container bg-black/40">
-                            <table class="min-w-full text-left text-[10px] md:text-xs table-fixed">
+                            <table class="min-w-full text-left text-[10px] md:text-xs">
                                 <thead class="bg-black/80 border-b border-slate-800 text-slate-400 font-mono tracking-wider sticky top-0 z-10">
                                     <tr>
-                                        <th class="px-2 md:px-4 py-2 font-semibold w-[60%] md:w-[65%]">Destination Path</th>
-                                        <th class="px-2 md:px-4 py-2 font-semibold text-right w-[25%] md:w-[20%]">Size</th>
-                                        <th class="px-2 md:px-4 py-2 font-semibold text-center w-[15%]">Action</th>
+                                        <th class="px-2 md:px-4 py-2 font-semibold">Destination Path</th>
+                                        <th class="px-2 md:px-4 py-2 font-semibold text-right w-[60px] md:w-[80px]">Size</th>
+                                        <th class="px-2 md:px-4 py-2 font-semibold text-center w-[40px] md:w-[60px]">Act</th>
                                     </tr>
                                 </thead>
                                 <tbody id="file-list-body" class="divide-y divide-slate-800/50 font-mono text-slate-300">
@@ -571,6 +584,7 @@
                                 <button type="button" id="btn-new-folder" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded transition" title="Create New Folder"><i class="fas fa-folder-plus text-xs"></i></button>
                                 <button type="button" id="btn-new-file" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded transition" title="Create New File"><i class="fas fa-file-medical text-xs"></i></button>
                                 <button type="button" id="btn-tree-download" class="hidden p-1.5 bg-emerald-950/60 hover:bg-emerald-900 text-emerald-400 rounded transition border border-emerald-800/50" title="Download Selected Item"><i class="fas fa-download text-xs"></i></button>
+                                <button type="button" id="btn-tree-move" class="hidden p-1.5 bg-indigo-950/60 hover:bg-indigo-900 text-indigo-400 rounded transition border border-indigo-800/50" title="Move/Rename Selected Item"><i class="fas fa-random text-xs"></i></button>
                                 <button type="button" id="btn-tree-delete" class="hidden p-1.5 bg-rose-950/60 hover:bg-rose-900 text-rose-400 rounded transition border border-rose-800/50" title="Delete Selected Item"><i class="fas fa-trash-alt text-xs"></i></button>
                             </div>
                         </div>
@@ -744,6 +758,21 @@
         </div>
     </div>
 
+    <!-- Move/Rename File/Folder Modal -->
+    <div id="modal-move" class="modal-overlay">
+        <div class="bg-[#0f172a] border border-indigo-500/30 rounded-xl p-4 w-[92%] max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.9)] transform scale-95 transition-transform duration-300" id="modal-move-content">
+            <div class="text-center mb-4">
+                <h3 class="text-base font-bold text-white mb-1"><i class="fas fa-random text-indigo-400 mr-2"></i>Move / Rename</h3>
+                <p class="text-slate-400 text-[10px] md:text-xs text-left mb-1 mt-2">Enter new path or name:</p>
+                <input type="text" id="move-item-path" class="w-full input-dark py-2 px-3 rounded text-xs mono" placeholder="new/path/to/item">
+            </div>
+            <div class="flex gap-2">
+                <button type="button" onclick="closeModal('modal-move', 'modal-move-content')" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-lg transition-colors text-xs">Cancel</button>
+                <button type="button" id="btn-confirm-move" class="flex-1 flex justify-center items-center py-2 btn-action btn-blue !bg-indigo-600 !shadow-indigo-500/30 text-white font-bold rounded-lg text-xs">Apply Move</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let selectedFiles = []; 
         let strippedFiles = []; 
@@ -792,6 +821,7 @@
             fileListBody: document.getElementById('file-list-body'),
             btnClearFiles: document.getElementById('btn-clear-files'),
             stripRoot: document.getElementById('strip-root'),
+            autoRoute: document.getElementById('auto-route'),
             btnUpload: document.getElementById('btn-upload'),
             btnCancelUpload: document.getElementById('btn-cancel-upload'),
             progressContainer: document.getElementById('progress-container'),
@@ -804,6 +834,7 @@
             btnNewFile: document.getElementById('btn-new-file'),
             btnNewFolder: document.getElementById('btn-new-folder'),
             btnTreeDownload: document.getElementById('btn-tree-download'),
+            btnTreeMove: document.getElementById('btn-tree-move'),
             btnTreeDelete: document.getElementById('btn-tree-delete'),
             lblActiveRepo: document.getElementById('lbl-active-repo'),
             repoTreeView: document.getElementById('repo-tree-view'),
@@ -844,7 +875,12 @@
             modalCreateContent: document.getElementById('modal-create-content'),
             modalCreateTitle: document.getElementById('modal-create-title'),
             createItemPath: document.getElementById('create-item-path'),
-            btnConfirmCreate: document.getElementById('btn-confirm-create')
+            btnConfirmCreate: document.getElementById('btn-confirm-create'),
+
+            modalMove: document.getElementById('modal-move'),
+            modalMoveContent: document.getElementById('modal-move-content'),
+            moveItemPath: document.getElementById('move-item-path'),
+            btnConfirmMove: document.getElementById('btn-confirm-move')
         };
 
         function init() {
@@ -861,6 +897,7 @@
             if (savedSettings.repo) DOM.repo.value = savedSettings.repo;
             if (savedSettings.branch) DOM.branch.value = savedSettings.branch;
             if (savedSettings.path) DOM.path.value = savedSettings.path;
+            if (savedSettings.autoRoute !== undefined) DOM.autoRoute.checked = savedSettings.autoRoute;
 
             DOM.toggleToken.addEventListener('click', () => {
                 const isPass = DOM.token.type === 'password';
@@ -885,7 +922,12 @@
             DOM.inputFolder.addEventListener('change', handleFolderSelection);
             DOM.inputZip.addEventListener('change', handleZipSelection);
             setupDragAndDrop();
+            
             DOM.stripRoot.addEventListener('change', updateFileList);
+            DOM.autoRoute.addEventListener('change', () => {
+                saveSettings();
+                updateFileList();
+            });
             DOM.btnClearFiles.addEventListener('click', () => { selectedFiles = []; updateFileList(); });
             
             DOM.btnUpload.addEventListener('click', startUpload);
@@ -894,10 +936,12 @@
             DOM.btnFetchTree.addEventListener('click', fetchRepositoryTree);
             DOM.btnTreeDownload.addEventListener('click', downloadActiveTreeSelection);
             DOM.btnTreeDelete.addEventListener('click', promptDeleteActiveSelection);
+            DOM.btnTreeMove.addEventListener('click', promptMoveSelection);
             
             DOM.btnSearchFile.addEventListener('click', () => { if(aceEditor) aceEditor.execCommand("find"); });
             DOM.btnSaveFile.addEventListener('click', saveEditedFile);
             DOM.btnConfirmDelFile.addEventListener('click', executeDeleteSelection);
+            DOM.btnConfirmMove.addEventListener('click', executeMoveItem);
             
             DOM.btnNewFile.addEventListener('click', () => promptCreateItem('file'));
             DOM.btnNewFolder.addEventListener('click', () => promptCreateItem('folder'));
@@ -970,7 +1014,8 @@
                 path: DOM.path.value.trim(),
                 rememberToken: DOM.rememberToken.checked,
                 token: DOM.rememberToken.checked ? DOM.token.value.trim() : '',
-                cachedRepos: userReposCache
+                cachedRepos: userReposCache,
+                autoRoute: DOM.autoRoute.checked
             };
             localStorage.setItem('ghManagerSettingsV3', JSON.stringify(settings));
         }
@@ -1200,14 +1245,37 @@
             });
         }
 
+        // --- Core Auto-Route Logic Here ---
         function updateFileList() {
             if (selectedFiles.length === 0) { DOM.fileSection.classList.add('hidden'); return; }
             DOM.fileSection.classList.remove('hidden');
+            
             let rootToStrip = DOM.stripRoot.checked ? getCommonRoot(selectedFiles.map(f => f.originalPath)) : '';
+            const doAutoRoute = DOM.autoRoute.checked;
 
             strippedFiles = selectedFiles.map((f, index) => {
                 let displayPath = f.originalPath;
-                if (rootToStrip && displayPath.startsWith(rootToStrip)) displayPath = displayPath.substring(rootToStrip.length);
+                if (rootToStrip && displayPath.startsWith(rootToStrip)) {
+                    displayPath = displayPath.substring(rootToStrip.length);
+                }
+
+                // SMART ROUTE LOGIC
+                if (doAutoRoute && !f.isDir) {
+                    const parts = displayPath.split('/');
+                    const fileName = parts.pop(); // ambil nama file asli
+                    const ext = fileName.split('.').pop().toLowerCase();
+                    
+                    const imgExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'];
+                    
+                    if (imgExtensions.includes(ext)) {
+                        // Jika belum ada di dalam folder 'images', pindahkan
+                        if (!displayPath.startsWith('images/')) displayPath = 'images/' + fileName;
+                    } else if (ext === 'enc') {
+                        // Jika belum ada di dalam folder 'data', pindahkan
+                        if (!displayPath.startsWith('data/')) displayPath = 'data/' + fileName;
+                    }
+                }
+
                 return { ...f, displayPath, originalIndex: index };
             }).filter(f => f.displayPath !== ''); 
 
@@ -1223,8 +1291,8 @@
                 const tr = document.createElement('tr');
                 tr.className = `hover:bg-white/[0.02] transition-colors`;
                 tr.innerHTML = `
-                    <td class="px-2 md:px-3 py-2 truncate" title="${file.displayPath}"><i class="${file.isDir ? 'fas fa-folder text-amber-500' : 'far fa-file-code text-purple-400'} mr-2 opacity-80"></i>${file.displayPath}</td>
-                    <td class="px-2 md:px-3 py-2 text-right text-slate-500">${file.isDir ? '-' : formatBytes(file.size)}</td>
+                    <td class="px-2 md:px-3 py-2 truncate max-w-[120px] sm:max-w-[200px]" title="${file.displayPath}"><i class="${file.isDir ? 'fas fa-folder text-amber-500' : 'far fa-file-code text-purple-400'} mr-2 opacity-80"></i>${file.displayPath}</td>
+                    <td class="px-2 md:px-3 py-2 text-right text-slate-500 whitespace-nowrap">${file.isDir ? '-' : formatBytes(file.size)}</td>
                     <td class="px-2 md:px-3 py-2 text-center"><button type="button" class="text-rose-500/70 hover:text-rose-400 p-1 rounded transition" onclick="removeFile(${file.originalIndex})"><i class="fas fa-trash-alt"></i></button></td>
                 `;
                 DOM.fileListBody.appendChild(tr);
@@ -1485,6 +1553,7 @@
             // Show action buttons in tree toolbar
             DOM.btnTreeDownload.classList.remove('hidden');
             DOM.btnTreeDelete.classList.remove('hidden');
+            DOM.btnTreeMove.classList.remove('hidden');
         }
         
         async function loadFileContent(path, sha, element) {
@@ -1667,6 +1736,69 @@
             }
         }
 
+        // --- Move/Rename Logic ---
+        function promptMoveSelection() {
+            if (!activeTreeSelection) return showAlert("Please select a file or folder from the tree first.");
+            DOM.moveItemPath.value = activeTreeSelection.path;
+            openModal('modal-move', 'modal-move-content');
+        }
+
+        async function executeMoveItem() {
+            const oldPath = activeTreeSelection.path;
+            const newPath = DOM.moveItemPath.value.trim();
+            
+            if(!newPath || oldPath === newPath) return closeModal('modal-move', 'modal-move-content');
+            
+            const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
+            const msg = `Move ${oldPath} to ${newPath}`;
+            
+            const btnHtml = DOM.btnConfirmMove.innerHTML;
+            DOM.btnConfirmMove.innerHTML = `<div class="spinner-cyber !w-4 !h-4"></div>`;
+            DOM.btnConfirmMove.disabled = true;
+
+            try {
+                // Fetch base tree from latest commit
+                const latestCommitSha = (await ghApi(`repos/${currentOwner}/${repo}/git/ref/heads/${branch}`)).object.sha;
+                const baseTreeSha = (await ghApi(`repos/${currentOwner}/${repo}/git/commits/${latestCommitSha}`)).tree.sha;
+
+                let treeEntries = [];
+
+                if (activeTreeSelection.type === 'blob') {
+                    treeEntries.push({ path: newPath, mode: "100644", type: "blob", sha: activeTreeSelection.sha });
+                    treeEntries.push({ path: oldPath, mode: "100644", type: "blob", sha: null }); // hapus origin
+                } else if (activeTreeSelection.type === 'tree') {
+                    // Pindahkan seluruh file dalam folder
+                    const folderPrefix = oldPath.endsWith('/') ? oldPath : oldPath + '/';
+                    const targetPrefix = newPath.endsWith('/') ? newPath : newPath + '/';
+                    
+                    const filesToMove = currentTreeData.filter(node => node.type === 'blob' && node.path.startsWith(folderPrefix));
+                    
+                    filesToMove.forEach(file => {
+                        const relPath = file.path.substring(folderPrefix.length);
+                        treeEntries.push({ path: targetPrefix + relPath, mode: "100644", type: "blob", sha: file.sha });
+                        treeEntries.push({ path: file.path, mode: "100644", type: "blob", sha: null }); // hapus origin
+                    });
+                }
+
+                // Kirim Tree dan Commit
+                const newTree = await ghApi(`repos/${currentOwner}/${repo}/git/trees`, 'POST', { base_tree: baseTreeSha, tree: treeEntries });
+                const newCommit = await ghApi(`repos/${currentOwner}/${repo}/git/commits`, 'POST', { message: msg, tree: newTree.sha, parents: [latestCommitSha] });
+                await ghApi(`repos/${currentOwner}/${repo}/git/refs/heads/${branch}`, 'PATCH', { sha: newCommit.sha, force: false });
+
+                closeModal('modal-move', 'modal-move-content');
+                showAlert(`Successfully moved to <b>${newPath}</b>`, "success");
+                
+                // Refresh data
+                fetchRepositoryTree();
+                if (editingFilePath === oldPath) resetEditor();
+
+            } catch (err) {
+                showAlert(`Move failed: ${err.message}`);
+                DOM.btnConfirmMove.innerHTML = btnHtml;
+                DOM.btnConfirmMove.disabled = false;
+            }
+        }
+
         function promptDeleteActiveSelection() {
             if (!activeTreeSelection) return showAlert("Please select a file or folder from the tree first.");
             DOM.modalFileTarget.textContent = activeTreeSelection.path;
@@ -1691,7 +1823,6 @@
                     currentTreeData = currentTreeData.filter(node => node.path !== item.path);
                     if (editingFilePath === item.path) resetEditor();
                 } else if (item.type === 'tree') {
-                    // Delete folder using Git Tree API (build new tree excluding items with prefix)
                     const folderPrefix = item.path.endsWith('/') ? item.path : item.path + '/';
                     const itemsToKeep = currentTreeData.filter(node => !(node.type === 'blob' && node.path.startsWith(folderPrefix)));
                     
@@ -1717,6 +1848,7 @@
                 activeTreeSelection = null;
                 DOM.btnTreeDownload.classList.add('hidden');
                 DOM.btnTreeDelete.classList.add('hidden');
+                DOM.btnTreeMove.classList.add('hidden');
                 
                 // Re-render tree
                 const root = [];
