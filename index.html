@@ -581,6 +581,7 @@
                                 <span id="tree-loading" class="hidden mr-1"><i class="fas fa-spinner fa-spin text-blue-400"></i></span>
                                 <!-- Right-aligned Mobile-friendly Toolbar inside Tree Header -->
                                 <button type="button" id="btn-fetch-tree" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-blue-400 rounded transition" title="Fetch Repository Tree"><i class="fas fa-sitemap text-xs"></i></button>
+                                <button type="button" id="btn-tree-organize" class="p-1.5 bg-fuchsia-950/60 hover:bg-fuchsia-900 text-fuchsia-400 rounded transition border border-fuchsia-800/50" title="Smart Organize (Auto-move root files to folders)"><i class="fas fa-magic text-xs"></i></button>
                                 <button type="button" id="btn-new-folder" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded transition" title="Create New Folder"><i class="fas fa-folder-plus text-xs"></i></button>
                                 <button type="button" id="btn-new-file" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded transition" title="Create New File"><i class="fas fa-file-medical text-xs"></i></button>
                                 <button type="button" id="btn-tree-download" class="hidden p-1.5 bg-emerald-950/60 hover:bg-emerald-900 text-emerald-400 rounded transition border border-emerald-800/50" title="Download Selected Item"><i class="fas fa-download text-xs"></i></button>
@@ -831,6 +832,7 @@
             progressDetail: document.getElementById('progress-detail'),
             
             btnFetchTree: document.getElementById('btn-fetch-tree'),
+            btnTreeOrganize: document.getElementById('btn-tree-organize'),
             btnNewFile: document.getElementById('btn-new-file'),
             btnNewFolder: document.getElementById('btn-new-folder'),
             btnTreeDownload: document.getElementById('btn-tree-download'),
@@ -934,6 +936,7 @@
             DOM.btnCancelUpload.addEventListener('click', cancelUpload);
 
             DOM.btnFetchTree.addEventListener('click', fetchRepositoryTree);
+            DOM.btnTreeOrganize.addEventListener('click', executeSmartOrganize);
             DOM.btnTreeDownload.addEventListener('click', downloadActiveTreeSelection);
             DOM.btnTreeDelete.addEventListener('click', promptDeleteActiveSelection);
             DOM.btnTreeMove.addEventListener('click', promptMoveSelection);
@@ -1794,8 +1797,59 @@
 
             } catch (err) {
                 showAlert(`Move failed: ${err.message}`);
+            } finally {
                 DOM.btnConfirmMove.innerHTML = btnHtml;
                 DOM.btnConfirmMove.disabled = false;
+            }
+        }
+
+        async function executeSmartOrganize() {
+            const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
+            if (!currentOwner || !repo || !branch) return showAlert("Please load a repository first.");
+
+            // Find root files to move
+            const filesToMove = [];
+            const imgExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'];
+            
+            currentTreeData.forEach(node => {
+                if (node.type === 'blob' && !node.path.includes('/')) {
+                    const ext = node.path.split('.').pop().toLowerCase();
+                    if (imgExtensions.includes(ext)) {
+                        filesToMove.push({ oldPath: node.path, newPath: `images/${node.path}`, sha: node.sha });
+                    } else if (ext === 'enc') {
+                        filesToMove.push({ oldPath: node.path, newPath: `data/${node.path}`, sha: node.sha });
+                    }
+                }
+            });
+
+            if (filesToMove.length === 0) {
+                return showAlert("Semua file sudah rapi! Tidak ditemukan gambar atau file .enc yang tercecer di folder utama.", "success");
+            }
+
+            if (!confirm(`Ditemukan ${filesToMove.length} file yang berantakan. Pindahkan semua secara otomatis ke folder images/ dan data/?`)) return;
+
+            DOM.treeLoading.classList.remove('hidden');
+            
+            try {
+                const latestCommitSha = (await ghApi(`repos/${currentOwner}/${repo}/git/ref/heads/${branch}`)).object.sha;
+                const baseTreeSha = (await ghApi(`repos/${currentOwner}/${repo}/git/commits/${latestCommitSha}`)).tree.sha;
+
+                let treeEntries = [];
+                filesToMove.forEach(f => {
+                    treeEntries.push({ path: f.newPath, mode: "100644", type: "blob", sha: f.sha });
+                    treeEntries.push({ path: f.oldPath, mode: "100644", type: "blob", sha: null }); // Delete old
+                });
+
+                const newTree = await ghApi(`repos/${currentOwner}/${repo}/git/trees`, 'POST', { base_tree: baseTreeSha, tree: treeEntries });
+                const newCommit = await ghApi(`repos/${currentOwner}/${repo}/git/commits`, 'POST', { message: `Smart Organize: Auto-moved ${filesToMove.length} files`, tree: newTree.sha, parents: [latestCommitSha] });
+                await ghApi(`repos/${currentOwner}/${repo}/git/refs/heads/${branch}`, 'PATCH', { sha: newCommit.sha, force: false });
+
+                showAlert(`Berhasil merapikan ${filesToMove.length} file sekaligus!`, "success");
+                fetchRepositoryTree();
+            } catch (err) {
+                showAlert(`Gagal merapikan: ${err.message}`);
+            } finally {
+                DOM.treeLoading.classList.add('hidden');
             }
         }
 
