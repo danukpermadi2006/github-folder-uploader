@@ -144,53 +144,17 @@
             box-shadow: none !important;
         }
 
-        .btn-upload {
-            background: linear-gradient(135deg, #a855f7 0%, #c026d3 100%);
-            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
-        }
-        .btn-upload:hover:not(:disabled) {
-            box-shadow: 0 6px 30px rgba(168, 85, 247, 0.6);
-            transform: translateY(-2px);
-        }
+        .btn-upload { background: linear-gradient(135deg, #a855f7 0%, #c026d3 100%); box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3), inset 0 1px 0 rgba(255,255,255,0.2); }
+        .btn-upload:hover:not(:disabled) { box-shadow: 0 6px 30px rgba(168, 85, 247, 0.6); transform: translateY(-2px); }
 
-        .btn-create {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
-        }
-        .btn-create:hover:not(:disabled) {
-            box-shadow: 0 6px 30px rgba(16, 185, 129, 0.6);
-            transform: translateY(-2px);
-        }
+        .btn-create { background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255,255,255,0.2); }
+        .btn-create:hover:not(:disabled) { box-shadow: 0 6px 30px rgba(16, 185, 129, 0.6); transform: translateY(-2px); }
         
-        .btn-blue {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
-        }
-        .btn-blue:hover:not(:disabled) {
-            box-shadow: 0 6px 30px rgba(59, 130, 246, 0.6);
-            transform: translateY(-2px);
-        }
+        .btn-blue { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255,255,255,0.2); }
+        .btn-blue:hover:not(:disabled) { box-shadow: 0 6px 30px rgba(59, 130, 246, 0.6); transform: translateY(-2px); }
 
-        .btn-delete {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
-        }
-        .btn-delete:hover:not(:disabled) {
-            box-shadow: 0 6px 30px rgba(239, 68, 68, 0.6);
-            transform: translateY(-2px);
-        }
-
-        .btn-test {
-            background: #111827;
-            border: 1px solid #374151;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
-            transition: all 0.3s ease;
-        }
-        .btn-test:hover:not(:disabled) {
-            background: #1f2937;
-            border-color: #a855f7;
-            box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
-        }
+        .btn-delete { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3), inset 0 1px 0 rgba(255,255,255,0.2); }
+        .btn-delete:hover:not(:disabled) { box-shadow: 0 6px 30px rgba(239, 68, 68, 0.6); transform: translateY(-2px); }
 
         .upload-area {
             background: rgba(0,0,0,0.4);
@@ -205,7 +169,6 @@
 
         @keyframes shine { 100% { left: 200%; } }
 
-        /* Premium Pulsing Glow Spinner */
         .spinner-cyber {
             width: 24px;
             height: 24px;
@@ -256,10 +219,7 @@
             border: 1px solid transparent;
             white-space: nowrap;
         }
-        .nav-tab:hover:not(.active) {
-            background: rgba(255,255,255,0.05);
-            color: #cbd5e1;
-        }
+        .nav-tab:hover:not(.active) { background: rgba(255,255,255,0.05); color: #cbd5e1; }
         .nav-tab.active {
             background: rgba(168, 85, 247, 0.15);
             color: #fff;
@@ -268,65 +228,39 @@
             text-shadow: 0 0 8px rgba(255,255,255,0.3);
         }
 
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease forwards;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .tab-content { display: none; animation: fadeIn 0.3s ease forwards; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
-            z-index: 100;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            z-index: 100; display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
         }
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
         
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
         
         .tree-item {
-            cursor: pointer;
-            transition: background-color 0.2s, color 0.2s;
-            display: flex;
-            align-items: center;
-            user-select: none;
+            cursor: pointer; transition: background-color 0.2s, color 0.2s;
+            display: flex; align-items: center; user-select: none;
         }
-        .tree-item:hover {
-            background-color: rgba(255,255,255,0.05);
-        }
-        .tree-item.selected {
-            background-color: rgba(59, 130, 246, 0.2);
-            border-left: 2px solid #3b82f6;
-            color: #fff;
-        }
-        .tree-children {
-            border-left: 1px solid rgba(255,255,255,0.1);
-            margin-left: 10px;
-            padding-left: 4px;
-        }
+        .tree-item:hover { background-color: rgba(255,255,255,0.05); }
+        .tree-item.selected { background-color: rgba(59, 130, 246, 0.2); border-left: 2px solid #3b82f6; color: #fff; }
+        .tree-item.drag-over { background-color: rgba(168, 85, 247, 0.3); border: 1px dashed #a855f7; }
+        .tree-children { border-left: 1px solid rgba(255,255,255,0.1); margin-left: 10px; padding-left: 4px; }
         
-        #file-editor {
-            overscroll-behavior: none;
-        }
-        .ace_editor {
-            touch-action: pan-x pan-y;
+        #file-editor { overscroll-behavior: none; }
+        .ace_editor { touch-action: pan-x pan-y; }
+
+        /* Checkerboard pattern for transparent image preview */
+        .bg-checkerboard {
+            background-color: #0f172a;
+            background-image: linear-gradient(45deg, #1e293b 25%, transparent 25%, transparent 75%, #1e293b 75%, #1e293b),
+                              linear-gradient(45deg, #1e293b 25%, transparent 25%, transparent 75%, #1e293b 75%, #1e293b);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
         }
     </style>
 </head>
@@ -336,33 +270,41 @@
         
         <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-80 rounded-t-xl sm:rounded-t-2xl pointer-events-none"></div>
 
-        <div class="p-3 md:p-6 pb-3 md:pb-4 border-b border-white/5 relative overflow-hidden flex justify-start items-center gap-3 md:gap-5 rounded-t-xl sm:rounded-t-2xl">
+        <div class="p-3 md:p-6 pb-3 md:pb-4 border-b border-white/5 relative overflow-hidden flex justify-between items-center gap-3 md:gap-5 rounded-t-xl sm:rounded-t-2xl">
             <i class="fab fa-github absolute -right-2 -top-2 text-7xl md:text-9xl text-white/5 transform -rotate-12 pointer-events-none"></i>
             
-            <div class="relative z-10 shrink-0 group cursor-pointer" title="Change Avatar" id="avatar-container">
-                <div class="absolute inset-0 bg-gradient-to-tr from-purple-500 to-fuchsia-500 rounded-full blur-[6px] md:blur-[10px] opacity-60 animate-pulse transition-opacity duration-500" id="avatar-glow"></div>
-                <img src="danuk.jpg" id="user-avatar" onerror="this.src='https://placehold.co/100x100/1e293b/a855f7?text=U'" alt="User Avatar" class="relative w-10 h-10 md:w-16 md:h-16 rounded-full border-[2px] border-black object-cover z-10 group-hover:scale-105 transition-transform duration-300 bg-slate-900">
-            </div>
+            <div class="flex items-center gap-3 md:gap-5">
+                <div class="relative z-10 shrink-0 group cursor-pointer" title="Change Avatar" id="avatar-container">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-purple-500 to-fuchsia-500 rounded-full blur-[6px] md:blur-[10px] opacity-60 animate-pulse transition-opacity duration-500" id="avatar-glow"></div>
+                    <img src="danuk.jpg" id="user-avatar" onerror="this.src='https://placehold.co/100x100/1e293b/a855f7?text=U'" alt="User Avatar" class="relative w-10 h-10 md:w-16 md:h-16 rounded-full border-[2px] border-black object-cover z-10 group-hover:scale-105 transition-transform duration-300 bg-slate-900">
+                </div>
 
-            <div class="flex items-center relative z-10">
-                <div>
-                    <h1 class="text-lg md:text-3xl font-extrabold tracking-tight text-white mb-0 md:mb-1 leading-tight">
+                <div class="relative z-10">
+                    <h1 class="text-lg md:text-3xl font-extrabold tracking-tight text-white mb-0 md:mb-1 leading-tight flex items-center gap-2">
                         GitHub <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-fuchsia-400">Manager</span>
                     </h1>
-                    <p class="text-slate-400 text-[10px] md:text-sm font-medium leading-tight mt-0.5">Upload, Edit & Manage Repositories</p>
+                    <div class="flex items-center gap-2">
+                        <p class="text-slate-400 text-[10px] md:text-sm font-medium leading-tight mt-0.5">Upload, Edit & Manage Repositories</p>
+                        <!-- Rate Limit Indicator -->
+                        <span id="rate-limit-badge" class="hidden text-[8px] md:text-[10px] bg-slate-800/80 px-1.5 py-0.5 rounded border border-slate-700 font-mono text-slate-300" title="API Requests Remaining">
+                            API: <span id="rate-limit-val">--</span>
+                        </span>
+                    </div>
                 </div>
             </div>
+
+            <!-- Logout Button -->
+            <button type="button" id="btn-logout" class="hidden relative z-10 text-[10px] md:text-xs font-bold bg-rose-500/10 text-rose-400 px-3 py-1.5 rounded-lg hover:bg-rose-500/20 transition-colors border border-rose-500/30 flex items-center gap-1.5">
+                <i class="fas fa-sign-out-alt"></i> <span class="hidden md:inline">Disconnect</span>
+            </button>
         </div>
 
         <div class="p-3 md:p-6 pt-3 md:pt-5 relative">
             
             <div class="bg-black/40 border border-amber-500/20 rounded-lg p-2.5 md:p-4 mb-4 shadow-inner relative overflow-hidden">
                 <div class="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-amber-400 to-orange-500"></div>
-                
                 <div class="flex items-start gap-2 md:gap-4">
-                    <div class="bg-amber-500/10 p-1 md:p-2 rounded-md text-amber-400 shrink-0 mt-0.5 hidden sm:block">
-                        <i class="fas fa-shield-halved text-sm md:text-xl"></i>
-                    </div>
+                    <div class="bg-amber-500/10 p-1 md:p-2 rounded-md text-amber-400 shrink-0 mt-0.5 hidden sm:block"><i class="fas fa-shield-halved text-sm md:text-xl"></i></div>
                     
                     <div class="flex-1 text-[10px] md:text-sm text-slate-300 leading-tight w-full">
                         <details class="group">
@@ -375,24 +317,15 @@
                             
                             <div class="mt-2.5 space-y-2 text-slate-400 border-t border-amber-500/20 pt-2.5 pb-1">
                                 <p class="mb-1.5">Aplikasi ini membutuhkan <strong>Personal Access Token (Classic)</strong> GitHub. Ikuti langkah mudah ini:</p>
-                                
                                 <ol class="list-decimal list-outside ml-4 space-y-2 marker:text-amber-500/70">
-                                    <li>Buka halaman <a href="https://github.com/settings/tokens" target="_blank" class="text-amber-400 font-semibold hover:text-amber-300 underline underline-offset-2 transition-colors">GitHub Tokens <i class="fas fa-external-link-alt text-[8px] ml-0.5"></i></a> lalu klik tombol <strong>Generate new token (classic)</strong>.</li>
-                                    <li>Isi kolom <strong>Note</strong> dan atur masa kedaluwarsa (Expiration).</li>
-                                    <li>Pada bagian daftar izin (<strong>Select scopes</strong>), Anda <strong class="text-rose-400">wajib mencentang</strong> dua kotak berikut:
-                                        <ul class="list-disc list-outside ml-4 mt-1.5 space-y-1.5 marker:text-rose-500/70">
-                                            <li>
-                                                <code class="text-rose-300 bg-rose-950/50 border border-rose-900/50 px-1 py-0.5 rounded text-[9px] md:text-xs">repo</code> 
-                                                <span class="text-slate-500 text-[9px] md:text-xs block sm:inline sm:ml-1">Memberi akses penuh untuk mengedit, mengunggah file, dan membuat repositori.</span>
-                                            </li>
-                                            <li>
-                                                <code class="text-rose-300 bg-rose-950/50 border border-rose-900/50 px-1 py-0.5 rounded text-[9px] md:text-xs">delete_repo</code> 
-                                                <span class="text-slate-500 text-[9px] md:text-xs block sm:inline sm:ml-1">Memberi akses khusus untuk menghapus repositori.</span>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li>Klik <strong>Generate token</strong> lalu salin token tersebut.</li>
+                                    <li>Buka halaman <a href="https://github.com/settings/tokens" target="_blank" class="text-amber-400 font-semibold hover:text-amber-300 underline underline-offset-2 transition-colors">GitHub Tokens</a>. Klik <strong>Generate new token (classic)</strong>.</li>
+                                    <li>Pilih scopes: <code class="text-rose-300 bg-rose-950/50 px-1 py-0.5 rounded text-[9px] md:text-xs">repo</code> (akses edit/upload) dan <code class="text-rose-300 bg-rose-950/50 px-1 py-0.5 rounded text-[9px] md:text-xs">delete_repo</code> (akses hapus repo).</li>
+                                    <li>Generate dan salin token tersebut ke form di bawah.</li>
                                 </ol>
+                                <div class="mt-3 p-2 bg-rose-950/30 border border-rose-900/50 rounded flex gap-2 items-start text-rose-300">
+                                    <i class="fas fa-exclamation-triangle mt-0.5"></i>
+                                    <span class="text-[9px] md:text-[11px]"><strong>Peringatan:</strong> Jika Anda menggunakan perangkat publik (warnet/komputer teman), <strong>JANGAN</strong> centang kotak "Remember". Selalu gunakan tombol "Disconnect" setelah selesai agar token Anda tidak tersimpan di browser.</span>
+                                </div>
                             </div>
                         </details>
                     </div>
@@ -401,29 +334,37 @@
 
             <!-- Global Setup -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3 md:gap-y-4 mb-4 pb-4 border-b border-white/5">
-                <div class="md:col-span-2 group">
+                
+                <!-- Token Input with History Dropdown -->
+                <div class="md:col-span-2 group relative z-50">
                     <div class="flex justify-between items-center mb-1">
                         <label class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider group-focus-within:text-purple-400 transition-colors">GitHub Token <span class="text-rose-500">*</span></label>
                         <div class="flex items-center gap-2 md:gap-4">
                             <button type="button" id="btn-load-account" class="hidden text-[9px] md:text-xs font-bold bg-fuchsia-500/20 text-fuchsia-400 px-2 py-0.5 rounded hover:bg-fuchsia-500/30 transition-colors flex items-center gap-1 border border-fuchsia-500/30">
                                 <i class="fas fa-sync-alt"></i> <span>Load</span>
                             </button>
-                            <div class="flex items-center">
+                            <div class="flex items-center" title="Save token locally">
                                 <input type="checkbox" id="remember-token" class="cyber-checkbox origin-right scale-75 md:scale-100">
                                 <label for="remember-token" class="ml-1 md:ml-2 text-[10px] md:text-xs font-medium text-slate-400 cursor-pointer hover:text-slate-200 select-none">Remember</label>
                             </div>
                         </div>
                     </div>
-                    <div class="flex rounded-lg md:rounded-xl shadow-sm relative z-10">
-                        <span class="bg-black px-2.5 md:px-4 flex items-center justify-center text-slate-500 border border-r-0 border-slate-700/80 group-focus-within:border-purple-500 transition-colors rounded-l-lg md:rounded-l-xl"><i class="fas fa-key text-xs md:text-base"></i></span>
-                        <input type="password" id="gh-token" class="flex-1 w-full px-2 md:px-4 py-2 md:py-3 input-dark !border-x-0 mono tracking-wider" placeholder="ghp_...">
-                        <button type="button" id="toggle-token" class="bg-black px-2.5 md:px-4 flex items-center justify-center text-slate-400 hover:text-purple-400 transition-colors border border-l-0 border-slate-700/80 group-focus-within:border-purple-500 focus:outline-none rounded-r-lg md:rounded-r-xl">
-                            <i class="fas fa-eye text-xs md:text-base"></i>
-                        </button>
+                    <div class="relative">
+                        <div class="flex rounded-lg md:rounded-xl shadow-sm relative z-40">
+                            <span class="bg-black px-2.5 md:px-4 flex items-center justify-center text-slate-500 border border-r-0 border-slate-700/80 group-focus-within:border-purple-500 transition-colors rounded-l-lg md:rounded-l-xl"><i class="fas fa-key text-xs md:text-base"></i></span>
+                            <input type="password" id="gh-token" autocomplete="off" class="flex-1 w-full px-2 md:px-4 py-2 md:py-3 input-dark !border-x-0 mono tracking-wider" placeholder="ghp_... atau github_pat_...">
+                            <button type="button" id="toggle-token" class="bg-black px-2.5 md:px-4 flex items-center justify-center text-slate-400 hover:text-purple-400 transition-colors border border-l-0 border-slate-700/80 group-focus-within:border-purple-500 focus:outline-none rounded-r-lg md:rounded-r-xl">
+                                <i class="fas fa-eye text-xs md:text-base"></i>
+                            </button>
+                        </div>
+                        <!-- Token History Dropdown -->
+                        <div id="dropdown-token-history" class="absolute left-0 top-full mt-1 w-full bg-[#0a0a0e] border border-purple-500/30 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.9)] overflow-y-auto max-h-48 hidden flex-col divide-y divide-white/5 py-1 z-50">
+                            <!-- Tokens injected here -->
+                        </div>
                     </div>
                 </div>
                 
-                <div class="group relative z-50 md:col-span-1">
+                <div class="group relative z-40 md:col-span-1">
                     <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-purple-400 transition-colors">Target Repo <span class="text-rose-500">*</span></label>
                     <div class="relative">
                         <i class="fas fa-book-journal-whills absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs md:text-base group-focus-within:text-purple-400 transition-colors z-30"></i>
@@ -433,8 +374,13 @@
                     </div>
                 </div>
 
-                <div class="group relative z-40 md:col-span-1">
-                    <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-focus-within:text-purple-400 transition-colors">Branch <span class="text-rose-500">*</span></label>
+                <div class="group relative z-30 md:col-span-1">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider group-focus-within:text-purple-400 transition-colors">Branch <span class="text-rose-500">*</span></label>
+                        <button type="button" id="btn-new-branch-prompt" class="text-[9px] md:text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1" title="Create a new branch from current">
+                            <i class="fas fa-plus"></i> New Branch
+                        </button>
+                    </div>
                     <div class="relative">
                         <i class="fas fa-code-branch absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs md:text-base group-focus-within:text-purple-400 transition-colors z-30"></i>
                         <input type="text" id="gh-branch" autocomplete="off" class="w-full py-2 md:py-3 pl-8 md:pl-11 pr-6 input-dark rounded-lg md:rounded-xl mono relative z-20" placeholder="main" value="main">
@@ -579,17 +525,17 @@
                             <span class="flex items-center gap-1.5"><i class="fas fa-folder-tree text-slate-400"></i> Repository Tree</span>
                             <div class="flex items-center gap-1">
                                 <span id="tree-loading" class="hidden mr-1"><i class="fas fa-spinner fa-spin text-blue-400"></i></span>
-                                <!-- Right-aligned Mobile-friendly Toolbar inside Tree Header -->
+                                <!-- Right-aligned Toolbar -->
                                 <button type="button" id="btn-fetch-tree" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-blue-400 rounded transition" title="Fetch Repository Tree"><i class="fas fa-sitemap text-xs"></i></button>
                                 <button type="button" id="btn-tree-organize" class="p-1.5 bg-fuchsia-950/60 hover:bg-fuchsia-900 text-fuchsia-400 rounded transition border border-fuchsia-800/50" title="Smart Organize (Auto-move root files to folders)"><i class="fas fa-magic text-xs"></i></button>
                                 <button type="button" id="btn-new-folder" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded transition" title="Create New Folder"><i class="fas fa-folder-plus text-xs"></i></button>
                                 <button type="button" id="btn-new-file" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded transition" title="Create New File"><i class="fas fa-file-medical text-xs"></i></button>
                                 <button type="button" id="btn-tree-download" class="hidden p-1.5 bg-emerald-950/60 hover:bg-emerald-900 text-emerald-400 rounded transition border border-emerald-800/50" title="Download Selected Item"><i class="fas fa-download text-xs"></i></button>
-                                <button type="button" id="btn-tree-move" class="hidden p-1.5 bg-indigo-950/60 hover:bg-indigo-900 text-indigo-400 rounded transition border border-indigo-800/50" title="Move/Rename Selected Item"><i class="fas fa-random text-xs"></i></button>
+                                <button type="button" id="btn-tree-move" class="hidden p-1.5 bg-indigo-950/60 hover:bg-indigo-900 text-indigo-400 rounded transition border border-indigo-800/50" title="Move/Rename Selected Item (You can also drag & drop)"><i class="fas fa-random text-xs"></i></button>
                                 <button type="button" id="btn-tree-delete" class="hidden p-1.5 bg-rose-950/60 hover:bg-rose-900 text-rose-400 rounded transition border border-rose-800/50" title="Delete Selected Item"><i class="fas fa-trash-alt text-xs"></i></button>
                             </div>
                         </div>
-                        <div class="p-2 overflow-y-auto flex-1 font-mono text-[10px] md:text-xs text-slate-300" id="repo-tree-view">
+                        <div class="p-2 overflow-y-auto flex-1 font-mono text-[10px] md:text-xs text-slate-300 relative" id="repo-tree-view">
                             <div class="text-slate-500 text-center mt-10 italic">Click the sitemap icon above to fetch files.</div>
                         </div>
                     </div>
@@ -611,11 +557,19 @@
                             </div>
                          </div>
                          
-                         <div class="flex-1 relative bg-[#0a0a0f]">
+                         <div class="flex-1 relative bg-[#0a0a0f] overflow-hidden">
                             <div id="editor-placeholder" class="absolute inset-0 flex items-center justify-center text-slate-600 font-mono text-[10px] md:text-xs italic select-none">
                                 Select a file from the tree to view/edit...
                             </div>
+                            <!-- Ace Editor Container -->
                             <div id="file-editor" class="absolute inset-0 w-full h-full opacity-0 pointer-events-none transition-opacity duration-300 z-0"></div>
+                            
+                            <!-- Image Preview Container -->
+                            <div id="image-preview-container" class="absolute inset-0 w-full h-full hidden z-0 bg-checkerboard flex-col items-center justify-center p-4">
+                                <img id="image-preview-img" class="max-w-full max-h-full object-contain shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-slate-700/50 rounded" alt="Preview">
+                                <p class="mt-4 text-xs font-mono text-slate-400 bg-black/60 px-3 py-1 rounded border border-white/10">Image Preview (Read Only)</p>
+                            </div>
+
                             <div id="editor-loading" class="absolute inset-0 bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center hidden z-10">
                                 <div class="spinner-cyber mb-3"></div>
                                 <span class="text-purple-400 font-bold text-xs tracking-wider" id="editor-loading-text">Loading content...</span>
@@ -706,6 +660,22 @@
         <a href="https://wa.me/6285129769015" target="_blank" class="hover:text-green-500 transition-transform transform hover:scale-110"><i class="fab fa-whatsapp"></i></a>
     </div>
 
+    <!-- Modals -->
+    <!-- Create Branch Modal -->
+    <div id="modal-branch" class="modal-overlay">
+        <div class="bg-[#0f172a] border border-blue-500/30 rounded-xl md:rounded-2xl p-4 md:p-6 w-[92%] max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.9)] transform scale-95 transition-transform duration-300" id="modal-branch-content">
+            <div class="text-center mb-4">
+                <h3 class="text-base font-bold text-white mb-1"><i class="fas fa-code-branch text-blue-500 mr-2"></i>Create New Branch</h3>
+                <p class="text-slate-400 text-[10px] md:text-xs text-left mb-1 mt-2">New branch name (from <span id="lbl-source-branch" class="text-blue-400 font-mono"></span>):</p>
+                <input type="text" id="new-branch-name" class="w-full input-dark py-2 px-3 rounded text-xs mono" placeholder="feature/new-update">
+            </div>
+            <div class="flex gap-2">
+                <button type="button" onclick="closeModal('modal-branch', 'modal-branch-content')" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-lg transition-colors text-xs">Cancel</button>
+                <button type="button" id="btn-confirm-branch" class="flex-1 flex justify-center items-center py-2 btn-action btn-blue text-white font-bold rounded-lg text-xs">Create Branch</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Delete Repo Modal -->
     <div id="modal-delete" class="modal-overlay">
         <div class="bg-[#0f172a] border border-rose-500/30 rounded-xl md:rounded-2xl p-4 md:p-6 w-[92%] max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.9)] transform scale-95 transition-transform duration-300" id="modal-delete-content">
@@ -720,7 +690,6 @@
                     This cannot be undone. Continue?
                 </p>
             </div>
-            
             <div class="flex gap-2">
                 <button type="button" id="btn-cancel-delete" class="flex-1 py-2 md:py-3 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-lg md:rounded-xl transition-colors text-xs md:text-sm">Cancel</button>
                 <button type="button" id="btn-confirm-delete" class="flex-1 flex justify-center items-center py-2 md:py-3 btn-action btn-delete text-white font-bold rounded-lg md:rounded-xl text-xs md:text-sm">Yes, Delete!</button>
@@ -783,25 +752,32 @@
         let userReposCache = [];
         let repoBranchesCache = [];
         let currentOwner = '';
+        const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
         
+        // Token History
+        let tokenHistoryList = JSON.parse(localStorage.getItem('ghManagerTokens') || '[]');
+
         // Editor State
         let currentTreeData = [];
-        let activeTreeSelection = null; // Stores selected tree node item {path, type, sha}
+        let activeTreeSelection = null; 
         let editingFilePath = null;
         let editingFileSha = null;
         let originalFileContent = "";
         let aceEditor = null; 
-        
         let pendingCreateType = 'file';
 
         const DOM = {
             token: document.getElementById('gh-token'),
             rememberToken: document.getElementById('remember-token'),
             toggleToken: document.getElementById('toggle-token'),
+            dropdownTokenHistory: document.getElementById('dropdown-token-history'),
             btnLoadAccount: document.getElementById('btn-load-account'),
+            btnLogout: document.getElementById('btn-logout'),
             userAvatar: document.getElementById('user-avatar'),
             avatarGlow: document.getElementById('avatar-glow'),
             alertBox: document.getElementById('alert-box'),
+            rateLimitBadge: document.getElementById('rate-limit-badge'),
+            rateLimitVal: document.getElementById('rate-limit-val'),
             
             navTabs: document.querySelectorAll('.nav-tab'),
             tabContents: document.querySelectorAll('.tab-content'),
@@ -810,6 +786,7 @@
             branch: document.getElementById('gh-branch'),
             dropdownRepo: document.getElementById('dropdown-repo'),
             dropdownBranch: document.getElementById('dropdown-branch'),
+            btnNewBranchPrompt: document.getElementById('btn-new-branch-prompt'),
             
             path: document.getElementById('gh-path'),
             message: document.getElementById('gh-message'),
@@ -844,6 +821,8 @@
             
             editorPlaceholder: document.getElementById('editor-placeholder'),
             fileEditor: document.getElementById('file-editor'),
+            imagePreviewContainer: document.getElementById('image-preview-container'),
+            imagePreviewImg: document.getElementById('image-preview-img'),
             editorFilePath: document.getElementById('editor-file-path'),
             editorLoading: document.getElementById('editor-loading'),
             editorLoadingText: document.getElementById('editor-loading-text'),
@@ -861,6 +840,12 @@
             btnTriggerDelete: document.getElementById('btn-trigger-delete'),
             lblCreateOwner: document.getElementById('lbl-create-owner'),
             
+            modalBranch: document.getElementById('modal-branch'),
+            modalBranchContent: document.getElementById('modal-branch-content'),
+            newBranchName: document.getElementById('new-branch-name'),
+            lblSourceBranch: document.getElementById('lbl-source-branch'),
+            btnConfirmBranch: document.getElementById('btn-confirm-branch'),
+
             modalDelete: document.getElementById('modal-delete'),
             modalContent: document.getElementById('modal-delete-content'),
             modalTarget: document.getElementById('modal-repo-target'),
@@ -895,6 +880,7 @@
             if (savedSettings.owner) {
                 currentOwner = savedSettings.owner;
                 DOM.lblCreateOwner.textContent = currentOwner;
+                DOM.btnLogout.classList.remove('hidden');
             }
             if (savedSettings.repo) DOM.repo.value = savedSettings.repo;
             if (savedSettings.branch) DOM.branch.value = savedSettings.branch;
@@ -908,7 +894,10 @@
                 DOM.toggleToken.classList.toggle('text-purple-400', isPass);
             });
             DOM.token.addEventListener('input', checkTokenLength);
+            DOM.token.addEventListener('focus', renderTokenHistory);
+            DOM.token.addEventListener('blur', () => setTimeout(() => DOM.dropdownTokenHistory.classList.add('hidden'), 200));
             DOM.btnLoadAccount.addEventListener('click', loadAccountData);
+            DOM.btnLogout.addEventListener('click', executeLogout);
 
             DOM.navTabs.forEach(tab => {
                 tab.addEventListener('click', () => {
@@ -926,10 +915,7 @@
             setupDragAndDrop();
             
             DOM.stripRoot.addEventListener('change', updateFileList);
-            DOM.autoRoute.addEventListener('change', () => {
-                saveSettings();
-                updateFileList();
-            });
+            DOM.autoRoute.addEventListener('change', () => { saveSettings(); updateFileList(); });
             DOM.btnClearFiles.addEventListener('click', () => { selectedFiles = []; updateFileList(); });
             
             DOM.btnUpload.addEventListener('click', startUpload);
@@ -944,12 +930,20 @@
             DOM.btnSearchFile.addEventListener('click', () => { if(aceEditor) aceEditor.execCommand("find"); });
             DOM.btnSaveFile.addEventListener('click', saveEditedFile);
             DOM.btnConfirmDelFile.addEventListener('click', executeDeleteSelection);
-            DOM.btnConfirmMove.addEventListener('click', executeMoveItem);
+            DOM.btnConfirmMove.addEventListener('click', () => executeMoveItem(DOM.moveItemPath.value.trim(), activeTreeSelection));
             
             DOM.btnNewFile.addEventListener('click', () => promptCreateItem('file'));
             DOM.btnNewFolder.addEventListener('click', () => promptCreateItem('folder'));
             DOM.btnConfirmCreate.addEventListener('click', executeCreateItem);
             
+            DOM.btnNewBranchPrompt.addEventListener('click', () => {
+                if(!currentOwner || !DOM.repo.value.trim() || !DOM.branch.value.trim()) return showAlert("Load a repo and branch first.");
+                DOM.lblSourceBranch.textContent = DOM.branch.value.trim();
+                DOM.newBranchName.value = "";
+                openModal('modal-branch', 'modal-branch-content');
+            });
+            DOM.btnConfirmBranch.addEventListener('click', executeCreateBranch);
+
             if (window.ace) {
                 ace.config.set('basePath', 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.2/');
                 aceEditor = ace.edit("file-editor");
@@ -979,9 +973,7 @@
             }
             
             DOM.btnCreateRepo.addEventListener('click', createRepository);
-            DOM.delRepoName.addEventListener('input', () => {
-                DOM.btnTriggerDelete.disabled = DOM.delRepoName.value.trim() === '';
-            });
+            DOM.delRepoName.addEventListener('input', () => { DOM.btnTriggerDelete.disabled = DOM.delRepoName.value.trim() === ''; });
             DOM.btnTriggerDelete.addEventListener('click', () => {
                 const repo = DOM.delRepoName.value.trim();
                 if(!repo || !currentOwner) return;
@@ -995,9 +987,7 @@
 
             setupAutocomplete(DOM.repo, DOM.dropdownRepo, () => userReposCache, onRepoSelected);
             setupAutocomplete(DOM.branch, DOM.dropdownBranch, () => repoBranchesCache);
-            setupAutocomplete(DOM.delRepoName, DOM.dropdownDelRepo, () => userReposCache, (repo) => {
-                DOM.btnTriggerDelete.disabled = false;
-            });
+            setupAutocomplete(DOM.delRepoName, DOM.dropdownDelRepo, () => userReposCache, (repo) => { DOM.btnTriggerDelete.disabled = false; });
 
             const saveInputs = [DOM.repo, DOM.branch, DOM.path, DOM.token, DOM.rememberToken];
             saveInputs.forEach(el => el.addEventListener('change', saveSettings));
@@ -1006,7 +996,41 @@
         }
 
         function checkTokenLength() {
-            DOM.btnLoadAccount.classList.toggle('hidden', DOM.token.value.trim().length <= 15);
+            const val = DOM.token.value.trim();
+            const isValidFormat = /^(ghp_|github_pat_|gho_|ghu_|ghs_)[a-zA-Z0-9_.-]+$/.test(val);
+            DOM.btnLoadAccount.classList.toggle('hidden', !isValidFormat && val.length < 15);
+        }
+
+        function saveTokenToHistory(token, username) {
+            tokenHistoryList = tokenHistoryList.filter(t => t.token !== token);
+            tokenHistoryList.unshift({ token, username, date: new Date().toISOString() });
+            if (tokenHistoryList.length > 5) tokenHistoryList.pop(); // Keep last 5
+            localStorage.setItem('ghManagerTokens', JSON.stringify(tokenHistoryList));
+        }
+
+        function renderTokenHistory() {
+            if (tokenHistoryList.length === 0) return DOM.dropdownTokenHistory.classList.add('hidden');
+            DOM.dropdownTokenHistory.innerHTML = '<div class="px-3 py-1.5 text-[9px] font-bold text-slate-500 uppercase tracking-wider">Saved Tokens</div>';
+            
+            tokenHistoryList.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'px-3 md:px-4 py-2 text-[10px] md:text-sm font-mono text-slate-300 hover:bg-purple-500/20 hover:text-white cursor-pointer transition-colors flex justify-between items-center';
+                div.innerHTML = `<span><i class="fas fa-user-circle mr-1.5 text-purple-400"></i>${item.username}</span> <span class="text-[9px] opacity-50">${item.token.substring(0, 8)}...</span>`;
+                div.addEventListener('mousedown', (e) => { 
+                    e.preventDefault(); 
+                    DOM.token.value = item.token;
+                    DOM.dropdownTokenHistory.classList.add('hidden');
+                    checkTokenLength();
+                    loadAccountData();
+                });
+                DOM.dropdownTokenHistory.appendChild(div);
+            });
+            DOM.dropdownTokenHistory.classList.remove('hidden');
+        }
+
+        function executeLogout() {
+            localStorage.removeItem('ghManagerSettingsV3');
+            location.reload();
         }
 
         function saveSettings() {
@@ -1034,6 +1058,16 @@
         }
         function hideAlert() { DOM.alertBox.classList.add('hidden'); }
 
+        function updateRateLimitUI(res) {
+            const limitRemaining = res.headers.get('x-ratelimit-remaining');
+            if (limitRemaining) {
+                DOM.rateLimitBadge.classList.remove('hidden');
+                DOM.rateLimitVal.textContent = limitRemaining;
+                if (parseInt(limitRemaining) < 50) DOM.rateLimitBadge.classList.replace('text-slate-300', 'text-amber-400');
+                if (parseInt(limitRemaining) < 10) DOM.rateLimitBadge.classList.replace('text-amber-400', 'text-rose-400');
+            }
+        }
+
         async function ghApi(endpoint, method = 'GET', body = null, signal = null) {
             const token = DOM.token.value.trim();
             if (!token) throw new Error("GitHub Token is required.");
@@ -1046,10 +1080,17 @@
             if (signal) options.signal = signal;
 
             const res = await fetch(`https://api.github.com/${endpoint}`, options);
+            updateRateLimitUI(res);
+            
             if (res.status === 204) return null; 
-
             const data = await res.json().catch(() => ({}));
-            if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
+            
+            if (!res.ok) {
+                if (res.status === 403 && res.headers.get('x-ratelimit-remaining') === '0') {
+                    throw new Error("API Rate Limit Exceeded. Please try again later.");
+                }
+                throw new Error(data.message || `HTTP ${res.status}`);
+            }
             return data;
         }
 
@@ -1062,6 +1103,7 @@
             
             while(url) {
                 const res = await fetch(url, { headers: { 'Accept': 'application/vnd.github.v3+json', 'Authorization': `Bearer ${token}` } });
+                updateRateLimitUI(res);
                 const data = await res.json().catch(() => ({}));
                 if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
                 
@@ -1093,6 +1135,9 @@
                 DOM.userAvatar.src = user.avatar_url;
                 DOM.avatarGlow.classList.replace('from-purple-500', 'from-emerald-400');
                 DOM.avatarGlow.classList.replace('to-fuchsia-500', 'to-cyan-400');
+                DOM.btnLogout.classList.remove('hidden');
+                
+                saveTokenToHistory(token, currentOwner);
                 
                 const repos = await ghApiPaginated('user/repos?per_page=100&sort=updated');
                 userReposCache = repos.map(r => r.name);
@@ -1123,7 +1168,7 @@
                     div.className = 'px-3 md:px-4 py-2 text-[10px] md:text-sm font-mono text-slate-300 hover:bg-purple-500/20 hover:text-white cursor-pointer transition-colors';
                     div.innerHTML = `<i class="fas fa-book mr-1.5 opacity-50 text-[10px]"></i>${item}`;
                     
-                    div.addEventListener('click', (e) => { 
+                    div.addEventListener('mousedown', (e) => { 
                         e.preventDefault();
                         inputEl.value = item;
                         dropdownEl.classList.add('hidden');
@@ -1193,11 +1238,11 @@
             selectedFiles = [];
             let hasLargeFiles = false;
             for (let f of filesList) {
-                if (f.size > 100 * 1024 * 1024) { hasLargeFiles = true; continue; }
+                if (f.size > MAX_FILE_SIZE) { hasLargeFiles = true; continue; }
                 const path = isWebKitDir ? f.webkitRelativePath : f.name;
                 selectedFiles.push({ originalPath: path, fileData: f, size: f.size, isDir: false });
             }
-            if (hasLargeFiles) showAlert("Some files were skipped because they exceed 100MB limit.", "error");
+            if (hasLargeFiles) showAlert("Some files were skipped because they exceed the 100MB limit.", "error");
             else hideAlert();
             updateFileList();
         }
@@ -1226,7 +1271,7 @@
                     } else {
                         promises.push(
                             zipEntry.async('blob').then(blob => {
-                                if (blob.size > 100 * 1024 * 1024) { hasLargeFiles = true; return; }
+                                if (blob.size > MAX_FILE_SIZE) { hasLargeFiles = true; return; }
                                 selectedFiles.push({ originalPath: relativePath, fileData: blob, size: blob.size, isDir: false });
                             })
                         );
@@ -1248,7 +1293,10 @@
             });
         }
 
-        // --- Core Auto-Route Logic Here ---
+        function sanitizeFileName(name) {
+            return name.replace(/[^a-zA-Z0-9.\-_]/g, '-');
+        }
+
         function updateFileList() {
             if (selectedFiles.length === 0) { DOM.fileSection.classList.add('hidden'); return; }
             DOM.fileSection.classList.remove('hidden');
@@ -1262,20 +1310,20 @@
                     displayPath = displayPath.substring(rootToStrip.length);
                 }
 
-                // SMART ROUTE LOGIC
                 if (doAutoRoute && !f.isDir) {
                     const parts = displayPath.split('/');
-                    const fileName = parts.pop(); // ambil nama file asli
+                    let fileName = parts.pop();
+                    fileName = sanitizeFileName(fileName); 
                     const ext = fileName.split('.').pop().toLowerCase();
                     
                     const imgExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'];
-                    
                     if (imgExtensions.includes(ext)) {
-                        // Jika belum ada di dalam folder 'images', pindahkan
                         if (!displayPath.startsWith('images/')) displayPath = 'images/' + fileName;
                     } else if (ext === 'enc') {
-                        // Jika belum ada di dalam folder 'data', pindahkan
                         if (!displayPath.startsWith('data/')) displayPath = 'data/' + fileName;
+                    } else {
+                        // Reconstruct path with sanitized filename
+                        displayPath = parts.length > 0 ? parts.join('/') + '/' + fileName : fileName;
                     }
                 }
 
@@ -1432,6 +1480,39 @@
             }
         }
 
+        async function executeCreateBranch() {
+            const repo = DOM.repo.value.trim();
+            const sourceBranch = DOM.lblSourceBranch.textContent;
+            let newBranch = DOM.newBranchName.value.trim();
+            
+            if (!newBranch) return showAlert("Branch name cannot be empty");
+            newBranch = sanitizeFileName(newBranch).toLowerCase(); 
+            
+            const btnHtml = DOM.btnConfirmBranch.innerHTML;
+            DOM.btnConfirmBranch.innerHTML = `<div class="spinner-cyber !w-4 !h-4"></div>`;
+            DOM.btnConfirmBranch.disabled = true;
+
+            try {
+                const latestCommitSha = (await ghApi(`repos/${currentOwner}/${repo}/git/ref/heads/${sourceBranch}`)).object.sha;
+                await ghApi(`repos/${currentOwner}/${repo}/git/refs`, 'POST', {
+                    ref: `refs/heads/${newBranch}`,
+                    sha: latestCommitSha
+                });
+                
+                showAlert(`Branch <b>${newBranch}</b> created successfully.`, 'success');
+                DOM.branch.value = newBranch;
+                if (!repoBranchesCache.includes(newBranch)) repoBranchesCache.push(newBranch);
+                saveSettings();
+                closeModal('modal-branch', 'modal-branch-content');
+                fetchRepositoryTree();
+            } catch (err) {
+                showAlert(`Failed to create branch: ${err.message}`);
+            } finally {
+                DOM.btnConfirmBranch.innerHTML = btnHtml;
+                DOM.btnConfirmBranch.disabled = false;
+            }
+        }
+
         async function fetchRepositoryTree() {
             const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
             if (!currentOwner || !repo || !branch) return showAlert("Owner, Repo, and Branch are required to fetch files.");
@@ -1495,13 +1576,41 @@
                 const header = document.createElement('div');
                 header.className = `tree-item p-1.5 rounded my-0.5 truncate`;
                 header.title = item.path;
+                header.setAttribute('draggable', 'true'); // Make item draggable
                 
+                // Drag and Drop Listeners
+                header.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('application/json', JSON.stringify(item));
+                    e.dataTransfer.effectAllowed = "move";
+                });
+
                 if (item.type === 'tree') {
                     header.innerHTML = `<i class="fas fa-folder text-amber-500 mr-2 w-4 text-center"></i> <span class="truncate font-bold">${name}</span>`;
                     
                     const childrenContainer = document.createElement('div');
                     childrenContainer.className = 'tree-children hidden';
                     
+                    // Folder specific drag events
+                    header.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = "move";
+                        header.classList.add('drag-over');
+                    });
+                    header.addEventListener('dragleave', () => {
+                        header.classList.remove('drag-over');
+                    });
+                    header.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        header.classList.remove('drag-over');
+                        try {
+                            const draggedItem = JSON.parse(e.dataTransfer.getData('application/json'));
+                            if (draggedItem.path !== item.path && !item.path.startsWith(draggedItem.path)) {
+                                const newPath = item.path + '/' + draggedItem.path.split('/').pop();
+                                executeMoveItem(newPath, draggedItem);
+                            }
+                        } catch(err) { console.error("Drag data error", err); }
+                    });
+
                     header.addEventListener('click', async (e) => {
                         e.stopPropagation();
                         setActiveTreeSelection(item, header);
@@ -1553,17 +1662,21 @@
             if(element) element.classList.add('selected');
             activeTreeSelection = item;
             
-            // Show action buttons in tree toolbar
             DOM.btnTreeDownload.classList.remove('hidden');
             DOM.btnTreeDelete.classList.remove('hidden');
             DOM.btnTreeMove.classList.remove('hidden');
         }
         
         async function loadFileContent(path, sha, element) {
-            const binaryExts = ['.png','.jpg','.jpeg','.gif','.ico','.pdf','.exe','.dll','.zip','.tar','.gz','.mp4','.mp3','.wav'];
-            const isBinary = binaryExts.some(ext => path.toLowerCase().endsWith(ext));
-            if(isBinary) {
-                showAlert(`Cannot edit binary file: <b>${path.split('/').pop()}</b>. Use Download button instead.`, "error");
+            const imgExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico', '.svg', '.bmp'];
+            const binaryExts = ['.pdf', '.exe', '.dll', '.zip', '.tar', '.gz', '.mp4', '.mp3', '.wav'];
+            const lowerPath = path.toLowerCase();
+            
+            const isImage = imgExtensions.some(ext => lowerPath.endsWith(ext));
+            const isBinary = binaryExts.some(ext => lowerPath.endsWith(ext));
+            
+            if(isBinary && !isImage) {
+                showAlert(`Cannot view binary file: <b>${path.split('/').pop()}</b>. Use Download button instead.`, "error");
                 return;
             }
 
@@ -1576,33 +1689,47 @@
             DOM.btnSearchFile.classList.add('hidden');
             DOM.btnSaveFile.classList.add('hidden');
             DOM.commitMsgContainer.style.display = 'none';
+            DOM.fileEditor.style.opacity = '0';
+            DOM.fileEditor.style.pointerEvents = 'none';
+            DOM.imagePreviewContainer.classList.add('hidden');
+            DOM.editorPlaceholder.style.display = 'none';
             
             try {
                 const data = await ghApi(`repos/${currentOwner}/${repo}/contents/${path}?ref=${branch}`);
-                const content = decodeURIComponent(escape(atob(data.content)));
                 
-                const modelist = ace.require("ace/ext/modelist");
-                const mode = modelist.getModeForPath(path).mode;
-                aceEditor.session.setMode(mode);
-                
-                DOM.editorPlaceholder.style.display = 'none';
-                DOM.fileEditor.style.opacity = '1';
-                DOM.fileEditor.style.pointerEvents = 'auto';
-                
-                aceEditor.setValue(content, -1);
-                originalFileContent = content;
-                editingFilePath = path;
-                editingFileSha = data.sha; 
-                
-                aceEditor.setReadOnly(false);
-                DOM.btnSearchFile.classList.remove('hidden');
-                DOM.btnSaveFile.classList.remove('hidden');
-                DOM.btnSaveFile.classList.add('opacity-50');
-                DOM.btnSaveFile.disabled = true;
-                DOM.btnSaveFile.classList.remove('btn-action', 'btn-blue');
-                
-                DOM.commitMsgContainer.style.display = 'flex';
-                DOM.editCommitMsg.value = `Update ${path.split('/').pop()}`;
+                if (isImage) {
+                    // Image Preview Mode
+                    const ext = path.split('.').pop().toLowerCase();
+                    DOM.imagePreviewImg.src = `data:image/${ext};base64,${data.content}`;
+                    DOM.imagePreviewContainer.classList.remove('hidden');
+                    DOM.imagePreviewContainer.classList.add('flex');
+                    editingFilePath = path;
+                    editingFileSha = data.sha;
+                } else {
+                    // Text Editor Mode
+                    const content = decodeURIComponent(escape(atob(data.content)));
+                    const modelist = ace.require("ace/ext/modelist");
+                    const mode = modelist.getModeForPath(path).mode;
+                    aceEditor.session.setMode(mode);
+                    
+                    DOM.fileEditor.style.opacity = '1';
+                    DOM.fileEditor.style.pointerEvents = 'auto';
+                    
+                    aceEditor.setValue(content, -1);
+                    originalFileContent = content;
+                    editingFilePath = path;
+                    editingFileSha = data.sha; 
+                    
+                    aceEditor.setReadOnly(false);
+                    DOM.btnSearchFile.classList.remove('hidden');
+                    DOM.btnSaveFile.classList.remove('hidden');
+                    DOM.btnSaveFile.classList.add('opacity-50');
+                    DOM.btnSaveFile.disabled = true;
+                    DOM.btnSaveFile.classList.remove('btn-action', 'btn-blue');
+                    
+                    DOM.commitMsgContainer.style.display = 'flex';
+                    DOM.editCommitMsg.value = `Update ${path.split('/').pop()}`;
+                }
                 
             } catch (error) {
                 showAlert(`Failed to load file: ${error.message}`);
@@ -1613,7 +1740,7 @@
         }
         
         async function saveEditedFile() {
-            if (!editingFilePath) return;
+            if (!editingFilePath || DOM.imagePreviewContainer.classList.contains('flex')) return; // Can't save images from editor
             
             const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
             const content = aceEditor.getValue();
@@ -1660,11 +1787,15 @@
             originalFileContent = "";
             DOM.editorFilePath.textContent = "No file selected";
             
-            if(aceEditor) aceEditor.setValue("", -1);
-            if(aceEditor) aceEditor.setReadOnly(true);
+            if(aceEditor) {
+                aceEditor.setValue("", -1);
+                aceEditor.setReadOnly(true);
+            }
             DOM.editorPlaceholder.style.display = 'flex';
             DOM.fileEditor.style.opacity = '0';
             DOM.fileEditor.style.pointerEvents = 'none';
+            DOM.imagePreviewContainer.classList.add('hidden');
+            DOM.imagePreviewContainer.classList.remove('flex');
             
             DOM.btnSearchFile.classList.add('hidden');
             DOM.btnSaveFile.classList.add('hidden');
@@ -1698,11 +1829,9 @@
                     window.URL.revokeObjectURL(url);
                     document.body.removeChild(a);
                 } else if (item.type === 'tree') {
-                    // Download Folder as ZIP using JSZip
                     const zip = new JSZip();
                     const folderPrefix = item.path.endsWith('/') ? item.path : item.path + '/';
                     
-                    // Filter all blobs starting with folderPrefix
                     const filesToZip = currentTreeData.filter(node => node.type === 'blob' && node.path.startsWith(folderPrefix));
                     if (filesToZip.length === 0) throw new Error("Folder is empty.");
 
@@ -1746,31 +1875,32 @@
             openModal('modal-move', 'modal-move-content');
         }
 
-        async function executeMoveItem() {
-            const oldPath = activeTreeSelection.path;
-            const newPath = DOM.moveItemPath.value.trim();
+        async function executeMoveItem(newPathTarget, targetItemNode) {
+            const oldPath = targetItemNode.path;
+            const newPath = newPathTarget;
             
             if(!newPath || oldPath === newPath) return closeModal('modal-move', 'modal-move-content');
             
             const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
             const msg = `Move ${oldPath} to ${newPath}`;
             
+            DOM.editorLoading.classList.remove('hidden');
+            DOM.editorLoadingText.textContent = "Moving item...";
+            
             const btnHtml = DOM.btnConfirmMove.innerHTML;
             DOM.btnConfirmMove.innerHTML = `<div class="spinner-cyber !w-4 !h-4"></div>`;
             DOM.btnConfirmMove.disabled = true;
 
             try {
-                // Fetch base tree from latest commit
                 const latestCommitSha = (await ghApi(`repos/${currentOwner}/${repo}/git/ref/heads/${branch}`)).object.sha;
                 const baseTreeSha = (await ghApi(`repos/${currentOwner}/${repo}/git/commits/${latestCommitSha}`)).tree.sha;
 
                 let treeEntries = [];
 
-                if (activeTreeSelection.type === 'blob') {
-                    treeEntries.push({ path: newPath, mode: "100644", type: "blob", sha: activeTreeSelection.sha });
-                    treeEntries.push({ path: oldPath, mode: "100644", type: "blob", sha: null }); // hapus origin
-                } else if (activeTreeSelection.type === 'tree') {
-                    // Pindahkan seluruh file dalam folder
+                if (targetItemNode.type === 'blob') {
+                    treeEntries.push({ path: newPath, mode: "100644", type: "blob", sha: targetItemNode.sha });
+                    treeEntries.push({ path: oldPath, mode: "100644", type: "blob", sha: null }); 
+                } else if (targetItemNode.type === 'tree') {
                     const folderPrefix = oldPath.endsWith('/') ? oldPath : oldPath + '/';
                     const targetPrefix = newPath.endsWith('/') ? newPath : newPath + '/';
                     
@@ -1779,11 +1909,10 @@
                     filesToMove.forEach(file => {
                         const relPath = file.path.substring(folderPrefix.length);
                         treeEntries.push({ path: targetPrefix + relPath, mode: "100644", type: "blob", sha: file.sha });
-                        treeEntries.push({ path: file.path, mode: "100644", type: "blob", sha: null }); // hapus origin
+                        treeEntries.push({ path: file.path, mode: "100644", type: "blob", sha: null }); 
                     });
                 }
 
-                // Kirim Tree dan Commit
                 const newTree = await ghApi(`repos/${currentOwner}/${repo}/git/trees`, 'POST', { base_tree: baseTreeSha, tree: treeEntries });
                 const newCommit = await ghApi(`repos/${currentOwner}/${repo}/git/commits`, 'POST', { message: msg, tree: newTree.sha, parents: [latestCommitSha] });
                 await ghApi(`repos/${currentOwner}/${repo}/git/refs/heads/${branch}`, 'PATCH', { sha: newCommit.sha, force: false });
@@ -1791,7 +1920,6 @@
                 closeModal('modal-move', 'modal-move-content');
                 showAlert(`Successfully moved to <b>${newPath}</b>`, "success");
                 
-                // Refresh data
                 fetchRepositoryTree();
                 if (editingFilePath === oldPath) resetEditor();
 
@@ -1800,6 +1928,7 @@
             } finally {
                 DOM.btnConfirmMove.innerHTML = btnHtml;
                 DOM.btnConfirmMove.disabled = false;
+                DOM.editorLoading.classList.add('hidden');
             }
         }
 
@@ -1807,7 +1936,6 @@
             const repo = DOM.repo.value.trim(), branch = DOM.branch.value.trim();
             if (!currentOwner || !repo || !branch) return showAlert("Please load a repository first.");
 
-            // Find root files to move
             const filesToMove = [];
             const imgExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'];
             
@@ -1815,9 +1943,9 @@
                 if (node.type === 'blob' && !node.path.includes('/')) {
                     const ext = node.path.split('.').pop().toLowerCase();
                     if (imgExtensions.includes(ext)) {
-                        filesToMove.push({ oldPath: node.path, newPath: `images/${node.path}`, sha: node.sha });
+                        filesToMove.push({ oldPath: node.path, newPath: `images/${sanitizeFileName(node.path)}`, sha: node.sha });
                     } else if (ext === 'enc') {
-                        filesToMove.push({ oldPath: node.path, newPath: `data/${node.path}`, sha: node.sha });
+                        filesToMove.push({ oldPath: node.path, newPath: `data/${sanitizeFileName(node.path)}`, sha: node.sha });
                     }
                 }
             });
@@ -1837,7 +1965,7 @@
                 let treeEntries = [];
                 filesToMove.forEach(f => {
                     treeEntries.push({ path: f.newPath, mode: "100644", type: "blob", sha: f.sha });
-                    treeEntries.push({ path: f.oldPath, mode: "100644", type: "blob", sha: null }); // Delete old
+                    treeEntries.push({ path: f.oldPath, mode: "100644", type: "blob", sha: null }); 
                 });
 
                 const newTree = await ghApi(`repos/${currentOwner}/${repo}/git/trees`, 'POST', { base_tree: baseTreeSha, tree: treeEntries });
@@ -1895,6 +2023,7 @@
                     await ghApi(`repos/${currentOwner}/${repo}/git/refs/heads/${branch}`, 'PATCH', { sha: newCommit.sha, force: false });
 
                     currentTreeData = itemsToKeep;
+                    resetEditor();
                 }
 
                 closeModal('modal-delete-file', 'modal-delete-file-content');
@@ -1904,7 +2033,7 @@
                 DOM.btnTreeDelete.classList.add('hidden');
                 DOM.btnTreeMove.classList.add('hidden');
                 
-                // Re-render tree
+                // Re-render tree locally
                 const root = [];
                 const treeMap = {};
                 currentTreeData.forEach(node => {
