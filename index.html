@@ -1032,12 +1032,15 @@
         function cancelUpload() { if(uploadAbortController) uploadAbortController.abort(); }
 
         async function fetchRepositoryTree() {
-            if(!currentOwner || !DOM.repo.value) return;
+            const repo = DOM.repo.value.trim();
+            const branch = DOM.branch.value.trim();
+            if(!currentOwner || !repo || !branch) return showAlert("Owner, Repo, and Branch are required.");
+            
             DOM.treeLoading.classList.remove('hidden');
             DOM.repoTreeView.innerHTML='';
             try {
-                DOM.lblActiveRepo.textContent = `${currentOwner}/${DOM.repo.value} [${DOM.branch.value}]`;
-                const data = await ghApi(`repos/${currentOwner}/${DOM.repo.value}/git/trees/${DOM.branch.value}?recursive=1`);
+                DOM.lblActiveRepo.textContent = `${currentOwner}/${repo} [${branch}]`;
+                const data = await ghApi(`repos/${currentOwner}/${repo}/git/trees/${branch}?recursive=1`);
                 currentTreeData = data.tree;
                 let root=[], map={};
                 data.tree.forEach(i => {
@@ -1047,7 +1050,10 @@
                     else { p.pop(); if(map[p.join('/')]) map[p.join('/')].children.push(i); else root.push(i); }
                 });
                 renderTreeLevel(root, DOM.repoTreeView);
-            } catch(e) { DOM.repoTreeView.innerHTML='Failed to load.'; }
+            } catch(e) { 
+                DOM.repoTreeView.innerHTML=`<div class="text-rose-400 text-center mt-10 italic">Failed to load: ${e.message}</div>`;
+                showAlert(`Fetch failed: ${e.message}`);
+            }
             DOM.treeLoading.classList.add('hidden');
         }
 
