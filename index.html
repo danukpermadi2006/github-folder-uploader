@@ -1128,6 +1128,180 @@
             DOM.btnCreateRepo.innerHTML=`Create Repository`;
         }
 
+        async function downloadEntireRepo() {
+            if (!currentOwner || !DOM.repo.value) return;
+            DOM.editorLoading.classList.remove('hidden');
+            try {
+                const res = await fetch(`https://api.github.com/repos/${currentOwner}/${DOM.repo.value}/zipball/${DOM.branch.value}`, { headers: { 'Authorization': `Bearer ${DOM.token.value.trim()}` } });
+                if (!res.ok) throw new Error("Download failed");
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = `${DOM.repo.value}.zip`;
+                document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); document.body.removeChild(a);
+            } catch(e) { showAlert(e.message); }
+            DOM.editorLoading.classList.add('hidden');
+        }
+
+        async function downloadActiveTreeSelection() {
+            if (!activeTreeSelection) return showAlert("Select an item");
+            DOM.editorLoading.classList.remove('hidden');
+            try {
+                if (activeTreeSelection.type === 'blob') {
+                    const data = await ghApi(`repos/${currentOwner}/${DOM.repo.value}/contents/${activeTreeSelection.path}?ref=${DOM.branch.value}`);
+                    const bStr = atob(data.content); const bytes = new Uint8Array(bStr.length);
+                    for (let i = 0; i < bStr.length; i++) bytes[i] = bStr.charCodeAt(i);
+                    const blob = new Blob([bytes]); const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a'); a.href = url; a.download = activeTreeSelection.path.split('/').pop();
+                    a.click(); URL.revokeObjectURL(url);
+                } else {
+                    const zip = new JSZip(); const prefix = activeTreeSelection.path + '/';
+                    const files = currentTreeData.filter(n => n.type === 'blob' && n.path.startsWith(prefix));
+                    for (let f of files) {
+                        const d = await ghApi(`repos/${currentOwner}/${DOM.repo.value}/contents/${f.path}?ref=${DOM.branch.value}`);
+                        const bStr = atob(d.content); const bytes = new Uint8Array(bStr.length);
+                        for (let i = 0; i < bStr.length; i++) bytes[i] = bStr.charCodeAt(i);
+                        zip.file(f.path.substring(prefix.length), bytes);
+                    }
+                    const content = await zip.generateAsync({type:"blob"});
+                    const url = URL.createObjectURL(content);
+                    const a = document.createElement('a'); a.href = url; a.download = `${activeTreeSelection.path.split('/').pop()}.zip`;
+                    a.click(); URL.revokeObjectURL(url);
+                }
+            } catch(e) { showAlert(e.message); }
+            DOM.editorLoading.classList.add('hidden');
+        }
+
+        function promptCreateItem(type) {
+            if (!currentOwner || !DOM.repo.value) return showAlert("Load repo first.");
+            pendingCreateType = type;
+            DOM.modalCreateTitle.innerHTML = type === 'file' ? "Create New File" : "Create New Folder";
+            DOM.createItemPath.value = activeTreeSelection && activeTreeSelection.type === 'tree' ? activeTreeSelection.path + '/' : '';
+            openModal('modal-create');
+        }
+
+        async function executeCreateItem() {
+            let path = DOM.createItemPath.value.trim();
+            if (!path) return;
+            closeModal('modal-create');
+            if (pendingCreateType === 'folder') {
+                path = path.replace(/\/$/, '') + '/.gitkeep';
+                DOM.editorLoading.classList.remove('hidden');
+                try {
+                    await ghApi(`repos/${currentOwner}/${DOM.repo.value}/contents/${path}`, 'PUT', { message: `Create folder`, content: btoa(""), branch: DOM.branch.value });
+                    showAlert("Folder created", "success"); fetchRepositoryTree();
+                } catch(e) { showAlert(e.message); }
+                DOM.editorLoading.classList.add('hidden');
+            } else {
+                editingFilePath = path; editingFileSha = null; originalFileContent = "";
+                if(aceEditor) { aceEditor.setValue("", -1); aceEditor.setReadOnly(false); }
+                DOM.editorPlaceholder.style.display = 'none'; DOM.fileEditor.style.opacity = 1; DOM.fileEditor.style.pointerEvents = 'auto';
+                DOM.btnSearchFile.classList.remove('hidden'); DOM.btnSaveFile.classList.remove('hidden'); DOM.btnSaveFile.disabled = false;
+                DOM.commitMsgContainer.style.display = 'flex'; DOM.editCommitMsg.value = `Create ${path.split('/').pop()}`;
+            }
+        }
+
+        async function executeDeleteSelection() {
+            if (!activeTreeSelection) return;
+            DOM.btnConfirmDelFile.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+            try {
+                let base = await ghApi(`repos/${currentOwner}/${DOM.repo.value}/git/commits/${DOM.branch.value}`);
+                let tree = [];
+                if (activeTreeSelection.type === 'blob') {
+                    tree.push({ path: activeTreeSelection.path, mode: "100644", type: "blob", sha: null });
+                } else {
+                    const prefix = activeTreeSelection.path + '/';
+                    currentTreeData.filter(n => n.type === 'blob' && n.path.startsWith(prefix)).forEach(n => {
+                        tree.push({ path: n.path, mode: "100644", type: "blob", sha: null });
+                    });
+                }
+                let nTree = await ghApi(`repos/${currentOwner}/${DOM.repo.value}/git/trees`, 'POST', {base_tree:base.tree.sha, tree});
+                let nCom = await ghApi(`repos/${currentOwner}/${DOM.repo.value}/git/commits`, 'POST', {message:DOM.delFileCommitMsg.value||"Delete item", tree:nTree.sha, parents:[base.sha]});
+                await ghApi(`repos/${currentOwner}/${DOM.repo.value}/git/refs/heads/${DOM.branch.value}`, 'PATCH', {sha:nCom.sha});
+                showAlert("Deleted", "success"); fetchRepositoryTree();
+            } catch(e) { showAlert(e.message); }
+            closeModal('modal-delete-file'); DOM.btnConfirmDelFile.innerHTML = "Delete";
+        }
+
+        async function executeDeleteAll() {
+            DOM.btnConfirmDelAll.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+            try {
+                let base = await ghApi(`repos/${currentOwner}/${DOM.repo.value}/git/commits/${DOM.branch.value}`);
+                let tree = currentTreeData.filter(n => n.type === 'blob' && n.path.toLowerCase() !== 'readme.md').map(n => ({ path: n.path, mode: "100644", type: "blob", sha: null }));
+                if(!tree.length) { closeModal('modal-delete-all'); return showAlert("Already empty (or only README)."); }
+                let nTree = await ghApi(`repos/${currentOwner}/${DOM.repo.value}/git/trees`, 'POST', {base_tree:base.tree.sha, tree});
+                let nCom = await ghApi(`repos/${currentOwner}/${DOM.repo.value}/git/commits`, 'POST', {message:DOM.delAllCommitMsg.value||"Delete all", tree:nTree.sha, parents:[base.sha]});
+                await ghApi(`repos/${currentOwner}/${DOM.repo.value}/git/refs/heads/${DOM.branch.value}`, 'PATCH', {sha:nCom.sha});
+                showAlert("Nuked!", "success"); fetchRepositoryTree();
+            } catch(e) { showAlert(e.message); }
+            closeModal('modal-delete-all'); DOM.btnConfirmDelAll.innerHTML = "Nuke It!";
+        }
+
+        async function executeMoveItem(newPath, item) {
+            if(!newPath || newPath === item.path) return closeModal('modal-move');
+            DOM.btnConfirmMove.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+            try {
+                let base = await ghApi(`repos/${currentOwner}/${DOM.repo.value}/git/commits/${DOM.branch.value}`);
+                let tree = [];
+                if (item.type === 'blob') {
+                    tree.push({ path: newPath, mode: "100644", type: "blob", sha: item.sha }, { path: item.path, mode: "100644", type: "blob", sha: null });
+                } else {
+                    const oldP = item.path + '/', newP = newPath + '/';
+                    currentTreeData.filter(n => n.type === 'blob' && n.path.startsWith(oldP)).forEach(n => {
+                        tree.push({ path: newP + n.path.substring(oldP.length), mode: "100644", type: "blob", sha: n.sha }, { path: n.path, mode: "100644", type: "blob", sha: null });
+                    });
+                }
+                let nTree = await ghApi(`repos/${currentOwner}/${DOM.repo.value}/git/trees`, 'POST', {base_tree:base.tree.sha, tree});
+                let nCom = await ghApi(`repos/${currentOwner}/${DOM.repo.value}/git/commits`, 'POST', {message:`Move ${item.path}`, tree:nTree.sha, parents:[base.sha]});
+                await ghApi(`repos/${currentOwner}/${DOM.repo.value}/git/refs/heads/${DOM.branch.value}`, 'PATCH', {sha:nCom.sha});
+                showAlert("Moved", "success"); fetchRepositoryTree();
+            } catch(e) { showAlert(e.message); }
+            closeModal('modal-move'); DOM.btnConfirmMove.innerHTML = "Apply Move";
+        }
+
+        async function executeCreateBranch() {
+            let newBranch = DOM.newBranchName.value.trim().replace(/[^a-zA-Z0-9.\-_]/g, '-').toLowerCase();
+            if (!newBranch) return showAlert("Branch name cannot be empty");
+            DOM.btnConfirmBranch.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+            try {
+                const latest = await ghApi(`repos/${currentOwner}/${DOM.repo.value}/git/ref/heads/${DOM.lblSourceBranch.textContent}`);
+                await ghApi(`repos/${currentOwner}/${DOM.repo.value}/git/refs`, 'POST', { ref: `refs/heads/${newBranch}`, sha: latest.object.sha });
+                showAlert("Branch created", "success"); DOM.branch.value = newBranch;
+                if (!repoBranchesCache.includes(newBranch)) repoBranchesCache.push(newBranch);
+                saveSettings(); closeModal('modal-branch'); fetchRepositoryTree();
+            } catch(e) { showAlert(e.message); }
+            DOM.btnConfirmBranch.innerHTML = "Create";
+        }
+
+        async function executeDeleteRepository() {
+            const repo = DOM.delRepoName.value.trim();
+            if(!repo || !currentOwner) return;
+
+            DOM.btnConfirmDel.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+            DOM.btnConfirmDel.disabled = true;
+
+            try {
+                await ghApi(`repos/${currentOwner}/${repo}`, 'DELETE');
+                closeModal('modal-delete');
+                showAlert(`Repository deleted permanently.`, 'success');
+                DOM.delRepoName.value = '';
+                DOM.btnTriggerDelete.disabled = true;
+                
+                userReposCache = userReposCache.filter(r => r !== repo);
+                saveSettings();
+                if (DOM.repo.value === repo) DOM.repo.value = '';
+            } catch (error) {
+                closeModal('modal-delete');
+                let msg = error.message;
+                if(msg.includes('403') || msg.toLowerCase().includes('resource not accessible')) {
+                    msg = "Token missing 'delete_repo' scope.";
+                }
+                showAlert(`Failed to delete repo: ${msg}`);
+            } finally {
+                DOM.btnConfirmDel.innerHTML = `Yes, Delete`;
+                DOM.btnConfirmDel.disabled = false;
+            }
+        }
+
         window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
