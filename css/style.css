@@ -1,0 +1,232 @@
+/* ==========================================================
+   GitHub Manager - style.css (styling utama)
+   Media query ada di css/responsive.css
+   ========================================================== */
+
+body { 
+    font-family: 'Plus Jakarta Sans', sans-serif; 
+    background-color: #030305;
+    background-image: 
+        radial-gradient(circle at 15% 0%, rgba(168, 85, 247, 0.15) 0%, transparent 25%),
+        radial-gradient(circle at 85% 100%, rgba(217, 70, 239, 0.15) 0%, transparent 25%);
+    color: #e2e8f0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+.glass-panel {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.8), rgba(9, 9, 11, 0.9));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.input-dark {
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(51, 65, 85, 0.5);
+    color: #f8fafc;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+    font-size: 13px !important; 
+}
+
+
+
+.input-dark:hover:not(:disabled) {
+    border-color: rgba(168, 85, 247, 0.4);
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.input-dark:focus {
+    border-color: #a855f7;
+    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2), inset 0 2px 4px rgba(0,0,0,0.5);
+    outline: none;
+}
+
+.input-dark:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.cyber-checkbox {
+    appearance: none;
+    width: 1.5rem; 
+    height: 1.5rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(51, 65, 85, 0.8);
+    border-radius: 0.375rem;
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.cyber-checkbox::before {
+    content: "";
+    width: 0.8rem;
+    height: 0.8rem;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em #000;
+    background-color: transform;
+    transform-origin: center;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+
+
+.cyber-checkbox:checked {
+    background-color: #a855f7;
+    border-color: #a855f7;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+}
+.cyber-checkbox:checked::before { transform: scale(1); }
+
+.cyber-checkbox.green:checked {
+    background-color: #10b981;
+    border-color: #10b981;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+.btn-action {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+.btn-action::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 50%; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+    transform: skewX(-20deg);
+}
+.btn-action:hover:not(:disabled)::after {
+    animation: shine 1.5s infinite;
+}
+.btn-action:disabled {
+    filter: grayscale(100%);
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.btn-upload { background: linear-gradient(135deg, #a855f7 0%, #c026d3 100%); box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3), inset 0 1px 0 rgba(255,255,255,0.2); }
+.btn-upload:hover:not(:disabled) { box-shadow: 0 6px 30px rgba(168, 85, 247, 0.6); transform: translateY(-2px); }
+
+.btn-create { background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255,255,255,0.2); }
+.btn-create:hover:not(:disabled) { box-shadow: 0 6px 30px rgba(16, 185, 129, 0.6); transform: translateY(-2px); }
+
+.btn-blue { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255,255,255,0.2); }
+.btn-blue:hover:not(:disabled) { box-shadow: 0 6px 30px rgba(59, 130, 246, 0.6); transform: translateY(-2px); }
+
+.btn-delete { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3), inset 0 1px 0 rgba(255,255,255,0.2); }
+.btn-delete:hover:not(:disabled) { box-shadow: 0 6px 30px rgba(239, 68, 68, 0.6); transform: translateY(-2px); }
+
+.upload-area {
+    background: rgba(0,0,0,0.4);
+    border: 2px dashed rgba(51, 65, 85, 0.8);
+    transition: all 0.3s ease;
+}
+.upload-area:hover, .upload-area.drag-over {
+    border-color: #a855f7;
+    background: rgba(168, 85, 247, 0.05);
+    box-shadow: inset 0 0 20px rgba(168, 85, 247, 0.1);
+}
+
+@keyframes shine { 100% { left: 200%; } }
+
+.spinner-cyber {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(168, 85, 247, 0.2);
+    border-top-color: #a855f7;
+    border-radius: 50%;
+    animation: spinCyber 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+@keyframes spinCyber {
+    0% { transform: rotate(0deg) scale(1); box-shadow: 0 0 0 rgba(168, 85, 247, 0); }
+    50% { transform: rotate(180deg) scale(1.1); box-shadow: 0 0 15px rgba(168, 85, 247, 0.5); }
+    100% { transform: rotate(360deg) scale(1); box-shadow: 0 0 0 rgba(168, 85, 247, 0); }
+}
+
+.file-list-container { max-height: 220px; overflow-y: auto; overflow-x: auto; }
+
+::-webkit-scrollbar { width: 6px; height: 6px;}
+::-webkit-scrollbar-track { background: #000; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; border: 1px solid #000; }
+::-webkit-scrollbar-thumb:hover { background-color: #555; }
+
+.nav-tabs {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(0,0,0,0.3);
+    border-radius: 0.75rem;
+    border: 1px solid rgba(255,255,255,0.05);
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 20;
+    overflow-x: auto;
+}
+.nav-tab {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+.nav-tab:hover:not(.active) { background: rgba(255,255,255,0.05); color: #cbd5e1; }
+.nav-tab.active {
+    background: rgba(168, 85, 247, 0.15);
+    color: #fff;
+    border-color: rgba(168, 85, 247, 0.5);
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.2), inset 0 0 10px rgba(168, 85, 247, 0.1);
+    text-shadow: 0 0 8px rgba(255,255,255,0.3);
+}
+
+.tab-content { display: none; animation: fadeIn 0.3s ease forwards; }
+.tab-content.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+    z-index: 100; display: flex; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+
+.tree-item {
+    cursor: pointer; transition: background-color 0.2s, color 0.2s;
+    display: flex; align-items: center; user-select: none;
+}
+.tree-item:hover { background-color: rgba(255,255,255,0.05); }
+.tree-item.selected { background-color: rgba(59, 130, 246, 0.2); border-left: 2px solid #3b82f6; color: #fff; }
+.tree-item.drag-over { background-color: rgba(168, 85, 247, 0.3); border: 1px dashed #a855f7; }
+.tree-children { border-left: 1px solid rgba(255,255,255,0.1); margin-left: 10px; padding-left: 4px; }
+
+#file-editor { overscroll-behavior: none; }
+.ace_editor { touch-action: pan-x pan-y; }
+
+/* Checkerboard pattern for transparent image preview */
+.bg-checkerboard {
+    background-color: #0f172a;
+    background-image: linear-gradient(45deg, #1e293b 25%, transparent 25%, transparent 75%, #1e293b 75%, #1e293b),
+                      linear-gradient(45deg, #1e293b 25%, transparent 25%, transparent 75%, #1e293b 75%, #1e293b);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+}
